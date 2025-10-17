@@ -1,0 +1,43 @@
+{
+  "name": "pustikorijen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Connecting Bosnian families across generations and borders",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "docker:dev": "docker-compose -f docker/docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.dev.yml down",
+    "docker:logs": "docker-compose -f docker/docker-compose.dev.yml logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/[username]/pustikorijen.git"
+  },
+  "keywords": [
+    "genealogy",
+    "family-tree",
+    "bosnia",
+    "diaspora",
+    "heritage"
+  ],
+  "author": "",
+  "license": "MIT"
+}
