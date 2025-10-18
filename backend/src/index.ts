@@ -26,6 +26,7 @@ app.get('/health', (_req, res) => {
 import authRoutes from './routes/auth.routes';
 import branchRoutes from './routes/branch.routes';
 import personRoutes from './routes/person.routes';
+import partnershipRoutes from './routes/partnership.routes';
 import { authenticateToken } from './middleware/auth.middleware';
 
 app.get('/api/v1', (_req, res) => {
@@ -43,6 +44,9 @@ app.use('/api/v1/branches', branchRoutes);
 
 // Person routes (nested under branches)
 app.use('/api/v1/branches/:branchId/persons', personRoutes);
+
+// Partnership routes (nested under branches)
+app.use('/api/v1/branches/:branchId/partnerships', partnershipRoutes);
 
 // Family tree route (separate from persons to avoid conflict)
 app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) => {
