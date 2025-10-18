@@ -115,7 +115,7 @@ export default function BranchDetail() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t">
             <div>
               <p className="text-sm text-gray-600">Members</p>
-              <p className="text-2xl font-bold">{branch._count?.members || 0}</p>
+              <p className="text-2xl font-bold">{members.length}</p>
             </div>
             <div>
               <p className="text-sm text-gray-600">People</p>

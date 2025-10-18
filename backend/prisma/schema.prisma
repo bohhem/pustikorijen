@@ -50,6 +50,8 @@ model User {
   branchMemberships     BranchMember[]
   createdPersons        Person[]                @relation("CreatedBy")
   verifiedPersons       Person[]                @relation("VerifiedBy")
+  createdPartnerships   Partnership[]           @relation("PartnershipCreatedBy")
+  verifiedPartnerships  Partnership[]           @relation("PartnershipVerifiedBy")
   stories               Story[]
   uploadedDocuments     Document[]
   rootChangeProposals   RootChangeProposal[]
@@ -115,6 +117,7 @@ model FamilyBranch {
 
   // Relations
   persons             Person[]
+  partnerships        Partnership[]
   members             BranchMember[]
   stories             Story[]
   documents           Document[]
@@ -209,6 +212,8 @@ model Person {
   // Relations
   relationships1    Relationship[] @relation("Person1")
   relationships2    Relationship[] @relation("Person2")
+  partnershipsAsPerson1 Partnership[] @relation("Partner1")
+  partnershipsAsPerson2 Partnership[] @relation("Partner2")
   branchMemberships BranchMember[]
   documents         Document[]
   auditLogs         AuditLog[]
@@ -264,6 +269,72 @@ model Relationship {
   @@index([person2Id])
   @@index([relationshipType])
   @@map("relationships")
+}
+
+// ============================================================================
+// PARTNERSHIPS (Marriages & Relationships)
+// ============================================================================
+
+model Partnership {
+  id String @id @default(uuid()) @map("partnership_id")
+
+  branchId String       @map("branch_id") @db.VarChar(50)
+  branch   FamilyBranch @relation(fields: [branchId], references: [id])
+
+  // Partners
+  person1Id String @map("person1_id")
+  person1   Person @relation("Partner1", fields: [person1Id], references: [id], onDelete: Cascade)
+
+  person2Id String @map("person2_id")
+  person2   Person @relation("Partner2", fields: [person2Id], references: [id], onDelete: Cascade)
+
+  // Partnership Type
+  partnershipType String @default("marriage") @map("partnership_type") @db.VarChar(50) // marriage, domestic_partnership, common_law, etc.
+
+  // Marriage/Partnership Details
+  startDate     DateTime? @map("start_date") @db.Date // Wedding/partnership start date
+  startPlace    String?   @map("start_place") @db.VarChar(255)
+  endDate       DateTime? @map("end_date") @db.Date // Divorce/separation/death date
+  endPlace      String?   @map("end_place") @db.VarChar(255)
+  endReason     String?   @map("end_reason") @db.VarChar(50) // divorce, death, separation
+
+  // Status
+  status    String  @default("active") @db.VarChar(20) // active, ended, annulled
+  isCurrent Boolean @default(true) @map("is_current")
+
+  // Order (for multiple marriages)
+  orderNumber Int @default(1) @map("order_number")
+
+  // Additional Info
+  notes       String? @db.Text
+  ceremonyType String? @map("ceremony_type") @db.VarChar(100) // religious, civil, etc.
+
+  // Metadata
+  createdById String? @map("created_by")
+  createdBy   User?   @relation("PartnershipCreatedBy", fields: [createdById], references: [id])
+
+  // Quality & Verification
+  qualityScore      Int     @default(0) @map("quality_score")
+  verificationLevel Int     @default(1) @map("verification_level")
+  isVerified        Boolean @default(false) @map("is_verified")
+  verifiedById      String? @map("verified_by")
+  verifiedBy        User?   @relation("PartnershipVerifiedBy", fields: [verifiedById], references: [id])
+  verifiedAt        DateTime? @map("verified_at")
+
+  // Privacy
+  visibility String @default("family_only") @db.VarChar(20)
+
+  // Timestamps
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([person1Id, person2Id, orderNumber])
+  @@index([branchId])
+  @@index([person1Id])
+  @@index([person2Id])
+  @@index([status])
+  @@index([startDate])
+  @@map("partnerships")
 }
 
 // ============================================================================
