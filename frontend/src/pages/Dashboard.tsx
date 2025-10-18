@@ -19,6 +19,12 @@ export default function Dashboard() {
               <h1 className="text-xl font-bold text-gray-900">Pustikorijen</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Link
+                to="/branches"
+                className="text-sm text-gray-700 hover:text-gray-900"
+              >
+                Branches
+              </Link>
               <span className="text-sm text-gray-700">
                 {user?.fullName}
               </span>

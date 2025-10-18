@@ -4,7 +4,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import BranchList from './pages/BranchList';
+import Branches from './pages/Branches';
 import BranchDetail from './pages/BranchDetail';
 import CreateBranch from './pages/CreateBranch';
 
@@ -23,7 +23,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/branches" element={<BranchList />} />
+          <Route path="/branches" element={<Branches />} />
           <Route path="/branches/:id" element={<BranchDetail />} />
           <Route
             path="/branches/create"
