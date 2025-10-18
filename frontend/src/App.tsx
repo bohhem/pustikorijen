@@ -10,6 +10,7 @@ import BranchDetail from './pages/BranchDetail';
 import CreateBranch from './pages/CreateBranch';
 import PersonList from './pages/PersonList';
 import CreatePerson from './pages/CreatePerson';
+import PersonDetail from './pages/PersonDetail';
 import FamilyTree from './pages/FamilyTree';
 import AddPartnership from './pages/AddPartnership';
 
@@ -52,6 +53,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreatePerson />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branches/:branchId/persons/:personId"
+              element={
+                <ProtectedRoute>
+                  <PersonDetail />
                 </ProtectedRoute>
               }
             />

@@ -5,11 +5,16 @@ export interface Person {
   givenName?: string;
   surname?: string;
   maidenName?: string;
+  nickname?: string;
   gender?: string;
   birthDate?: string;
   birthPlace?: string;
   deathDate?: string;
   deathPlace?: string;
+  currentLocation?: string;
+  currentCountry?: string;
+  occupation?: string;
+  education?: string;
   biography?: string;
   generation?: string;  // G1, G2, etc
   generationNumber?: number;
