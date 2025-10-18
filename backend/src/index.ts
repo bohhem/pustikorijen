@@ -25,6 +25,8 @@ app.get('/health', (_req, res) => {
 // API routes
 import authRoutes from './routes/auth.routes';
 import branchRoutes from './routes/branch.routes';
+import personRoutes from './routes/person.routes';
+import { authenticateToken } from './middleware/auth.middleware';
 
 app.get('/api/v1', (_req, res) => {
   res.json({
@@ -38,6 +40,22 @@ app.use('/api/v1/auth', authRoutes);
 
 // Branch routes
 app.use('/api/v1/branches', branchRoutes);
+
+// Person routes (nested under branches)
+app.use('/api/v1/branches/:branchId/persons', personRoutes);
+
+// Family tree route (separate from persons to avoid conflict)
+app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) => {
+  try {
+    const { branchId } = req.params;
+    const personService = (await import('./services/person.service')).default;
+    const tree = await personService.getFamilyTree(branchId);
+    res.json({ tree });
+  } catch (error: any) {
+    console.error('Error fetching family tree:', error);
+    res.status(400).json({ error: error.message || 'Failed to fetch family tree' });
+  }
+});
 
 // 404 handler
 app.use((_req, res) => {

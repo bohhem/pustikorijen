@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getBranches } from '../api/branch';
+import Layout from '../components/layout/Layout';
 import type { Branch } from '../types/branch';
 
 export default function Branches() {
@@ -36,7 +37,7 @@ export default function Branches() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Family Branches</h1>
@@ -149,6 +150,6 @@ export default function Branches() {
           </>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

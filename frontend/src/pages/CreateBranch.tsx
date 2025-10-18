@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createBranch } from '../api/branch';
+import Layout from '../components/layout/Layout';
 import type { CreateBranchInput } from '../types/branch';
 
 export default function CreateBranch() {
@@ -30,8 +31,8 @@ export default function CreateBranch() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+    <Layout>
+      <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow rounded-lg p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Family Branch</h2>
 
@@ -168,6 +169,6 @@ export default function CreateBranch() {
           </form>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

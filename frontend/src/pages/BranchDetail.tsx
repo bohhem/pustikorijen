@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getBranchById, getBranchMembers, requestJoinBranch } from '../api/branch';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import Layout from '../components/layout/Layout';
 import type { Branch, BranchMember } from '../types/branch';
 
 export default function BranchDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast();
   const [branch, setBranch] = useState<Branch | null>(null);
   const [members, setMembers] = useState<BranchMember[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,10 +48,10 @@ export default function BranchDetail() {
     setJoining(true);
     try {
       await requestJoinBranch(id!);
-      alert('Join request submitted! A Guru will review your request.');
+      toast.success('Join request submitted! A Guru will review your request.');
       loadMembers();
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to submit join request');
+      toast.error(err.response?.data?.error || 'Failed to submit join request');
     } finally {
       setJoining(false);
     }
@@ -58,28 +61,32 @@ export default function BranchDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </Layout>
     );
   }
 
   if (error || !branch) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600">{error || 'Branch not found'}</p>
-          <button onClick={() => navigate('/branches')} className="mt-4 text-indigo-600">
-            Back to Branches
-          </button>
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600">{error || 'Branch not found'}</p>
+            <button onClick={() => navigate('/branches')} className="mt-4 text-indigo-600">
+              Back to Branches
+            </button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Layout>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow rounded-lg p-8 mb-6">
           <div className="flex justify-between items-start mb-6">
             <div>
@@ -123,6 +130,31 @@ export default function BranchDetail() {
               <p className="text-2xl font-bold">{branch._count?.stories || 0}</p>
             </div>
           </div>
+
+          {isMember && (
+            <div className="mt-6 pt-6 border-t">
+              <div className="grid grid-cols-3 gap-3">
+                <Link
+                  to={`/branches/${branch.id}/tree`}
+                  className="text-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+                >
+                  🌳 Tree View
+                </Link>
+                <Link
+                  to={`/branches/${branch.id}/persons`}
+                  className="text-center px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition"
+                >
+                  📋 List View
+                </Link>
+                <Link
+                  to={`/branches/${branch.id}/persons/create`}
+                  className="text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                >
+                  ➕ Add Person
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="bg-white shadow rounded-lg p-8">
@@ -146,6 +178,6 @@ export default function BranchDetail() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
