@@ -11,6 +11,7 @@ import CreateBranch from './pages/CreateBranch';
 import PersonList from './pages/PersonList';
 import CreatePerson from './pages/CreatePerson';
 import FamilyTree from './pages/FamilyTree';
+import AddPartnership from './pages/AddPartnership';
 
 function App() {
   return (
@@ -59,6 +60,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <FamilyTree />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branches/:branchId/partnerships/add"
+              element={
+                <ProtectedRoute>
+                  <AddPartnership />
                 </ProtectedRoute>
               }
             />
