@@ -8,7 +8,7 @@ import {
 } from '../controllers/partnership.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 // All partnership routes require authentication
 router.use(authenticateToken);
