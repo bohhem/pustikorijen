@@ -24,6 +24,7 @@ app.get('/health', (_req, res) => {
 
 // API routes
 import authRoutes from './routes/auth.routes';
+import branchRoutes from './routes/branch.routes';
 
 app.get('/api/v1', (_req, res) => {
   res.json({
@@ -34,6 +35,9 @@ app.get('/api/v1', (_req, res) => {
 
 // Auth routes
 app.use('/api/v1/auth', authRoutes);
+
+// Branch routes
+app.use('/api/v1/branches', branchRoutes);
 
 // 404 handler
 app.use((_req, res) => {

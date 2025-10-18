@@ -1,5 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -71,10 +71,35 @@ export default function Dashboard() {
               </dl>
             </div>
 
-            <div className="mt-6">
-              <p className="text-gray-600">
-                Phase 1 (Authentication) is complete! More features coming soon...
-              </p>
+            <div className="mt-6 space-y-4">
+              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Link
+                  to="/branches"
+                  className="flex items-center p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition"
+                >
+                  <div className="flex-shrink-0">
+                    <span className="text-3xl">🌳</span>
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-sm font-medium text-blue-900">Browse Family Branches</h4>
+                    <p className="text-sm text-blue-700">Discover and join family branches</p>
+                  </div>
+                </Link>
+
+                <Link
+                  to="/branches/create"
+                  className="flex items-center p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition"
+                >
+                  <div className="flex-shrink-0">
+                    <span className="text-3xl">➕</span>
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-sm font-medium text-green-900">Create Family Branch</h4>
+                    <p className="text-sm text-green-700">Start your family tree</p>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
