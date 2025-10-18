@@ -61,6 +61,25 @@ app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) =
   }
 });
 
+// Recalculate generations route
+app.post('/api/v1/branches/:branchId/recalculate-generations', authenticateToken, async (req, res) => {
+  try {
+    const { branchId } = req.params;
+    const personService = (await import('./services/person.service')).default;
+    const result = await personService.recalculateGenerations(branchId);
+    res.json({
+      message: 'Generations recalculated successfully',
+      result
+    });
+  } catch (error: any) {
+    console.error('Error recalculating generations:', error);
+    res.status(500).json({
+      error: 'Failed to recalculate generations',
+      details: error.message
+    });
+  }
+});
+
 // 404 handler
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });

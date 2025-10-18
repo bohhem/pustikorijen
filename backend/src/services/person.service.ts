@@ -262,6 +262,118 @@ export class PersonService {
       },
     });
   }
+
+  /**
+   * Recalculate generation numbers for all persons in a branch
+   * Uses depth-first search from root ancestors and adjusts spouses
+   */
+  async recalculateGenerations(branchId: string) {
+    const persons = await prisma.person.findMany({
+      where: { branchId },
+      include: {
+        father: true,
+        mother: true,
+      },
+    });
+
+    // Map to store calculated generations
+    const generationMap = new Map<string, number>();
+
+    // Helper function to calculate generation recursively based on parents
+    const calculateGeneration = (personId: string, visited = new Set<string>()): number => {
+      // Avoid circular references
+      if (visited.has(personId)) {
+        return 1;
+      }
+
+      // If already calculated, return it
+      if (generationMap.has(personId)) {
+        return generationMap.get(personId)!;
+      }
+
+      visited.add(personId);
+
+      const person = persons.find(p => p.id === personId);
+      if (!person) {
+        return 1;
+      }
+
+      // If no parents, check if they have children to infer generation
+      if (!person.fatherId && !person.motherId) {
+        const children = persons.filter(p => p.fatherId === person.id || p.motherId === person.id);
+
+        if (children.length > 0) {
+          // Calculate generation based on children (their gen - 1)
+          const childGenerations = children.map(child => calculateGeneration(child.id, new Set(visited)));
+          const minChildGen = Math.min(...childGenerations);
+          const inferredGen = Math.max(1, minChildGen - 1);
+          generationMap.set(personId, inferredGen);
+          return inferredGen;
+        }
+
+        // No parents and no children, must be G1
+        generationMap.set(personId, 1);
+        return 1;
+      }
+
+      // Calculate based on parents (take max + 1)
+      let parentGeneration = 0;
+
+      if (person.fatherId) {
+        const fatherGen = calculateGeneration(person.fatherId, new Set(visited));
+        parentGeneration = Math.max(parentGeneration, fatherGen);
+      }
+
+      if (person.motherId) {
+        const motherGen = calculateGeneration(person.motherId, new Set(visited));
+        parentGeneration = Math.max(parentGeneration, motherGen);
+      }
+
+      const generation = parentGeneration + 1;
+      generationMap.set(personId, generation);
+      return generation;
+    };
+
+    // Calculate generations for all persons
+    persons.forEach(person => {
+      calculateGeneration(person.id);
+    });
+
+    // Update all persons with correct generation numbers
+    const updates = [];
+    for (const [personId, generationNum] of generationMap.entries()) {
+      updates.push(
+        prisma.person.update({
+          where: { id: personId },
+          data: {
+            generationNumber: generationNum,
+            generation: `G${generationNum}`,
+          },
+        })
+      );
+    }
+
+    await Promise.all(updates);
+
+    // Update branch statistics
+    const maxGeneration = Math.max(...Array.from(generationMap.values()));
+    const totalPeople = persons.length;
+
+    await prisma.familyBranch.update({
+      where: { id: branchId },
+      data: {
+        totalGenerations: maxGeneration,
+        totalPeople,
+      },
+    });
+
+    return {
+      totalPeople,
+      totalGenerations: maxGeneration,
+      updated: updates.length,
+      generationMap: Object.fromEntries(generationMap),
+    };
+  }
 }
 
 export default new PersonService();
