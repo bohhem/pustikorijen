@@ -206,7 +206,7 @@ export default function FamilyTree() {
                         <div>
                           <dt className="text-gray-600">{t('persons.father')}:</dt>
                           <dd className="text-gray-900 font-medium">
-                            {selectedPerson.father.firstName} {selectedPerson.father.lastName}
+                            {selectedPerson.father.givenName || selectedPerson.father.firstName} {selectedPerson.father.surname || selectedPerson.father.lastName}
                           </dd>
                         </div>
                       )}
@@ -214,7 +214,7 @@ export default function FamilyTree() {
                         <div>
                           <dt className="text-gray-600">{t('persons.mother')}:</dt>
                           <dd className="text-gray-900 font-medium">
-                            {selectedPerson.mother.firstName} {selectedPerson.mother.lastName}
+                            {selectedPerson.mother.givenName || selectedPerson.mother.firstName} {selectedPerson.mother.surname || selectedPerson.mother.lastName}
                           </dd>
                         </div>
                       )}
@@ -224,7 +224,7 @@ export default function FamilyTree() {
                           <dd className="text-gray-900 font-medium">
                             {selectedPerson.children.map(child => (
                               <div key={child.id}>
-                                {child.firstName} {child.lastName}
+                                {child.givenName || child.firstName} {child.surname || child.lastName}
                               </div>
                             ))}
                           </dd>
