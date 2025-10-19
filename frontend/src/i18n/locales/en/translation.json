@@ -25,9 +25,12 @@
     "confirmPassword": "Confirm Password",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "preferredLanguage": "Preferred Language",
     "forgotPassword": "Forgot Password?",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account...",
     "loginError": "Login failed. Please check your credentials.",
     "registerError": "Registration failed. Please try again."
   },
@@ -41,7 +44,24 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "welcome": "Welcome to Pustikorijen",
+    "welcome": "Welcome back",
+    "tagline": "Connecting Bosnian families across generations and borders",
+    "quickActions": "Quick Actions",
+    "browseBranches": "Browse Branches",
+    "findYourFamily": "Find your family",
+    "startYourTree": "Start your tree",
+    "comingSoon": "Coming soon",
+    "yourProfile": "Your Profile",
+    "language": "Language",
+    "location": "Location",
+    "notSpecified": "Not specified",
+    "emailStatus": "Email Status",
+    "verified": "Verified",
+    "notVerified": "Not verified",
+    "recentBranches": "Recent Family Branches",
+    "viewAll": "View all",
+    "noBranches": "No branches yet. Be the first to create one!",
+    "gen": "gen.",
     "myBranches": "My Branches",
     "recentActivity": "Recent Activity",
     "statistics": "Statistics"
@@ -64,7 +84,14 @@
     "deleteBranch": "Delete Branch",
     "createSuccess": "Branch created successfully",
     "createError": "Failed to create branch",
+    "loadError": "Failed to load branches",
     "searchPlaceholder": "Search branches..."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "of": "of"
   },
   "persons": {
     "title": "Family Members",
@@ -179,6 +206,7 @@
     "required": "This field is required",
     "invalidEmail": "Invalid email address",
     "passwordTooShort": "Password must be at least 8 characters",
+    "passwordRequirements": "Password must contain uppercase, lowercase, and number",
     "passwordsDontMatch": "Passwords don't match",
     "invalidDate": "Invalid date"
   },

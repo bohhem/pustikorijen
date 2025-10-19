@@ -1,11 +1,13 @@
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
 import type { Branch } from '../types/branch';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [recentBranches, setRecentBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,16 +34,16 @@ export default function Dashboard() {
           {/* Welcome Section */}
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Welcome back, {user?.fullName?.split(' ')[0]}! 👋
+              {t('dashboard.welcome')}, {user?.fullName?.split(' ')[0]}! 👋
             </h2>
             <p className="text-gray-600">
-              Connecting Bosnian families across generations and borders.
+              Pustikorijen - {t('dashboard.tagline')}
             </p>
           </div>
 
           {/* Quick Actions */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Link
                 to="/branches"
@@ -49,8 +51,8 @@ export default function Dashboard() {
               >
                 <div className="flex-shrink-0 text-3xl mr-4">🌳</div>
                 <div>
-                  <h4 className="text-sm font-semibold text-blue-900">Browse Branches</h4>
-                  <p className="text-xs text-blue-700 mt-1">Find your family</p>
+                  <h4 className="text-sm font-semibold text-blue-900">{t('dashboard.browseBranches')}</h4>
+                  <p className="text-xs text-blue-700 mt-1">{t('dashboard.findYourFamily')}</p>
                 </div>
               </Link>
 
@@ -60,16 +62,16 @@ export default function Dashboard() {
               >
                 <div className="flex-shrink-0 text-3xl mr-4">➕</div>
                 <div>
-                  <h4 className="text-sm font-semibold text-green-900">Create Branch</h4>
-                  <p className="text-xs text-green-700 mt-1">Start your tree</p>
+                  <h4 className="text-sm font-semibold text-green-900">{t('branches.create')}</h4>
+                  <p className="text-xs text-green-700 mt-1">{t('dashboard.startYourTree')}</p>
                 </div>
               </Link>
 
               <div className="flex items-start p-4 bg-purple-50 border border-purple-200 rounded-lg opacity-60 cursor-not-allowed">
                 <div className="flex-shrink-0 text-3xl mr-4">📖</div>
                 <div>
-                  <h4 className="text-sm font-semibold text-purple-900">Stories</h4>
-                  <p className="text-xs text-purple-700 mt-1">Coming soon</p>
+                  <h4 className="text-sm font-semibold text-purple-900">{t('branches.stories')}</h4>
+                  <p className="text-xs text-purple-700 mt-1">{t('dashboard.comingSoon')}</p>
                 </div>
               </div>
             </div>
@@ -77,34 +79,34 @@ export default function Dashboard() {
 
           {/* Profile Overview */}
           <div className="bg-white shadow rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Your Profile</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.yourProfile')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Email</dt>
+                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('auth.email')}</dt>
                 <dd className="text-sm text-gray-900 mt-1 font-medium">{user?.email}</dd>
               </div>
               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Language</dt>
+                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.language')}</dt>
                 <dd className="text-sm text-gray-900 mt-1 font-medium">
-                  {user?.preferredLanguage === 'bs' ? 'Bosnian' : 'English'}
+                  {user?.preferredLanguage === 'bs' ? 'Bosanski' : user?.preferredLanguage === 'de' ? 'Deutsch' : 'English'}
                 </dd>
               </div>
               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Location</dt>
+                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.location')}</dt>
                 <dd className="text-sm text-gray-900 mt-1 font-medium">
-                  {user?.currentLocation || 'Not specified'}
+                  {user?.currentLocation || t('dashboard.notSpecified')}
                 </dd>
               </div>
               <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">Email Status</dt>
+                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.emailStatus')}</dt>
                 <dd className="text-sm mt-1 font-medium flex items-center">
                   {user?.emailVerified ? (
                     <span className="text-green-700 flex items-center">
-                      <span className="mr-1">✓</span> Verified
+                      <span className="mr-1">✓</span> {t('dashboard.verified')}
                     </span>
                   ) : (
                     <span className="text-orange-700 flex items-center">
-                      <span className="mr-1">⚠</span> Not verified
+                      <span className="mr-1">⚠</span> {t('dashboard.notVerified')}
                     </span>
                   )}
                 </dd>
@@ -115,9 +117,9 @@ export default function Dashboard() {
           {/* Recent Branches */}
           <div className="bg-white shadow rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Family Branches</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('dashboard.recentBranches')}</h3>
               <Link to="/branches" className="text-sm text-indigo-600 hover:text-indigo-800">
-                View all →
+                {t('dashboard.viewAll')} →
               </Link>
             </div>
 
@@ -126,7 +128,7 @@ export default function Dashboard() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
               </div>
             ) : recentBranches.length === 0 ? (
-              <p className="text-gray-600 text-center py-8">No branches yet. Be the first to create one!</p>
+              <p className="text-gray-600 text-center py-8">{t('dashboard.noBranches')}</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {recentBranches.map((branch) => (
@@ -149,9 +151,9 @@ export default function Dashboard() {
                       )}
                     </div>
                     <div className="flex gap-3 text-xs text-gray-600 mt-3 pt-3 border-t">
-                      <span><strong>{branch._count?.members || 0}</strong> members</span>
-                      <span><strong>{branch.totalPeople}</strong> people</span>
-                      <span><strong>{branch.totalGenerations}</strong> gen.</span>
+                      <span><strong>{branch._count?.members || 0}</strong> {t('branches.members').toLowerCase()}</span>
+                      <span><strong>{branch.totalPeople}</strong> {t('branches.totalPeople').toLowerCase()}</span>
+                      <span><strong>{branch.totalGenerations}</strong> {t('dashboard.gen')}</span>
                     </div>
                   </Link>
                 ))}

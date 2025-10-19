@@ -25,9 +25,12 @@
     "confirmPassword": "Potvrdi lozinku",
     "firstName": "Ime",
     "lastName": "Prezime",
+    "preferredLanguage": "Željeni jezik",
     "forgotPassword": "Zaboravili ste lozinku?",
     "noAccount": "Nemate račun?",
     "haveAccount": "Već imate račun?",
+    "createAccount": "Kreiraj račun",
+    "creatingAccount": "Kreiranje računa...",
     "loginError": "Prijava neuspješna. Provjerite vaše podatke.",
     "registerError": "Registracija neuspješna. Pokušajte ponovo."
   },
@@ -41,7 +44,24 @@
   },
   "dashboard": {
     "title": "Kontrolna ploča",
-    "welcome": "Dobrodošli u Pustikorijen",
+    "welcome": "Dobrodošli nazad",
+    "tagline": "Povezujemo bosanske porodice kroz generacije i granice",
+    "quickActions": "Brze akcije",
+    "browseBranches": "Pregledaj grane",
+    "findYourFamily": "Pronađi svoju porodicu",
+    "startYourTree": "Započni svoje stablo",
+    "comingSoon": "Uskoro",
+    "yourProfile": "Vaš profil",
+    "language": "Jezik",
+    "location": "Lokacija",
+    "notSpecified": "Nije navedeno",
+    "emailStatus": "Status emaila",
+    "verified": "Verifikovan",
+    "notVerified": "Nije verifikovan",
+    "recentBranches": "Nedavne porodične grane",
+    "viewAll": "Pogledaj sve",
+    "noBranches": "Još nema grana. Budite prvi koji će kreirati!",
+    "gen": "gen.",
     "myBranches": "Moje grane",
     "recentActivity": "Nedavna aktivnost",
     "statistics": "Statistika"
@@ -64,7 +84,14 @@
     "deleteBranch": "Obriši granu",
     "createSuccess": "Grana uspješno kreirana",
     "createError": "Greška pri kreiranju grane",
+    "loadError": "Greška pri učitavanju grana",
     "searchPlaceholder": "Pretraži grane..."
+  },
+  "pagination": {
+    "previous": "Prethodna",
+    "next": "Sljedeća",
+    "page": "Stranica",
+    "of": "od"
   },
   "persons": {
     "title": "Članovi porodice",
@@ -179,6 +206,7 @@
     "required": "Ovo polje je obavezno",
     "invalidEmail": "Neispravna email adresa",
     "passwordTooShort": "Lozinka mora imati najmanje 8 karaktera",
+    "passwordRequirements": "Lozinka mora sadržavati veliko slovo, malo slovo i broj",
     "passwordsDontMatch": "Lozinke se ne poklapaju",
     "invalidDate": "Neispravan datum"
   },

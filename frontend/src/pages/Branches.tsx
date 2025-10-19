@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
 import type { Branch } from '../types/branch';
 
 export default function Branches() {
+  const { t } = useTranslation();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,7 +26,7 @@ export default function Branches() {
       setBranches(response.branches);
       setTotalPages(response.pagination.totalPages);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to load branches');
+      setError(err.response?.data?.error || t('branches.loadError'));
     } finally {
       setLoading(false);
     }
@@ -40,12 +42,12 @@ export default function Branches() {
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Family Branches</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('branches.title')}</h1>
           <Link
             to="/branches/create"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
           >
-            Create Branch
+            {t('branches.create')}
           </Link>
         </div>
 
@@ -55,14 +57,14 @@ export default function Branches() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by surname, city, or region..."
+              placeholder={t('branches.searchPlaceholder')}
               className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             />
             <button
               type="submit"
               className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
             >
-              Search
+              {t('common.search')}
             </button>
           </div>
         </form>
@@ -79,7 +81,7 @@ export default function Branches() {
           </div>
         ) : branches.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-600">No branches found. Be the first to create one!</p>
+            <p className="text-gray-600">{t('branches.noBranches')}</p>
           </div>
         ) : (
           <>
@@ -99,7 +101,7 @@ export default function Branches() {
                     </div>
                     {branch.isVerified && (
                       <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                        Verified
+                        {t('dashboard.verified')}
                       </span>
                     )}
                   </div>
@@ -113,13 +115,13 @@ export default function Branches() {
 
                   <div className="flex gap-4 text-sm text-gray-600 border-t pt-4">
                     <div>
-                      <span className="font-semibold">{branch._count?.members || 0}</span> members
+                      <span className="font-semibold">{branch._count?.members || 0}</span> {t('branches.members').toLowerCase()}
                     </div>
                     <div>
-                      <span className="font-semibold">{branch.totalPeople}</span> people
+                      <span className="font-semibold">{branch.totalPeople}</span> {t('branches.totalPeople').toLowerCase()}
                     </div>
                     <div>
-                      <span className="font-semibold">{branch.totalGenerations}</span> generations
+                      <span className="font-semibold">{branch.totalGenerations}</span> {t('branches.totalGenerations').toLowerCase()}
                     </div>
                   </div>
                 </Link>
@@ -133,17 +135,17 @@ export default function Branches() {
                   disabled={page === 1}
                   className="px-4 py-2 bg-white rounded-md shadow disabled:opacity-50"
                 >
-                  Previous
+                  {t('pagination.previous')}
                 </button>
                 <span className="px-4 py-2 bg-white rounded-md shadow">
-                  Page {page} of {totalPages}
+                  {t('pagination.page')} {page} {t('pagination.of')} {totalPages}
                 </span>
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
                   className="px-4 py-2 bg-white rounded-md shadow disabled:opacity-50"
                 >
-                  Next
+                  {t('pagination.next')}
                 </button>
               </div>
             )}
