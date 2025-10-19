@@ -49,7 +49,7 @@ export default function FamilyTreeView({ persons, partnerships, onPersonSelect }
     const newEdges: Edge[] = [];
 
     const VERTICAL_SPACING = 250;
-    const HORIZONTAL_SPACING = 280;
+    const HORIZONTAL_SPACING = 220;
 
     generations.forEach((gen, genIndex) => {
       const personsInGen = generationMap.get(gen)!;

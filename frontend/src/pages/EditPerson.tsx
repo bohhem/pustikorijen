@@ -1,20 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { createPerson, getPersonsByBranch } from '../api/person';
-import { getBranchById } from '../api/branch';
-import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
-import type { CreatePersonInput, Person } from '../types/person';
+import { useToast } from '../contexts/ToastContext';
+import { getBranchById } from '../api/branch';
+import { getPersonById, getPersonsByBranch, updatePerson } from '../api/person';
 import type { Branch } from '../types/branch';
+import type { Person, UpdatePersonInput } from '../types/person';
 
-export default function CreatePerson() {
-  const { branchId } = useParams<{ branchId: string }>();
+export default function EditPerson() {
+  const { branchId, personId } = useParams<{ branchId: string; personId: string }>();
   const navigate = useNavigate();
   const toast = useToast();
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [persons, setPersons] = useState<Person[]>([]);
 
@@ -22,69 +24,122 @@ export default function CreatePerson() {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
-  } = useForm<CreatePersonInput>({
+  } = useForm<UpdatePersonInput>({
     defaultValues: {
       isAlive: true,
       privacyLevel: 'family_only',
     },
   });
 
-  const isAlive = watch('isAlive');
+  const isAlive = watch('isAlive', true);
 
   useEffect(() => {
-    if (branchId) {
+    if (branchId && personId) {
       loadData();
     }
-  }, [branchId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [branchId, personId]);
 
   const loadData = async () => {
+    setIsLoading(true);
     try {
-      const [branchData, personsData] = await Promise.all([
+      const [branchData, personsData, personData] = await Promise.all([
         getBranchById(branchId!),
         getPersonsByBranch(branchId!),
+        getPersonById(branchId!, personId!),
       ]);
+
       setBranch(branchData);
       setPersons(personsData);
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || t('createPerson.loadDataError'));
-    }
-  };
 
-  const onSubmit = async (data: CreatePersonInput) => {
-    setLoading(true);
-    try {
-      const payload: CreatePersonInput = {
-        ...data,
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-        gender: data.gender,
-        isAlive: data.isAlive,
-        maidenName: data.maidenName?.trim() ? data.maidenName.trim() : null,
-        biography: data.biography?.trim() ? data.biography : null,
-        privacyLevel: data.privacyLevel || 'family_only',
-        fatherId: data.fatherId || undefined,
-        motherId: data.motherId || undefined,
-        birthDate: data.birthDate || null,
-        birthPlace: data.birthPlace?.trim() ? data.birthPlace.trim() : null,
-        deathDate: data.isAlive ? null : data.deathDate || null,
-        deathPlace: data.isAlive ? null : (data.deathPlace?.trim() ? data.deathPlace.trim() : null),
+      const formatDate = (value?: string | null) => {
+        if (!value) return undefined;
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return undefined;
+        return date.toISOString().split('T')[0];
       };
 
-      await createPerson(branchId!, payload);
-      toast.success(t('persons.createSuccess'));
+      reset({
+        firstName: personData.givenName || personData.firstName || '',
+        lastName: personData.surname || personData.lastName || '',
+        maidenName: personData.maidenName || '',
+        gender: (personData.gender as UpdatePersonInput['gender']) || 'other',
+        birthDate: formatDate(personData.birthDate),
+        birthPlace: personData.birthPlace || '',
+        deathDate: formatDate(personData.deathDate),
+        deathPlace: personData.deathPlace || '',
+        biography: personData.biography || '',
+        fatherId: personData.fatherId || '',
+        motherId: personData.motherId || '',
+        isAlive: personData.isAlive !== false,
+        privacyLevel: (personData.privacyLevel as UpdatePersonInput['privacyLevel']) || 'family_only',
+      });
+    } catch (error: any) {
+      console.error('Failed to load person for editing:', error);
+      toast.error(error.response?.data?.error || t('persons.loadError'));
       navigate(`/branches/${branchId}/persons`);
-    } catch (err: any) {
-      toast.error(err.response?.data?.error || t('persons.createError'));
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  const onSubmit = async (data: UpdatePersonInput) => {
+    if (!branchId || !personId) return;
+
+    setIsSubmitting(true);
+    try {
+      const payload: UpdatePersonInput = {
+        ...data,
+        birthDate: data.birthDate ? data.birthDate : null,
+        birthPlace: data.birthPlace?.trim() ? data.birthPlace.trim() : null,
+        fatherId: data.fatherId ? data.fatherId : null,
+        motherId: data.motherId ? data.motherId : null,
+        maidenName: data.maidenName?.trim() ? data.maidenName.trim() : null,
+        biography: data.biography?.trim() ? data.biography.trim() : null,
+        privacyLevel: data.privacyLevel || 'family_only',
+        isAlive: data.isAlive ?? true,
+      };
+
+      if (payload.isAlive) {
+        payload.deathDate = null;
+        payload.deathPlace = null;
+      } else {
+        payload.deathDate = data.deathDate || null;
+        payload.deathPlace = data.deathPlace?.trim() ? data.deathPlace.trim() : null;
+      }
+
+      await updatePerson(branchId, personId, payload);
+      toast.success(t('persons.updateSuccess'));
+      navigate(`/branches/${branchId}/persons/${personId}`);
+    } catch (error: any) {
+      console.error('Failed to update person:', error);
+      toast.error(error.response?.data?.error || t('persons.updateError'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const nameForOption = (person: Person) => {
+    if (person.fullName) return person.fullName;
+    const parts = [person.givenName, person.surname].filter(Boolean);
+    return parts.join(' ') || t('persons.person');
+  };
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
         <div className="flex items-center text-sm text-gray-600 mb-4">
           <Link to="/branches" className="hover:text-indigo-600">{t('navigation.branches')}</Link>
           <span className="mx-2">/</span>
@@ -96,14 +151,13 @@ export default function CreatePerson() {
             {t('createPerson.breadcrumbPeople')}
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">{t('createPerson.breadcrumbAddPerson')}</span>
+          <span className="text-gray-900">{t('editPerson.breadcrumbEditPerson')}</span>
         </div>
 
         <div className="bg-white shadow rounded-lg p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('createPerson.title')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('editPerson.title')}</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">{t('createPerson.basicInfo')}</h3>
 
@@ -187,7 +241,6 @@ export default function CreatePerson() {
               </div>
             </div>
 
-            {/* Life Information */}
             <div className="space-y-4 pt-6 border-t">
               <h3 className="text-lg font-semibold text-gray-900">{t('createPerson.lifeInfo')}</h3>
 
@@ -255,7 +308,6 @@ export default function CreatePerson() {
               )}
             </div>
 
-            {/* Parents */}
             <div className="space-y-4 pt-6 border-t">
               <h3 className="text-lg font-semibold text-gray-900">{t('createPerson.parents')}</h3>
 
@@ -270,10 +322,10 @@ export default function CreatePerson() {
                   >
                     <option value="">{t('persons.selectFather')}</option>
                     {persons
-                      .filter(p => p.gender === 'male')
+                      .filter(p => p.id !== personId && p.gender === 'male')
                       .map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.firstName} {p.lastName} ({t('personDetail.gen')} {p.generation})
+                          {nameForOption(p)}
                         </option>
                       ))}
                   </select>
@@ -289,10 +341,11 @@ export default function CreatePerson() {
                   >
                     <option value="">{t('persons.selectMother')}</option>
                     {persons
-                      .filter(p => p.gender === 'female')
+                      .filter(p => p.id !== personId && p.gender === 'female')
                       .map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.firstName} {p.lastName} {p.maidenName && `(${p.maidenName})`} ({t('personDetail.gen')} {p.generation})
+                          {nameForOption(p)}
+                          {p.maidenName ? ` (${p.maidenName})` : ''}
                         </option>
                       ))}
                   </select>
@@ -300,7 +353,6 @@ export default function CreatePerson() {
               </div>
             </div>
 
-            {/* Biography */}
             <div className="space-y-4 pt-6 border-t">
               <h3 className="text-lg font-semibold text-gray-900">{t('persons.biography')}</h3>
 
@@ -317,7 +369,6 @@ export default function CreatePerson() {
               </div>
             </div>
 
-            {/* Privacy */}
             <div className="space-y-4 pt-6 border-t">
               <h3 className="text-lg font-semibold text-gray-900">{t('createPerson.privacy')}</h3>
 
@@ -336,18 +387,17 @@ export default function CreatePerson() {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-4 pt-6">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
                 className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                {loading ? t('createPerson.adding') : t('createPerson.addPerson')}
+                {isSubmitting ? t('editPerson.updating') : t('editPerson.updatePerson')}
               </button>
               <button
                 type="button"
-                onClick={() => navigate(`/branches/${branchId}/persons`)}
+                onClick={() => navigate(-1)}
                 className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 {t('common.cancel')}

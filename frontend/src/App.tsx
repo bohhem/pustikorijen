@@ -11,6 +11,7 @@ import CreateBranch from './pages/CreateBranch';
 import PersonList from './pages/PersonList';
 import CreatePerson from './pages/CreatePerson';
 import PersonDetail from './pages/PersonDetail';
+import EditPerson from './pages/EditPerson';
 import FamilyTree from './pages/FamilyTree';
 import AddPartnership from './pages/AddPartnership';
 
@@ -61,6 +62,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PersonDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/branches/:branchId/persons/:personId/edit"
+              element={
+                <ProtectedRoute>
+                  <EditPerson />
                 </ProtectedRoute>
               }
             />

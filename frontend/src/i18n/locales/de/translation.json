@@ -120,7 +120,13 @@
     "generation": "Generation",
     "person": "Person",
     "people": "Personen",
-    "noResults": "Keine Personen gefunden, die Ihrer Suche entsprechen."
+    "noResults": "Keine Personen gefunden, die Ihrer Suche entsprechen.",
+    "partnersLabel": "Partnerschaften",
+    "partnerStatus": {
+      "active": "aktiv",
+      "ended": "beendet",
+      "annulled": "annulliert"
+    }
   },
   "createBranch": {
     "title": "Familienzweig erstellen",
@@ -213,6 +219,12 @@
     "breadcrumbAddPerson": "Person hinzufügen",
     "loadDataError": "Fehler beim Laden der Daten"
   },
+  "editPerson": {
+    "title": "Familienmitglied bearbeiten",
+    "updatePerson": "Änderungen speichern",
+    "updating": "Speichern...",
+    "breadcrumbEditPerson": "Person bearbeiten"
+  },
   "personDetail": {
     "title": "Personenprofil",
     "mainInfo": "Hauptinformationen",
@@ -238,7 +250,10 @@
     "selectedPerson": "Ausgewählte Person",
     "nee": "geb.",
     "gen": "Gen",
-    "in": "in"
+    "in": "in",
+    "editPerson": "Bearbeiten",
+    "deletePerson": "Löschen",
+    "confirmDelete": "Möchten Sie diese Person wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "partnerships": {
     "title": "Partnerschaften",

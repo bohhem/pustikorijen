@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getPersonsByBranch } from '../api/person';
+import { getPersonsByBranch, deletePerson } from '../api/person';
 import { getPersonPartnerships } from '../api/partnership';
 import { getBranchById } from '../api/branch';
 import { useToast } from '../contexts/ToastContext';
@@ -21,6 +21,7 @@ export default function PersonDetail() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [allPersons, setAllPersons] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (branchId && personId) {
@@ -79,9 +80,27 @@ export default function PersonDetail() {
     return age;
   };
 
-  const findPersonById = (id?: string) => {
+  const findPersonById = (id?: string | null) => {
     if (!id) return null;
     return allPersons.find(p => p.id === id);
+  };
+
+  const handleDelete = async () => {
+    if (!branchId || !personId) return;
+    const confirmed = window.confirm(t('personDetail.confirmDelete'));
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    try {
+      await deletePerson(branchId, personId);
+      toast.success(t('persons.deleteSuccess'));
+      navigate(`/branches/${branchId}/persons`);
+    } catch (err: any) {
+      console.error('Failed to delete person:', err);
+      toast.error(err.response?.data?.error || t('persons.deleteError'));
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (loading) {
@@ -120,6 +139,24 @@ export default function PersonDetail() {
           </Link>
           <span className="mx-2">/</span>
           <span className="text-gray-900">{person.fullName}</span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mb-6">
+          <Link
+            to={`/branches/${branchId}/persons/${personId}/edit`}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+          >
+            {t('personDetail.editPerson')}
+          </Link>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+          >
+            {isDeleting ? t('common.loading') : t('personDetail.deletePerson')}
+          </button>
         </div>
 
         {/* Main Info Card */}

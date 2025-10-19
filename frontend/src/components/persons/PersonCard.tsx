@@ -1,12 +1,47 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Person } from '../../types/person';
+import type { Partnership } from '../../types/partnership';
+
+interface PartnerBadge {
+  partner: Person;
+  status: Partnership['status'];
+  type: Partnership['partnershipType'];
+}
 
 interface PersonCardProps {
   person: Person;
   branchId: string;
+  partners?: PartnerBadge[];
 }
 
-export default function PersonCard({ person, branchId }: PersonCardProps) {
+const statusStyles: Record<Partnership['status'], string> = {
+  active: 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+  ended: 'bg-slate-100 text-slate-600 border border-slate-200',
+  annulled: 'bg-amber-100 text-amber-800 border border-amber-200',
+};
+
+const statusIcon: Record<Partnership['status'], string> = {
+  active: '💞',
+  ended: '💔',
+  annulled: '⚖️',
+};
+
+const typeIcon = (type: Partnership['partnershipType']) => {
+  switch (type) {
+    case 'marriage':
+      return '💍';
+    case 'domestic_partnership':
+      return '🏠';
+    case 'common_law':
+      return '🤝';
+    default:
+      return '🪢';
+  }
+};
+
+export default function PersonCard({ person, branchId, partners }: PersonCardProps) {
+  const { t } = useTranslation();
   const firstName = person.givenName || person.firstName || '';
   const lastName = person.surname || person.lastName || '';
   const isAlive = person.isAlive !== false; // Default to true if not specified
@@ -81,11 +116,39 @@ export default function PersonCard({ person, branchId }: PersonCardProps) {
           {(person.father || person.mother) && (
             <div className="text-xs text-gray-500 mt-2 space-y-1">
               {person.father && (
-                <div>Father: {person.father.fullName || `${person.father.givenName} ${person.father.surname}`}</div>
+                <div>{t('persons.father')}: {person.father.fullName || `${person.father.givenName} ${person.father.surname}`}</div>
               )}
               {person.mother && (
-                <div>Mother: {person.mother.fullName || `${person.mother.givenName} ${person.mother.surname}`}</div>
+                <div>{t('persons.mother')}: {person.mother.fullName || `${person.mother.givenName} ${person.mother.surname}`}</div>
               )}
+            </div>
+          )}
+
+          {partners && partners.length > 0 && (
+            <div className="mt-3 border-t border-gray-100 pt-3">
+              <p className="text-xs font-semibold text-gray-500 mb-2 flex items-center gap-1">
+                <span className="text-sm leading-none">💞</span>
+                <span>{t('personList.partnersLabel')}</span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {partners.map(({ partner, status, type }) => {
+                  const partnerName = partner.fullName || `${partner.givenName || ''} ${partner.surname || ''}`.trim() || t('personList.person');
+                  const statusKey = status;
+                  return (
+                    <span
+                      key={`${partner.id}-${statusKey}-${type}`}
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusStyles[statusKey]}`}
+                    >
+                      <span>{statusIcon[statusKey]}</span>
+                      <span>{typeIcon(type)}</span>
+                      <span className="truncate max-w-[120px]">{partnerName}</span>
+                      <span className="uppercase text-[10px] font-semibold">
+                        {t(`personList.partnerStatus.${statusKey}`)}
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

@@ -18,8 +18,8 @@ export interface Person {
   biography?: string;
   generation?: string;  // G1, G2, etc
   generationNumber?: number;
-  fatherId?: string;
-  motherId?: string;
+  fatherId?: string | null;
+  motherId?: string | null;
   profilePhotoUrl?: string;
   isAlive?: boolean;
   privacyLevel?: string;
@@ -38,17 +38,31 @@ export interface Person {
 export interface CreatePersonInput {
   firstName: string;
   lastName: string;
-  maidenName?: string;
+  maidenName?: string | null;
   gender: 'male' | 'female' | 'other';
-  birthDate?: string;
-  birthPlace?: string;
-  deathDate?: string;
-  deathPlace?: string;
-  biography?: string;
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  deathDate?: string | null;
+  deathPlace?: string | null;
+  biography?: string | null;
   fatherId?: string;
   motherId?: string;
   isAlive: boolean;
   privacyLevel?: 'public' | 'family_only' | 'private';
 }
 
-export interface UpdatePersonInput extends Partial<CreatePersonInput> {}
+export interface UpdatePersonInput {
+  firstName?: string;
+  lastName?: string;
+  maidenName?: string | null;
+  gender?: 'male' | 'female' | 'other';
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  deathDate?: string | null;
+  deathPlace?: string | null;
+  biography?: string | null;
+  fatherId?: string | null;
+  motherId?: string | null;
+  isAlive?: boolean;
+  privacyLevel?: 'public' | 'family_only' | 'private';
+}

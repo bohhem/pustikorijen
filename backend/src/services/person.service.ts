@@ -23,7 +23,12 @@ export class PersonService {
     let generationNumber = 1; // Default for root ancestors
 
     if (data.fatherId || data.motherId) {
-      const parentId = data.fatherId || data.motherId;
+      const parentId = data.fatherId ?? data.motherId;
+
+      if (!parentId) {
+        throw new Error('Parent must have a valid ID');
+      }
+
       const parent = await prisma.person.findUnique({
         where: { id: parentId },
       });
@@ -51,12 +56,14 @@ export class PersonService {
         generationNumber,
         generation: `G${generationNumber}`,
         birthDate: data.birthDate ? new Date(data.birthDate) : null,
-        birthPlace: data.birthPlace,
+        birthPlace: data.birthPlace ?? null,
         deathDate: data.deathDate ? new Date(data.deathDate) : null,
-        deathPlace: data.deathPlace,
-        biography: data.biography,
-        fatherId: data.fatherId,
-        motherId: data.motherId,
+        deathPlace: data.deathPlace ?? null,
+        biography: data.biography ?? null,
+        isLiving: data.isAlive,
+        visibility: data.privacyLevel ?? 'family_only',
+        fatherId: data.fatherId ?? null,
+        motherId: data.motherId ?? null,
         createdById: userId,
       },
       include: {
@@ -154,13 +161,26 @@ export class PersonService {
 
     if (data.maidenName !== undefined) updateData.maidenName = data.maidenName;
     if (data.gender) updateData.gender = data.gender;
-    if (data.birthDate) updateData.birthDate = new Date(data.birthDate);
-    if (data.birthPlace) updateData.birthPlace = data.birthPlace;
-    if (data.deathDate) updateData.deathDate = new Date(data.deathDate);
-    if (data.deathPlace) updateData.deathPlace = data.deathPlace;
+
+    if (data.birthDate !== undefined) {
+      updateData.birthDate = data.birthDate ? new Date(data.birthDate) : null;
+    }
+
+    if (data.birthPlace !== undefined) {
+      updateData.birthPlace = data.birthPlace;
+    }
+
+    if (data.deathDate !== undefined) {
+      updateData.deathDate = data.deathDate ? new Date(data.deathDate) : null;
+    }
+
+    if (data.deathPlace !== undefined) {
+      updateData.deathPlace = data.deathPlace;
+    }
+
     if (data.biography !== undefined) updateData.biography = data.biography;
-    if (data.isAlive !== undefined) updateData.isAlive = data.isAlive;
-    if (data.privacyLevel) updateData.privacyLevel = data.privacyLevel;
+    if (data.isAlive !== undefined) updateData.isLiving = data.isAlive;
+    if (data.privacyLevel) updateData.visibility = data.privacyLevel;
     if (data.fatherId !== undefined) updateData.fatherId = data.fatherId;
     if (data.motherId !== undefined) updateData.motherId = data.motherId;
 

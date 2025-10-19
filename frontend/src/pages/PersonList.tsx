@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
 import { getBranchById } from '../api/branch';
+import { getBranchPartnerships } from '../api/partnership';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import PersonCard from '../components/persons/PersonCard';
 import type { Person } from '../types/person';
 import type { Branch } from '../types/branch';
+import type { Partnership } from '../types/partnership';
+import { orderPersonsByPartnerPairing } from '../utils/personOrdering';
 
 export default function PersonList() {
   const { t } = useTranslation();
@@ -18,6 +21,7 @@ export default function PersonList() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'alive' | 'deceased'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [partnerships, setPartnerships] = useState<Partnership[]>([]);
 
   useEffect(() => {
     if (branchId) {
@@ -28,12 +32,17 @@ export default function PersonList() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [personsData, branchData] = await Promise.all([
+      const [personsData, branchData, partnershipData] = await Promise.all([
         getPersonsByBranch(branchId!),
-        getBranchById(branchId!)
+        getBranchById(branchId!),
+        getBranchPartnerships(branchId!)
       ]);
-      setPersons(personsData);
+
+      const ordered = orderPersonsByPartnerPairing(personsData, partnershipData);
+
+      setPersons(ordered.orderedPersons);
       setBranch(branchData);
+      setPartnerships(partnershipData);
     } catch (err: any) {
       toast.error(err.response?.data?.error || t('persons.loadError'));
     } finally {
@@ -58,7 +67,54 @@ export default function PersonList() {
     return true;
   });
 
-  const groupedByGeneration = filteredPersons.reduce((acc, person) => {
+  const orderedFilteredPersons = useMemo(
+    () => orderPersonsByPartnerPairing(filteredPersons, partnerships).orderedPersons,
+    [filteredPersons, partnerships]
+  );
+
+  type PartnerBadge = {
+    partner: Person;
+    status: Partnership['status'];
+    type: Partnership['partnershipType'];
+  };
+
+  const partnerBadgeMap = useMemo(() => {
+    const map = new Map<string, PartnerBadge[]>();
+    const personLookup = new Map(persons.map(p => [p.id, p]));
+
+    const addPartner = (
+      personId: string,
+      partnerId: string,
+      status: Partnership['status'],
+      type: Partnership['partnershipType']
+    ) => {
+      const partnerPerson = personLookup.get(partnerId);
+      if (!partnerPerson) return;
+
+      const existing = map.get(personId) ?? [];
+      if (!existing.some(entry => entry.partner.id === partnerPerson.id && entry.status === status && entry.type === type)) {
+        existing.push({ partner: partnerPerson, status, type });
+        map.set(personId, existing);
+      }
+    };
+
+    partnerships.forEach(partnership => {
+      addPartner(partnership.person1Id, partnership.person2Id, partnership.status, partnership.partnershipType);
+      addPartner(partnership.person2Id, partnership.person1Id, partnership.status, partnership.partnershipType);
+    });
+
+    map.forEach(entries => {
+      entries.sort((a, b) => {
+        const nameA = (a.partner.fullName || `${a.partner.givenName || ''} ${a.partner.surname || ''}`).trim();
+        const nameB = (b.partner.fullName || `${b.partner.givenName || ''} ${b.partner.surname || ''}`).trim();
+        return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
+      });
+    });
+
+    return map;
+  }, [partnerships, persons]);
+
+  const groupedByGeneration = orderedFilteredPersons.reduce((acc, person) => {
     const gen = person.generationNumber || 1;
     if (!acc[gen]) acc[gen] = [];
     acc[gen].push(person);
@@ -152,7 +208,7 @@ export default function PersonList() {
         </div>
 
         {/* Results */}
-        {filteredPersons.length === 0 ? (
+        {orderedFilteredPersons.length === 0 ? (
           <div className="bg-white shadow rounded-lg p-8 text-center">
             <p className="text-gray-600">
               {searchQuery
@@ -172,7 +228,12 @@ export default function PersonList() {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {groupedByGeneration[gen].map(person => (
-                    <PersonCard key={person.id} person={person} branchId={branchId!} />
+                    <PersonCard
+                      key={person.id}
+                      person={person}
+                      branchId={branchId!}
+                      partners={partnerBadgeMap.get(person.id)}
+                    />
                   ))}
                 </div>
               </div>

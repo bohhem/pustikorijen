@@ -120,7 +120,13 @@
     "generation": "Generacija",
     "person": "osoba",
     "people": "osobe",
-    "noResults": "Nema pronađenih osoba koje odgovaraju pretrazi."
+    "noResults": "Nema pronađenih osoba koje odgovaraju pretrazi.",
+    "partnersLabel": "Partnerstva",
+    "partnerStatus": {
+      "active": "aktivno",
+      "ended": "završeno",
+      "annulled": "poništeno"
+    }
   },
   "createBranch": {
     "title": "Kreiraj porodičnu granu",
@@ -213,6 +219,12 @@
     "breadcrumbAddPerson": "Dodaj osobu",
     "loadDataError": "Greška pri učitavanju podataka"
   },
+  "editPerson": {
+    "title": "Uredi člana porodice",
+    "updatePerson": "Sačuvaj izmjene",
+    "updating": "Spremanje...",
+    "breadcrumbEditPerson": "Uredi osobu"
+  },
   "personDetail": {
     "title": "Profil osobe",
     "mainInfo": "Osnovne informacije",
@@ -238,7 +250,10 @@
     "selectedPerson": "Odabrana osoba",
     "nee": "rođena",
     "gen": "Gen",
-    "in": "u"
+    "in": "u",
+    "editPerson": "Uredi",
+    "deletePerson": "Obriši",
+    "confirmDelete": "Jeste li sigurni da želite obrisati ovu osobu? Ova radnja je nepovratna."
   },
   "partnerships": {
     "title": "Partnerstva",

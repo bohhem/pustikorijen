@@ -120,7 +120,13 @@
     "generation": "Generation",
     "person": "person",
     "people": "people",
-    "noResults": "No persons found matching your search."
+    "noResults": "No persons found matching your search.",
+    "partnersLabel": "Partnerships",
+    "partnerStatus": {
+      "active": "active",
+      "ended": "ended",
+      "annulled": "annulled"
+    }
   },
   "createBranch": {
     "title": "Create Family Branch",
@@ -213,6 +219,12 @@
     "breadcrumbAddPerson": "Add Person",
     "loadDataError": "Failed to load data"
   },
+  "editPerson": {
+    "title": "Edit Family Member",
+    "updatePerson": "Save Changes",
+    "updating": "Saving...",
+    "breadcrumbEditPerson": "Edit Person"
+  },
   "personDetail": {
     "title": "Person Profile",
     "mainInfo": "Main Information",
@@ -238,7 +250,10 @@
     "selectedPerson": "Selected Person",
     "nee": "née",
     "gen": "Gen",
-    "in": "in"
+    "in": "in",
+    "editPerson": "Edit",
+    "deletePerson": "Delete",
+    "confirmDelete": "Are you sure you want to delete this person? This action cannot be undone."
   },
   "partnerships": {
     "title": "Partnerships",

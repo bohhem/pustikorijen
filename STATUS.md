@@ -1,6 +1,6 @@
 # Pustikorijen - Implementation Status
 
-**Last Updated:** October 19, 2025
+**Last Updated:** October 19, 2025 (late PM refresh)
 **Current Version:** v0.3.0-alpha
 **Environment:** Production (https://pustikorijen.vibengin.com)
 
@@ -15,7 +15,7 @@
 Phase 0: Project Setup        ████████████████████ 100% ✅
 Phase 1: Authentication       ████████████████████ 100% ✅
 Phase 2: Family Branches      ███████████████████░  95% ✅
-Phase 3: Family Tree          ████████████████░░░░  80% 🚧
+Phase 3: Family Tree          █████████████████░░░  90% 🚧
 Phase 4: Multilingual (i18n)  ████████████████████ 100% ✅
 Phase 5: Member Management    ████████████████████ 100% ✅
 ```
@@ -52,7 +52,7 @@ Phase 5: Member Management    ████████████████�
 - ⏳ Branch merging (planned)
 - ⏳ Branch splitting (planned)
 
-### **4. Person Management** (85%)
+### **4. Person Management** (95%)
 - ✅ Create persons with full profile data
 - ✅ Person list view with generation grouping
 - ✅ Person detail view
@@ -61,28 +61,30 @@ Phase 5: Member Management    ████████████████�
 - ✅ Privacy levels (public/family_only/private)
 - ✅ Living/deceased status
 - ✅ Biography and life information
-- ⏳ Person editing (planned)
-- ⏳ Person deletion (planned)
+- ✅ Person editing with validation + auditing hooks 🆕
+- ✅ Person deletion (Guru-only, safety checks) 🆕
+- ✅ Partner-aware ordering in list view 🆕
 
-### **5. Partnership Management** (90%)
+### **5. Partnership Management** (95%)
 - ✅ Create partnerships (marriages, etc.)
 - ✅ Partnership types (marriage, domestic, common law)
 - ✅ Partnership status (active/ended)
 - ✅ Partnership visualization in person detail
 - ✅ **Partnership visualization in family tree** 🆕
+- ✅ Partnership badges in generation list view (status + icons) 🆕
 - ✅ Start/end dates and places
 - ✅ Marriage order tracking
 - ⏳ Partnership editing (planned)
 
-### **6. Family Tree Visualization** (80%)
+### **6. Family Tree Visualization** (90%)
 - ✅ Interactive tree view using ReactFlow
 - ✅ Node-based person cards
 - ✅ Parent-child connection lines
 - ✅ **Partnership connection lines** 🆕
-- ✅ Generation-based layout
+- ✅ Generation-based layout with partner pairing 🆕
 - ✅ Generation filtering
 - ✅ Zoom and pan controls
-- ✅ **Selected person detail panel** 🆕
+- ✅ **Selected person overlay card with edit CTA** 🆕
 - ✅ **Parent display in selected person panel** 🆕
 - ✅ Tree legend with connection types
 - ⏳ Tree editing mode (planned)
@@ -124,6 +126,8 @@ Phase 5: Member Management    ████████████████�
 - 🚧 Mobile responsiveness optimization
 
 ### **UI/UX Improvements**
+- ✅ Partner badges + same-generation grouping in list view 🆕
+- ✅ Tree overlay focus state for selected person 🆕
 - 🚧 Loading states and skeleton screens
 - 🚧 Better error messages
 - 🚧 Toast notification styling
@@ -300,9 +304,11 @@ Phase 5: Member Management    ████████████████�
 
 ### **October 19, 2025** 🆕
 - ✅ **Member Management Dashboard** - Complete role management system for Gurus
-- ✅ **Partnership Visualization** - Visual connections in family tree
+- ✅ **Partnership Visualization** - Visual connections in family tree + partner pairing in lists
 - ✅ **Parent Display Fix** - Fixed parent names in selected person panel
 - ✅ **Complete i18n Migration** - All pages now support 3 languages
+- ✅ **Person CRUD Enhancements** - Edit/delete flows, date parsing, Guru-only delete guard
+- ✅ **Tree Focus Overlay** - Slide-in edit card + backdrop when selecting nodes
 
 ### **October 18, 2025**
 - ✅ Multilingual support (Bosnian, English, German)

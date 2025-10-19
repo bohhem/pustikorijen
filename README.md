@@ -40,7 +40,7 @@ To run locally, see [QUICKSTART.md](QUICKSTART.md) for detailed setup instructio
 
 ```bash
 # Clone repository
-git clone https://github.com/[username]/pustikorijen.git
+git clone https://github.com/bohhem/pustikorijen.git
 cd pustikorijen
 
 # Install dependencies
@@ -85,7 +85,7 @@ npm run dev  # frontend (separate terminal)
 We welcome contributions! Please see our [contribution guidelines](CONTRIBUTING.md) (coming soon).
 
 **How to contribute:**
-1. Check [GitHub Projects](https://github.com/[username]/pustikorijen/projects) for available tasks
+1. Check [GitHub Projects](https://github.com/bohhem/pustikorijen/projects) for available tasks
 2. Pick an issue from the "Ready" column
 3. Comment on the issue to get assigned
 4. Create a feature branch
@@ -171,16 +171,16 @@ All 13 pages and 260+ UI elements support language switching with persistent pre
 
 ## 🔗 Links
 
-- **GitHub:** [github.com/[username]/pustikorijen](https://github.com/[username]/pustikorijen)
-- **Projects Board:** [View Progress](https://github.com/[username]/pustikorijen/projects)
+- **GitHub:** [github.com/bohhem/pustikorijen](https://github.com/bohhem/pustikorijen)
+- **Projects Board:** [View Progress](https://github.com/bohhem/pustikorijen/projects)
 - **Documentation:** [docs/](docs/)
-- **Issues:** [Report a bug or request a feature](https://github.com/[username]/pustikorijen/issues)
+- **Issues:** [Report a bug or request a feature](https://github.com/bohhem/pustikorijen/issues)
 
 ## 💬 Support
 
 - **Documentation:** Check the [docs](docs/) folder
-- **Questions:** Create a [GitHub Discussion](https://github.com/[username]/pustikorijen/discussions)
-- **Bugs:** Report via [GitHub Issues](https://github.com/[username]/pustikorijen/issues)
+- **Questions:** Create a [GitHub Discussion](https://github.com/bohhem/pustikorijen/discussions)
+- **Bugs:** Report via [GitHub Issues](https://github.com/bohhem/pustikorijen/issues)
 
 ---
 
