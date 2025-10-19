@@ -6,25 +6,30 @@
 
 **Pustikorijen** is a family genealogy platform connecting Bosnian diaspora with their homeland. Built with Node.js + React + PostgreSQL.
 
-📁 **Repository:** Will be at `github.com/[your-username]/pustikorijen`
-📋 **Project Board:** GitHub Projects (to be created)
+🌐 **Live Site:** https://pustikorijen.vibengin.com
+📁 **Repository:** github.com/bohhem/pustikorijen
 📚 **Full Documentation:** `docs/` folder
+📊 **Status:** [STATUS.md](STATUS.md)
 
 ---
 
-## Current Status: Phase 0 - Project Setup
+## Current Status: Phase 3 - Active Development ✅
 
 **What's Done:**
-✅ Complete design documentation (8 documents)
-✅ Technical architecture defined
-✅ Database schema designed
-✅ Implementation roadmap created
+✅ Complete project setup and infrastructure
+✅ Authentication system with JWT
+✅ Family branch management
+✅ Person and partnership management
+✅ Interactive family tree visualization
+✅ **Multilingual support (Bosnian/English/German)** 🆕
+✅ **Member management dashboard** 🆕
+✅ Production deployment
 
 **What's Next:**
-🎯 Initialize Git repository
-🎯 Create GitHub repo and project board
-🎯 Set up development environment
-🎯 Begin Phase 0 implementation
+🎯 Person/partnership editing
+🎯 Photo upload system
+🎯 Stories and memories
+🎯 Advanced search
 
 ---
 
@@ -45,39 +50,56 @@ GitHub CLI     (check: gh --version)
 ### First-Time Setup (10 minutes)
 
 ```bash
-# 1. Clone repository (after it's created on GitHub)
-git clone https://github.com/[username]/pustikorijen.git
+# 1. Clone repository
+git clone https://github.com/bohhem/pustikorijen.git
 cd pustikorijen
 
-# 2. Install dependencies (when project is initialized)
+# 2. Install dependencies for both backend and frontend
+cd backend
 npm install
+cd ../frontend
+npm install
+cd ..
 
 # 3. Set up environment
-cp .env.example .env
-# Edit .env with your local configuration
+# Backend
+cp backend/.env.example backend/.env
+# Edit backend/.env with your database configuration
 
-# 4. Start development services
-docker-compose -f docker/docker-compose.dev.yml up -d
+# Frontend
+cp frontend/.env.example frontend/.env
+# Edit frontend/.env with API URL
 
-# 5. Run database migrations
+# 4. Set up database (PostgreSQL)
+# Make sure PostgreSQL is running
+# Create database: pustikorijen_dev
+
 cd backend
-npm run db:migrate
-npm run db:seed
+npx prisma migrate dev
+npx prisma db seed  # Optional: seed with sample data
 
-# 6. Start development servers
+# 5. Start development servers
 # Terminal 1 - Backend
 cd backend
 npm run dev
+# Backend API will run on: http://localhost:5000
 
 # Terminal 2 - Frontend
 cd frontend
 npm run dev
+# Frontend will run on: http://localhost:5173
 
-# 7. Open browser
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:5000
-# MailHog: http://localhost:8025
+# 6. Create your first account
+# Open http://localhost:5173
+# Click "Register" and create an account
 ```
+
+### Production Deployment (Already Running)
+
+The application is currently deployed at:
+- **Frontend:** https://pustikorijen.vibengin.com
+- **Backend API:** https://api-pustikorijen.vibengin.com
+- **Database:** PostgreSQL on production server
 
 ---
 

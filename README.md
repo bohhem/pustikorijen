@@ -15,17 +15,28 @@ A platform where Bosnian families can:
 
 ## ✨ Key Features
 
-- **🏘️ Family Branches** - Multiple families with the same surname can coexist with geographic disambiguation
-- **👥 Collaborative Genealogy** - Family members work together to build accurate trees with governance and quality controls
-- **🌍 Diaspora Mapping** - Visualize family migration patterns across the world
+### **✅ Implemented Features**
+- **🏘️ Family Branches** - Create and manage family branches with geographic disambiguation
+- **👥 Member Management** - Guru-based governance with role promotion system 🆕
+- **🌳 Interactive Family Tree** - Visual tree with zoom, pan, and generation filtering
+- **💑 Partnership Visualization** - See marriages and relationships in the tree 🆕
+- **👤 Person Profiles** - Detailed person pages with life information and family connections
+- **🌍 Multilingual** - Full support for Bosnian, English, and German 🆕
+- **🔐 Privacy Controls** - Public, family-only, and private visibility levels
+- **📊 Generation Tracking** - Automatic generation calculation and grouping
+
+### **⏳ Planned Features**
 - **📖 Stories & Memories** - Share family recipes, photos, and cultural traditions
 - **⚖️ Dispute Resolution** - Three-tier process for resolving conflicting information
 - **🌱 Tree Evolution** - Family trees can grow upward as older ancestors are discovered
-- **🔒 Privacy First** - Granular privacy controls and GDPR compliance
+- **🔍 Advanced Search** - Find relatives and discover connections
+- **📤 Data Export** - GEDCOM export for genealogy software compatibility
 
 ## 🚀 Quick Start
 
-**Note:** Project is currently in Phase 0 (Setup). See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
+**Live Demo:** https://pustikorijen.vibengin.com
+
+To run locally, see [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 
 ```bash
 # Clone repository
@@ -53,8 +64,9 @@ npm run dev  # frontend (separate terminal)
 
 ## 📚 Documentation
 
+- **[Project Status (STATUS.md)](STATUS.md)** - Current implementation status and progress 🆕
 - **[Quick Start Guide](QUICKSTART.md)** - Get started quickly
-- **[Project Status](PROJECT_STATUS.md)** - Current status and progress
+- **[Multilingual Support](docs/MULTILINGUAL_SUPPORT.md)** - i18n implementation guide 🆕
 - **[Implementation Roadmap](docs/08-implementation-roadmap.md)** - Detailed task breakdown
 - **[Technical Architecture](docs/07-technical-architecture.md)** - System design and tech stack
 - **[Full Documentation](docs/README.md)** - Complete documentation index
@@ -83,16 +95,20 @@ We welcome contributions! Please see our [contribution guidelines](CONTRIBUTING.
 
 ## 📋 Project Status
 
-**Current Phase:** Phase 0 - Project Setup (In Progress)
+**Current Phase:** Phase 3 - Family Tree & Features (In Progress)
+**Version:** v0.3.0-alpha
+**Live Site:** https://pustikorijen.vibengin.com
 
 **Progress:**
-- ✅ Design & Documentation (100%)
-- 🚧 Project Setup (10%)
-- ⏳ Authentication (0%)
-- ⏳ Family Branches (0%)
-- ⏳ Family Tree (0%)
+- ✅ Project Setup (100%)
+- ✅ Authentication (100%)
+- ✅ Family Branches (95%)
+- ✅ Person Management (85%)
+- ✅ Family Tree Visualization (80%)
+- ✅ Multilingual Support (100%) 🆕
+- ✅ Member Management (100%) 🆕
 
-See [PROJECT_STATUS.md](PROJECT_STATUS.md) for detailed progress.
+See [STATUS.md](STATUS.md) for detailed progress and feature list.
 
 ## 🎯 Roadmap
 
@@ -136,11 +152,14 @@ Guardian/administrator of a family branch (1-3 per branch) responsible for:
 ### Tree Evolution
 Family trees can grow upward when older ancestors are discovered, with automatic generation recalculation while preserving all data integrity.
 
-## 🌐 Multilingual Support
+## 🌐 Multilingual Support ✅
 
-- 🇧🇦 Bosnian/Serbian/Croatian (primary)
-- 🇬🇧 English
-- 🇩🇪 German (large diaspora)
+**Fully Implemented** with react-i18next:
+- 🇧🇦 **Bosnian** (default) - Bosanski
+- 🇬🇧 **English** - English
+- 🇩🇪 **German** - Deutsch
+
+All 13 pages and 260+ UI elements support language switching with persistent preference.
 
 ## 📄 License
 
