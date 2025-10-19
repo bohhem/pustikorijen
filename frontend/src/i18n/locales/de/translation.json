@@ -103,6 +103,22 @@
       "member": "Mitglied"
     }
   },
+  "createBranch": {
+    "title": "Familienzweig erstellen",
+    "surname": "Nachname",
+    "surnameMinLength": "Nachname muss mindestens 2 Zeichen lang sein",
+    "cityCode": "Stadtcode",
+    "cityCodeMinLength": "Stadtcode muss mindestens 2 Zeichen lang sein",
+    "cityName": "Stadtname",
+    "cityNameMinLength": "Stadtname muss mindestens 2 Zeichen lang sein",
+    "defaultCountry": "Bosnien und Herzegowina",
+    "descriptionPlaceholder": "Erzählen Sie uns über Ihren Familienzweig...",
+    "visibility": "Sichtbarkeit",
+    "visibilityPublic": "Öffentlich - Jeder kann sehen",
+    "visibilityFamilyOnly": "Nur Familie - Nur Mitglieder können sehen",
+    "visibilityPrivate": "Privat - Nur auf Einladung",
+    "creating": "Wird erstellt..."
+  },
   "pagination": {
     "previous": "Zurück",
     "next": "Weiter",

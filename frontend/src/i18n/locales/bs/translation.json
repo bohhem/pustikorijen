@@ -103,6 +103,22 @@
       "member": "Član"
     }
   },
+  "createBranch": {
+    "title": "Kreiraj porodičnu granu",
+    "surname": "Prezime",
+    "surnameMinLength": "Prezime mora imati najmanje 2 karaktera",
+    "cityCode": "Kod grada",
+    "cityCodeMinLength": "Kod grada mora imati najmanje 2 karaktera",
+    "cityName": "Naziv grada",
+    "cityNameMinLength": "Naziv grada mora imati najmanje 2 karaktera",
+    "defaultCountry": "Bosna i Hercegovina",
+    "descriptionPlaceholder": "Recite nam nešto o vašoj porodičnoj grani...",
+    "visibility": "Vidljivost",
+    "visibilityPublic": "Javno - Svi mogu vidjeti",
+    "visibilityFamilyOnly": "Samo porodica - Samo članovi mogu vidjeti",
+    "visibilityPrivate": "Privatno - Samo putem pozivnice",
+    "creating": "Kreiranje..."
+  },
   "pagination": {
     "previous": "Prethodna",
     "next": "Sljedeća",

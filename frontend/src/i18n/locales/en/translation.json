@@ -103,6 +103,22 @@
       "member": "Member"
     }
   },
+  "createBranch": {
+    "title": "Create Family Branch",
+    "surname": "Surname",
+    "surnameMinLength": "Surname must be at least 2 characters",
+    "cityCode": "City Code",
+    "cityCodeMinLength": "City code must be at least 2 characters",
+    "cityName": "City Name",
+    "cityNameMinLength": "City name must be at least 2 characters",
+    "defaultCountry": "Bosnia and Herzegovina",
+    "descriptionPlaceholder": "Tell us about your family branch...",
+    "visibility": "Visibility",
+    "visibilityPublic": "Public - Anyone can view",
+    "visibilityFamilyOnly": "Family Only - Only members can view",
+    "visibilityPrivate": "Private - Invite only",
+    "creating": "Creating..."
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next",
