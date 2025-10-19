@@ -103,6 +103,16 @@
       "member": "Mitglied"
     }
   },
+  "personList": {
+    "searchPlaceholder": "Nach Namen suchen...",
+    "all": "Alle",
+    "living": "Lebend",
+    "deceased": "Verstorben",
+    "generation": "Generation",
+    "person": "Person",
+    "people": "Personen",
+    "noResults": "Keine Personen gefunden, die Ihrer Suche entsprechen."
+  },
   "createBranch": {
     "title": "Familienzweig erstellen",
     "surname": "Nachname",
@@ -129,6 +139,7 @@
     "title": "Familienmitglieder",
     "create": "Person hinzufügen",
     "noPeople": "Noch keine Personen. Seien Sie der Erste!",
+    "loadError": "Fehler beim Laden der Personen",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "maidenName": "Mädchenname",

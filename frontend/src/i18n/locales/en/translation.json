@@ -103,6 +103,16 @@
       "member": "Member"
     }
   },
+  "personList": {
+    "searchPlaceholder": "Search by name...",
+    "all": "All",
+    "living": "Living",
+    "deceased": "Deceased",
+    "generation": "Generation",
+    "person": "person",
+    "people": "people",
+    "noResults": "No persons found matching your search."
+  },
   "createBranch": {
     "title": "Create Family Branch",
     "surname": "Surname",
@@ -129,6 +139,7 @@
     "title": "Family Members",
     "create": "Add Person",
     "noPeople": "No persons yet. Be the first to add one!",
+    "loadError": "Failed to load persons",
     "firstName": "First Name",
     "lastName": "Last Name",
     "maidenName": "Maiden Name",

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
 import { getBranchById } from '../api/branch';
 import { useToast } from '../contexts/ToastContext';
@@ -9,6 +10,7 @@ import type { Person } from '../types/person';
 import type { Branch } from '../types/branch';
 
 export default function PersonList() {
+  const { t } = useTranslation();
   const { branchId } = useParams<{ branchId: string }>();
   const toast = useToast();
   const [persons, setPersons] = useState<Person[]>([]);
@@ -33,7 +35,7 @@ export default function PersonList() {
       setPersons(personsData);
       setBranch(branchData);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to load persons');
+      toast.error(err.response?.data?.error || t('persons.loadError'));
     } finally {
       setLoading(false);
     }
@@ -83,21 +85,21 @@ export default function PersonList() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center text-sm text-gray-600 mb-2">
-            <Link to="/branches" className="hover:text-indigo-600">Branches</Link>
+            <Link to="/branches" className="hover:text-indigo-600">{t('navigation.branches')}</Link>
             <span className="mx-2">/</span>
             <Link to={`/branches/${branchId}`} className="hover:text-indigo-600">
               {branch?.surname}
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-gray-900">People</span>
+            <span className="text-gray-900">{t('navigation.people')}</span>
           </div>
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-900">Family Members</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('persons.title')}</h1>
             <Link
               to={`/branches/${branchId}/persons/create`}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             >
-              Add Person
+              {t('persons.create')}
             </Link>
           </div>
         </div>
@@ -110,7 +112,7 @@ export default function PersonList() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name..."
+                placeholder={t('personList.searchPlaceholder')}
                 className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
               />
             </div>
@@ -123,7 +125,7 @@ export default function PersonList() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                All ({persons.length})
+                {t('personList.all')} ({persons.length})
               </button>
               <button
                 onClick={() => setFilter('alive')}
@@ -133,7 +135,7 @@ export default function PersonList() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Living ({persons.filter(p => p.isAlive).length})
+                {t('personList.living')} ({persons.filter(p => p.isAlive).length})
               </button>
               <button
                 onClick={() => setFilter('deceased')}
@@ -143,7 +145,7 @@ export default function PersonList() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Deceased ({persons.filter(p => !p.isAlive).length})
+                {t('personList.deceased')} ({persons.filter(p => !p.isAlive).length})
               </button>
             </div>
           </div>
@@ -154,8 +156,8 @@ export default function PersonList() {
           <div className="bg-white shadow rounded-lg p-8 text-center">
             <p className="text-gray-600">
               {searchQuery
-                ? 'No persons found matching your search.'
-                : 'No persons in this branch yet. Be the first to add one!'}
+                ? t('personList.noResults')
+                : t('persons.noPeople')}
             </p>
           </div>
         ) : (
@@ -163,9 +165,9 @@ export default function PersonList() {
             {generations.map(gen => (
               <div key={gen} className="bg-white shadow rounded-lg p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
-                  Generation {gen}
+                  {t('personList.generation')} {gen}
                   <span className="ml-2 text-sm font-normal text-gray-600">
-                    ({groupedByGeneration[gen].length} {groupedByGeneration[gen].length === 1 ? 'person' : 'people'})
+                    ({groupedByGeneration[gen].length} {groupedByGeneration[gen].length === 1 ? t('personList.person') : t('personList.people')})
                   </span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

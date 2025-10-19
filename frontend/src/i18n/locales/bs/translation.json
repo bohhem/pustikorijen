@@ -103,6 +103,16 @@
       "member": "Član"
     }
   },
+  "personList": {
+    "searchPlaceholder": "Pretraži po imenu...",
+    "all": "Svi",
+    "living": "Živi",
+    "deceased": "Umrli",
+    "generation": "Generacija",
+    "person": "osoba",
+    "people": "osobe",
+    "noResults": "Nema pronađenih osoba koje odgovaraju pretrazi."
+  },
   "createBranch": {
     "title": "Kreiraj porodičnu granu",
     "surname": "Prezime",
@@ -129,6 +139,7 @@
     "title": "Članovi porodice",
     "create": "Dodaj osobu",
     "noPeople": "Još nema osoba. Budite prvi koji će dodati!",
+    "loadError": "Greška pri učitavanju osoba",
     "firstName": "Ime",
     "lastName": "Prezime",
     "maidenName": "Djevojačko prezime",
