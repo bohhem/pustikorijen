@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
 import { getBranchById } from '../api/branch';
 import { useToast } from '../contexts/ToastContext';
@@ -10,6 +11,7 @@ import type { Branch } from '../types/branch';
 
 export default function FamilyTree() {
   const { branchId } = useParams<{ branchId: string }>();
+  const { t } = useTranslation();
   const toast = useToast();
   const [persons, setPersons] = useState<Person[]>([]);
   const [branch, setBranch] = useState<Branch | null>(null);
@@ -32,7 +34,7 @@ export default function FamilyTree() {
       setPersons(personsData);
       setBranch(branchData);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to load family tree');
+      toast.error(err.response?.data?.error || t('persons.loadError'));
     } finally {
       setLoading(false);
     }
@@ -58,21 +60,21 @@ export default function FamilyTree() {
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center text-sm text-gray-600 mb-2">
-            <Link to="/branches" className="hover:text-indigo-600">Branches</Link>
+            <Link to="/branches" className="hover:text-indigo-600">{t('navigation.branches')}</Link>
             <span className="mx-2">/</span>
             <Link to={`/branches/${branchId}`} className="hover:text-indigo-600">
               {branch?.surname}
             </Link>
             <span className="mx-2">/</span>
-            <span className="text-gray-900">Family Tree</span>
+            <span className="text-gray-900">{t('tree.title')}</span>
           </div>
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                {branch?.surname} Family Tree
+                {branch?.surname} {t('tree.title')}
               </h1>
               <p className="text-gray-600 mt-1">
-                {persons.length} people across {Math.max(...persons.map(p => p.generationNumber || 0), 0)} generations
+                {persons.length} {t('tree.peopleAcross')} {Math.max(...persons.map(p => p.generationNumber || 0), 0)} {t('tree.generations')}
               </p>
             </div>
             <div className="flex gap-3">
@@ -80,13 +82,13 @@ export default function FamilyTree() {
                 to={`/branches/${branchId}/persons`}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
               >
-                View List
+                {t('tree.viewList')}
               </Link>
               <Link
                 to={`/branches/${branchId}/persons/create`}
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Add Person
+                {t('persons.create')}
               </Link>
             </div>
           </div>
@@ -97,16 +99,16 @@ export default function FamilyTree() {
           <div className="bg-white shadow rounded-lg p-12 text-center">
             <div className="text-6xl mb-4">🌳</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No family members yet
+              {t('tree.noMembers')}
             </h3>
             <p className="text-gray-600 mb-6">
-              Start building your family tree by adding the first person.
+              {t('tree.noMembersDesc')}
             </p>
             <Link
               to={`/branches/${branchId}/persons/create`}
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             >
-              Add First Person
+              {t('tree.addFirstPerson')}
             </Link>
           </div>
         ) : (
@@ -117,7 +119,7 @@ export default function FamilyTree() {
             {selectedPerson && (
               <div className="bg-white shadow rounded-lg p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">Selected Person</h3>
+                  <h3 className="text-xl font-bold text-gray-900">{t('tree.selectedPersonTitle')}</h3>
                   <button
                     onClick={() => setSelectedPerson(null)}
                     className="text-gray-400 hover:text-gray-600"
@@ -154,37 +156,37 @@ export default function FamilyTree() {
                       <p className="text-sm text-gray-600">née {selectedPerson.maidenName}</p>
                     )}
                     <span className="mt-2 inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded">
-                      Generation {selectedPerson.generation}
+                      {t('persons.generation')} {selectedPerson.generation}
                     </span>
                   </div>
 
                   {/* Life information */}
                   <div>
-                    <h5 className="font-semibold text-gray-900 mb-3">Life Information</h5>
+                    <h5 className="font-semibold text-gray-900 mb-3">{t('personDetail.lifeInfo')}</h5>
                     <dl className="space-y-2 text-sm">
                       {selectedPerson.birthDate && (
                         <div>
-                          <dt className="text-gray-600">Born:</dt>
+                          <dt className="text-gray-600">{t('personDetail.born')}:</dt>
                           <dd className="text-gray-900 font-medium">
                             {new Date(selectedPerson.birthDate).toLocaleDateString()}
-                            {selectedPerson.birthPlace && ` in ${selectedPerson.birthPlace}`}
+                            {selectedPerson.birthPlace && ` ${t('personDetail.in')} ${selectedPerson.birthPlace}`}
                           </dd>
                         </div>
                       )}
                       {!selectedPerson.isAlive && selectedPerson.deathDate && (
                         <div>
-                          <dt className="text-gray-600">Died:</dt>
+                          <dt className="text-gray-600">{t('personDetail.died')}:</dt>
                           <dd className="text-gray-900 font-medium">
                             {new Date(selectedPerson.deathDate).toLocaleDateString()}
-                            {selectedPerson.deathPlace && ` in ${selectedPerson.deathPlace}`}
+                            {selectedPerson.deathPlace && ` ${t('personDetail.in')} ${selectedPerson.deathPlace}`}
                           </dd>
                         </div>
                       )}
                       {selectedPerson.isAlive && selectedPerson.birthDate && (
                         <div>
-                          <dt className="text-gray-600">Age:</dt>
+                          <dt className="text-gray-600">{t('personDetail.age')}:</dt>
                           <dd className="text-gray-900 font-medium">
-                            {new Date().getFullYear() - new Date(selectedPerson.birthDate).getFullYear()} years old
+                            {new Date().getFullYear() - new Date(selectedPerson.birthDate).getFullYear()} {t('personDetail.yearsOld')}
                           </dd>
                         </div>
                       )}
@@ -193,11 +195,11 @@ export default function FamilyTree() {
 
                   {/* Family information */}
                   <div>
-                    <h5 className="font-semibold text-gray-900 mb-3">Family</h5>
+                    <h5 className="font-semibold text-gray-900 mb-3">{t('personDetail.family')}</h5>
                     <dl className="space-y-2 text-sm">
                       {selectedPerson.father && (
                         <div>
-                          <dt className="text-gray-600">Father:</dt>
+                          <dt className="text-gray-600">{t('persons.father')}:</dt>
                           <dd className="text-gray-900 font-medium">
                             {selectedPerson.father.firstName} {selectedPerson.father.lastName}
                           </dd>
@@ -205,7 +207,7 @@ export default function FamilyTree() {
                       )}
                       {selectedPerson.mother && (
                         <div>
-                          <dt className="text-gray-600">Mother:</dt>
+                          <dt className="text-gray-600">{t('persons.mother')}:</dt>
                           <dd className="text-gray-900 font-medium">
                             {selectedPerson.mother.firstName} {selectedPerson.mother.lastName}
                           </dd>
@@ -213,7 +215,7 @@ export default function FamilyTree() {
                       )}
                       {selectedPerson.children && selectedPerson.children.length > 0 && (
                         <div>
-                          <dt className="text-gray-600">Children:</dt>
+                          <dt className="text-gray-600">{t('persons.children')}:</dt>
                           <dd className="text-gray-900 font-medium">
                             {selectedPerson.children.map(child => (
                               <div key={child.id}>
@@ -230,7 +232,7 @@ export default function FamilyTree() {
                 {/* Biography */}
                 {selectedPerson.biography && (
                   <div className="mt-6 pt-6 border-t">
-                    <h5 className="font-semibold text-gray-900 mb-2">Biography</h5>
+                    <h5 className="font-semibold text-gray-900 mb-2">{t('persons.biography')}</h5>
                     <p className="text-gray-700 text-sm">{selectedPerson.biography}</p>
                   </div>
                 )}

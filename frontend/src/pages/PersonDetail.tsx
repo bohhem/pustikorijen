@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
 import { getPersonPartnerships } from '../api/partnership';
 import { getBranchById } from '../api/branch';
@@ -13,6 +14,7 @@ import type { Partnership } from '../types/partnership';
 export default function PersonDetail() {
   const { branchId, personId } = useParams<{ branchId: string; personId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const toast = useToast();
   const [person, setPerson] = useState<Person | null>(null);
   const [branch, setBranch] = useState<Branch | null>(null);
@@ -36,7 +38,7 @@ export default function PersonDetail() {
 
       const currentPerson = personsData.find(p => p.id === personId);
       if (!currentPerson) {
-        toast.error('Person not found');
+        toast.error(t('personDetail.notFound'));
         navigate(`/branches/${branchId}/persons`);
         return;
       }
@@ -53,7 +55,7 @@ export default function PersonDetail() {
         console.error('Failed to load partnerships:', err);
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to load person details');
+      toast.error(err.response?.data?.error || t('persons.loadError'));
       navigate(`/branches/${branchId}/persons`);
     } finally {
       setLoading(false);
@@ -107,14 +109,14 @@ export default function PersonDetail() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm text-gray-600 mb-6">
-          <Link to="/branches" className="hover:text-indigo-600">Branches</Link>
+          <Link to="/branches" className="hover:text-indigo-600">{t('navigation.branches')}</Link>
           <span className="mx-2">/</span>
           <Link to={`/branches/${branchId}`} className="hover:text-indigo-600">
             {branch?.surname}
           </Link>
           <span className="mx-2">/</span>
           <Link to={`/branches/${branchId}/persons`} className="hover:text-indigo-600">
-            People
+            {t('createPerson.breadcrumbPeople')}
           </Link>
           <span className="mx-2">/</span>
           <span className="text-gray-900">{person.fullName}</span>
@@ -148,7 +150,7 @@ export default function PersonDetail() {
                 </h1>
                 {person.maidenName && (
                   <p className="text-lg text-gray-600 mb-2">
-                    née {person.maidenName}
+                    {t('personDetail.nee')} {person.maidenName}
                   </p>
                 )}
                 {person.nickname && (
@@ -166,11 +168,11 @@ export default function PersonDetail() {
                   )}
                   {isAlive ? (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                      Living
+                      {t('personDetail.living')}
                     </span>
                   ) : (
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                      Deceased
+                      {t('personDetail.deceased')}
                     </span>
                   )}
                 </div>
@@ -180,43 +182,43 @@ export default function PersonDetail() {
 
           {/* Life Information */}
           <div className="border-t border-gray-200 px-6 py-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Life Information</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('personDetail.lifeInfo')}</h3>
             <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {person.birthDate && (
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Born</dt>
+                  <dt className="text-sm font-medium text-gray-500">{t('personDetail.born')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     {formatDate(person.birthDate)}
-                    {person.birthPlace && ` in ${person.birthPlace}`}
-                    {age && isAlive && ` (${age} years old)`}
+                    {person.birthPlace && ` ${t('personDetail.in')} ${person.birthPlace}`}
+                    {age && isAlive && ` (${age} ${t('personDetail.yearsOld')})`}
                   </dd>
                 </div>
               )}
               {person.deathDate && (
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Died</dt>
+                  <dt className="text-sm font-medium text-gray-500">{t('personDetail.died')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     {formatDate(person.deathDate)}
-                    {person.deathPlace && ` in ${person.deathPlace}`}
-                    {age && ` (${age} years)`}
+                    {person.deathPlace && ` ${t('personDetail.in')} ${person.deathPlace}`}
+                    {age && ` (${age} ${t('personDetail.years')})`}
                   </dd>
                 </div>
               )}
               {person.currentLocation && isAlive && (
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Current Location</dt>
+                  <dt className="text-sm font-medium text-gray-500">{t('persons.currentLocation')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">{person.currentLocation}</dd>
                 </div>
               )}
               {person.occupation && (
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Occupation</dt>
+                  <dt className="text-sm font-medium text-gray-500">{t('persons.occupation')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">{person.occupation}</dd>
                 </div>
               )}
               {person.education && (
                 <div>
-                  <dt className="text-sm font-medium text-gray-500">Education</dt>
+                  <dt className="text-sm font-medium text-gray-500">{t('persons.education')}</dt>
                   <dd className="mt-1 text-sm text-gray-900">{person.education}</dd>
                 </div>
               )}
@@ -226,7 +228,7 @@ export default function PersonDetail() {
           {/* Biography */}
           {person.biography && (
             <div className="border-t border-gray-200 px-6 py-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Biography</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('persons.biography')}</h3>
               <p className="text-gray-700 whitespace-pre-line">{person.biography}</p>
             </div>
           )}
@@ -235,21 +237,21 @@ export default function PersonDetail() {
         {/* Family Section */}
         <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Family</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('personDetail.family')}</h2>
           </div>
 
           <div className="p-6 space-y-6">
             {/* Parents */}
             {(father || mother) && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Parents</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('personDetail.parents')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {father && (
                     <Link
                       to={`/branches/${branchId}/persons/${father.id}`}
                       className="block p-4 border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md transition"
                     >
-                      <p className="text-sm text-gray-500">Father</p>
+                      <p className="text-sm text-gray-500">{t('persons.father')}</p>
                       <p className="font-medium text-gray-900">{father.fullName}</p>
                       {father.birthDate && (
                         <p className="text-sm text-gray-600">
@@ -264,10 +266,10 @@ export default function PersonDetail() {
                       to={`/branches/${branchId}/persons/${mother.id}`}
                       className="block p-4 border border-gray-200 rounded-lg hover:border-indigo-300 hover:shadow-md transition"
                     >
-                      <p className="text-sm text-gray-500">Mother</p>
+                      <p className="text-sm text-gray-500">{t('persons.mother')}</p>
                       <p className="font-medium text-gray-900">
                         {mother.fullName}
-                        {mother.maidenName && ` (née ${mother.maidenName})`}
+                        {mother.maidenName && ` (${t('personDetail.nee')} ${mother.maidenName})`}
                       </p>
                       {mother.birthDate && (
                         <p className="text-sm text-gray-600">
@@ -285,7 +287,7 @@ export default function PersonDetail() {
             {partnerships.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  {partnerships.length === 1 ? 'Partnership' : 'Partnerships'}
+                  {partnerships.length === 1 ? t('personDetail.partnership') : t('personDetail.partnerships')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {partnerships.map((partnership) => (
@@ -304,7 +306,7 @@ export default function PersonDetail() {
             {children.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Children ({children.length})
+                  {t('persons.children')} ({children.length})
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {children.map((child) => (
@@ -320,7 +322,7 @@ export default function PersonDetail() {
                         </p>
                       )}
                       <p className="text-xs text-gray-500 mt-1">
-                        {child.generation || `Gen ${child.generationNumber}`}
+                        {child.generation || `${t('personDetail.gen')} ${child.generationNumber}`}
                       </p>
                     </Link>
                   ))}
@@ -336,13 +338,13 @@ export default function PersonDetail() {
             to={`/branches/${branchId}/partnerships/add?person=${personId}`}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm font-medium"
           >
-            Add Partnership
+            {t('personDetail.addPartnership')}
           </Link>
           <Link
             to={`/branches/${branchId}/persons`}
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition text-sm font-medium"
           >
-            Back to List
+            {t('personDetail.backToList')}
           </Link>
         </div>
       </div>

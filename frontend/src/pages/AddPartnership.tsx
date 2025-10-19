@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { createPartnership } from '../api/partnership';
 import { getPersonsByBranch } from '../api/person';
 import { getBranchById } from '../api/branch';
@@ -14,6 +15,7 @@ export default function AddPartnership() {
   const { branchId, personId } = useParams<{ branchId: string; personId: string }>();
   const navigate = useNavigate();
   const toast = useToast();
+  const { t } = useTranslation();
   const [persons, setPersons] = useState<Person[]>([]);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ export default function AddPartnership() {
       setPersons(personsData);
       setBranch(branchData);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to load data');
+      toast.error(err.response?.data?.error || t('partnerships.loadDataError'));
     }
   };
 
@@ -53,10 +55,10 @@ export default function AddPartnership() {
     setLoading(true);
     try {
       await createPartnership(branchId!, data);
-      toast.success('Partnership added successfully!');
+      toast.success(t('partnerships.createSuccess'));
       navigate(`/branches/${branchId}/persons`);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to create partnership');
+      toast.error(err.response?.data?.error || t('partnerships.createError'));
     } finally {
       setLoading(false);
     }
@@ -66,9 +68,9 @@ export default function AddPartnership() {
     <Layout>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Add Partnership</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('partnerships.add')}</h1>
           <p className="text-gray-600 mt-2">
-            {branch?.surname} Family Branch
+            {branch?.surname} {t('branchDetail.family')}
           </p>
         </div>
 
@@ -77,13 +79,13 @@ export default function AddPartnership() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Person 1 *
+                {t('partnerships.person1')} *
               </label>
               <select
-                {...register('person1Id', { required: 'Person 1 is required' })}
+                {...register('person1Id', { required: t('partnerships.person1Required') })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
               >
-                <option value="">Select person</option>
+                <option value="">{t('partnerships.selectPerson')}</option>
                 {persons.map((person) => (
                   <option key={person.id} value={person.id}>
                     {person.fullName || `${person.givenName} ${person.surname}`}
@@ -98,13 +100,13 @@ export default function AddPartnership() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Person 2 *
+                {t('partnerships.person2')} *
               </label>
               <select
-                {...register('person2Id', { required: 'Person 2 is required' })}
+                {...register('person2Id', { required: t('partnerships.person2Required') })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
               >
-                <option value="">Select person</option>
+                <option value="">{t('partnerships.selectPerson')}</option>
                 {persons.map((person) => (
                   <option key={person.id} value={person.id}>
                     {person.fullName || `${person.givenName} ${person.surname}`}
@@ -121,16 +123,16 @@ export default function AddPartnership() {
           {/* Partnership Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Partnership Type
+              {t('partnerships.partnershipType')}
             </label>
             <select
               {...register('partnershipType')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             >
-              <option value="marriage">Marriage</option>
-              <option value="domestic_partnership">Domestic Partnership</option>
-              <option value="common_law">Common Law</option>
-              <option value="other">Other</option>
+              <option value="marriage">{t('partnerships.marriage')}</option>
+              <option value="domestic_partnership">{t('partnerships.domesticPartnership')}</option>
+              <option value="common_law">{t('partnerships.commonLaw')}</option>
+              <option value="other">{t('partnerships.other')}</option>
             </select>
           </div>
 
@@ -138,7 +140,7 @@ export default function AddPartnership() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Start Date
+                {t('partnerships.startDate')}
               </label>
               <input
                 {...register('startDate')}
@@ -149,12 +151,12 @@ export default function AddPartnership() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Start Place
+                {t('partnerships.startPlace')}
               </label>
               <input
                 {...register('startPlace')}
                 type="text"
-                placeholder="City, Country"
+                placeholder={t('persons.placeholderCityCountry')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
               />
             </div>
@@ -163,12 +165,12 @@ export default function AddPartnership() {
           {/* Ceremony Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Ceremony Type
+              {t('partnerships.ceremonyType')}
             </label>
             <input
               {...register('ceremonyType')}
               type="text"
-              placeholder="e.g., Religious, Civil, Traditional"
+              placeholder={t('partnerships.ceremonyTypePlaceholder')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             />
           </div>
@@ -176,15 +178,15 @@ export default function AddPartnership() {
           {/* Status */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Status
+              {t('partnerships.status')}
             </label>
             <select
               {...register('status')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             >
-              <option value="active">Active</option>
-              <option value="ended">Ended</option>
-              <option value="annulled">Annulled</option>
+              <option value="active">{t('partnerships.active')}</option>
+              <option value="ended">{t('partnerships.ended')}</option>
+              <option value="annulled">{t('partnerships.annulled')}</option>
             </select>
           </div>
 
@@ -194,7 +196,7 @@ export default function AddPartnership() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    End Date
+                    {t('partnerships.endDate')}
                   </label>
                   <input
                     {...register('endDate')}
@@ -205,12 +207,12 @@ export default function AddPartnership() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    End Place
+                    {t('partnerships.endPlace')}
                   </label>
                   <input
                     {...register('endPlace')}
                     type="text"
-                    placeholder="City, Country"
+                    placeholder={t('persons.placeholderCityCountry')}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
                   />
                 </div>
@@ -218,17 +220,17 @@ export default function AddPartnership() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  End Reason
+                  {t('partnerships.endReason')}
                 </label>
                 <select
                   {...register('endReason')}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
                 >
-                  <option value="">Select reason</option>
-                  <option value="divorce">Divorce</option>
-                  <option value="death">Death</option>
-                  <option value="separation">Separation</option>
-                  <option value="annulment">Annulment</option>
+                  <option value="">{t('partnerships.selectReason')}</option>
+                  <option value="divorce">{t('partnerships.divorce')}</option>
+                  <option value="death">{t('partnerships.death')}</option>
+                  <option value="separation">{t('partnerships.separation')}</option>
+                  <option value="annulment">{t('partnerships.annulment')}</option>
                 </select>
               </div>
             </>
@@ -237,7 +239,7 @@ export default function AddPartnership() {
           {/* Order Number */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Marriage Number
+              {t('partnerships.marriageOrder')}
             </label>
             <input
               {...register('orderNumber', { valueAsNumber: true, min: 1 })}
@@ -246,19 +248,19 @@ export default function AddPartnership() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             />
             <p className="mt-1 text-sm text-gray-500">
-              1 for first marriage, 2 for second, etc.
+              {t('partnerships.marriageOrderHint')}
             </p>
           </div>
 
           {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Notes
+              {t('partnerships.notes')}
             </label>
             <textarea
               {...register('notes')}
               rows={3}
-              placeholder="Additional information..."
+              placeholder={t('partnerships.notesPlaceholder')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             />
           </div>
@@ -266,15 +268,15 @@ export default function AddPartnership() {
           {/* Privacy */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Privacy
+              {t('partnerships.privacy')}
             </label>
             <select
               {...register('visibility')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
             >
-              <option value="public">Public - Anyone can view</option>
-              <option value="family_only">Family Only - Branch members only</option>
-              <option value="private">Private - Only me and Gurus</option>
+              <option value="public">{t('persons.public')} - {t('persons.publicDesc')}</option>
+              <option value="family_only">{t('persons.familyOnly')} - {t('persons.familyOnlyDesc')}</option>
+              <option value="private">{t('persons.private')} - {t('persons.privateDesc')}</option>
             </select>
           </div>
 
@@ -285,14 +287,14 @@ export default function AddPartnership() {
               disabled={loading}
               className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              {loading ? 'Creating...' : 'Create Partnership'}
+              {loading ? t('partnerships.creating') : t('partnerships.createPartnership')}
             </button>
             <button
               type="button"
               onClick={() => navigate(`/branches/${branchId}/persons`)}
               className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
         </form>
