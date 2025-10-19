@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getBranchById, getBranchMembers, requestJoinBranch } from '../api/branch';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -7,6 +8,7 @@ import Layout from '../components/layout/Layout';
 import type { Branch, BranchMember } from '../types/branch';
 
 export default function BranchDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -29,7 +31,7 @@ export default function BranchDetail() {
       const data = await getBranchById(id!);
       setBranch(data);
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to load branch');
+      setError(err.response?.data?.error || t('branches.loadError'));
     } finally {
       setLoading(false);
     }
@@ -48,10 +50,10 @@ export default function BranchDetail() {
     setJoining(true);
     try {
       await requestJoinBranch(id!);
-      toast.success('Join request submitted! A Guru will review your request.');
+      toast.success(t('branchDetail.joinRequestSubmitted'));
       loadMembers();
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to submit join request');
+      toast.error(err.response?.data?.error || t('branchDetail.joinRequestFailed'));
     } finally {
       setJoining(false);
     }
@@ -74,9 +76,9 @@ export default function BranchDetail() {
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
-            <p className="text-red-600">{error || 'Branch not found'}</p>
+            <p className="text-red-600">{error || t('branches.branchNotFound')}</p>
             <button onClick={() => navigate('/branches')} className="mt-4 text-indigo-600">
-              Back to Branches
+              {t('branchDetail.backToBranches')}
             </button>
           </div>
         </div>
@@ -90,7 +92,7 @@ export default function BranchDetail() {
         <div className="bg-white shadow rounded-lg p-8 mb-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{branch.surname} Family</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{branch.surname} {t('branchDetail.family')}</h1>
               <p className="text-gray-600">{branch.cityName}, {branch.region || branch.country}</p>
               <p className="text-sm text-gray-500 font-mono mt-2">{branch.id}</p>
             </div>
@@ -100,33 +102,33 @@ export default function BranchDetail() {
                 disabled={joining}
                 className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
               >
-                {joining ? 'Requesting...' : 'Request to Join'}
+                {joining ? t('branchDetail.requesting') : t('branchDetail.requestToJoin')}
               </button>
             )}
           </div>
 
           {branch.description && (
             <div className="mb-6">
-              <h2 className="font-semibold text-gray-900 mb-2">About</h2>
+              <h2 className="font-semibold text-gray-900 mb-2">{t('branchDetail.about')}</h2>
               <p className="text-gray-700">{branch.description}</p>
             </div>
           )}
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t">
             <div>
-              <p className="text-sm text-gray-600">Members</p>
+              <p className="text-sm text-gray-600">{t('branches.members')}</p>
               <p className="text-2xl font-bold">{members.length}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">People</p>
+              <p className="text-sm text-gray-600">{t('branches.totalPeople')}</p>
               <p className="text-2xl font-bold">{branch.totalPeople}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Generations</p>
+              <p className="text-sm text-gray-600">{t('branches.totalGenerations')}</p>
               <p className="text-2xl font-bold">{branch.totalGenerations}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Stories</p>
+              <p className="text-sm text-gray-600">{t('branches.stories')}</p>
               <p className="text-2xl font-bold">{branch._count?.stories || 0}</p>
             </div>
           </div>
@@ -138,19 +140,19 @@ export default function BranchDetail() {
                   to={`/branches/${branch.id}/tree`}
                   className="text-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
                 >
-                  🌳 Tree View
+                  🌳 {t('branchDetail.treeView')}
                 </Link>
                 <Link
                   to={`/branches/${branch.id}/persons`}
                   className="text-center px-4 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-50 transition"
                 >
-                  📋 List View
+                  📋 {t('branchDetail.listView')}
                 </Link>
                 <Link
                   to={`/branches/${branch.id}/persons/create`}
                   className="text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
-                  ➕ Add Person
+                  ➕ {t('persons.create')}
                 </Link>
               </div>
             </div>
@@ -158,7 +160,7 @@ export default function BranchDetail() {
         </div>
 
         <div className="bg-white shadow rounded-lg p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Members ({members.length})</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-4">{t('branches.members')} ({members.length})</h2>
           <div className="space-y-3">
             {members.map(member => (
               <div key={member.id} className="flex justify-between items-center py-3 border-b last:border-0">
@@ -171,7 +173,7 @@ export default function BranchDetail() {
                 <span className={`px-3 py-1 rounded text-sm font-medium ${
                   member.role === 'guru' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
                 }`}>
-                  {member.role}
+                  {t(`branchDetail.role.${member.role}`)}
                 </span>
               </div>
             ))}

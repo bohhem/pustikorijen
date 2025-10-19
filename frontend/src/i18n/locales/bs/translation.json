@@ -70,6 +70,7 @@
     "title": "Porodične grane",
     "create": "Kreiraj granu",
     "noBranches": "Nema pronađenih grana",
+    "branchNotFound": "Grana nije pronađena",
     "branchName": "Naziv grane",
     "description": "Opis",
     "region": "Regija",
@@ -86,6 +87,21 @@
     "createError": "Greška pri kreiranju grane",
     "loadError": "Greška pri učitavanju grana",
     "searchPlaceholder": "Pretraži grane..."
+  },
+  "branchDetail": {
+    "family": "Porodica",
+    "about": "O nama",
+    "requestToJoin": "Zatraži pristup",
+    "requesting": "Slanje zahtjeva...",
+    "joinRequestSubmitted": "Zahtjev poslat! Guru će pregledati vaš zahtjev.",
+    "joinRequestFailed": "Greška pri slanju zahtjeva",
+    "backToBranches": "Nazad na grane",
+    "treeView": "Pregled stabla",
+    "listView": "Pregled liste",
+    "role": {
+      "guru": "Guru",
+      "member": "Član"
+    }
   },
   "pagination": {
     "previous": "Prethodna",

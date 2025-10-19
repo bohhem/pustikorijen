@@ -70,6 +70,7 @@
     "title": "Family Branches",
     "create": "Create Branch",
     "noBranches": "No branches found",
+    "branchNotFound": "Branch not found",
     "branchName": "Branch Name",
     "description": "Description",
     "region": "Region",
@@ -86,6 +87,21 @@
     "createError": "Failed to create branch",
     "loadError": "Failed to load branches",
     "searchPlaceholder": "Search branches..."
+  },
+  "branchDetail": {
+    "family": "Family",
+    "about": "About",
+    "requestToJoin": "Request to Join",
+    "requesting": "Requesting...",
+    "joinRequestSubmitted": "Join request submitted! A Guru will review your request.",
+    "joinRequestFailed": "Failed to submit join request",
+    "backToBranches": "Back to Branches",
+    "treeView": "Tree View",
+    "listView": "List View",
+    "role": {
+      "guru": "Guru",
+      "member": "Member"
+    }
   },
   "pagination": {
     "previous": "Previous",

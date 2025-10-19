@@ -70,6 +70,7 @@
     "title": "Familienzweige",
     "create": "Zweig erstellen",
     "noBranches": "Keine Zweige gefunden",
+    "branchNotFound": "Zweig nicht gefunden",
     "branchName": "Zweigname",
     "description": "Beschreibung",
     "region": "Region",
@@ -86,6 +87,21 @@
     "createError": "Fehler beim Erstellen des Zweigs",
     "loadError": "Fehler beim Laden der Zweige",
     "searchPlaceholder": "Zweige durchsuchen..."
+  },
+  "branchDetail": {
+    "family": "Familie",
+    "about": "Über uns",
+    "requestToJoin": "Beitrittsanfrage",
+    "requesting": "Wird angefragt...",
+    "joinRequestSubmitted": "Beitrittsanfrage gesendet! Ein Guru wird Ihre Anfrage prüfen.",
+    "joinRequestFailed": "Fehler beim Senden der Beitrittsanfrage",
+    "backToBranches": "Zurück zu Zweigen",
+    "treeView": "Baumansicht",
+    "listView": "Listenansicht",
+    "role": {
+      "guru": "Guru",
+      "member": "Mitglied"
+    }
   },
   "pagination": {
     "previous": "Zurück",
