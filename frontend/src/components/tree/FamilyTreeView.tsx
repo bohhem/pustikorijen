@@ -12,9 +12,11 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import PersonNode from './PersonNode';
 import type { Person } from '../../types/person';
+import type { Partnership } from '../../types/partnership';
 
 interface FamilyTreeViewProps {
   persons: Person[];
+  partnerships: Partnership[];
   onPersonSelect: (person: Person) => void;
 }
 
@@ -22,7 +24,7 @@ const nodeTypes = {
   person: PersonNode,
 };
 
-export default function FamilyTreeView({ persons, onPersonSelect }: FamilyTreeViewProps) {
+export default function FamilyTreeView({ persons, partnerships, onPersonSelect }: FamilyTreeViewProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedGeneration, setSelectedGeneration] = useState<number | null>(null);
@@ -105,9 +107,42 @@ export default function FamilyTreeView({ persons, onPersonSelect }: FamilyTreeVi
       });
     });
 
+    // Add partnership edges (horizontal connections between partners)
+    partnerships.forEach((partnership) => {
+      const person1 = persons.find(p => p.id === partnership.person1Id);
+      const person2 = persons.find(p => p.id === partnership.person2Id);
+
+      // Only add edge if both persons exist in the tree
+      if (person1 && person2) {
+        const isActive = partnership.status === 'active';
+        const edgeColor = isActive ? '#10b981' : '#94a3b8'; // green for active, gray for ended
+
+        newEdges.push({
+          id: `partnership-${partnership.id}`,
+          source: partnership.person1Id,
+          target: partnership.person2Id,
+          type: 'straight',
+          animated: isActive,
+          style: {
+            stroke: edgeColor,
+            strokeWidth: 3,
+            strokeDasharray: isActive ? '0' : '5 5', // dashed line for ended partnerships
+          },
+          label: partnership.partnershipType === 'marriage' ? '💑' : '🤝',
+          labelStyle: {
+            fontSize: 16,
+          },
+          labelBgStyle: {
+            fill: 'white',
+            fillOpacity: 0.8,
+          },
+        });
+      }
+    });
+
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [persons, onPersonSelect]);
+  }, [persons, partnerships, onPersonSelect]);
 
   const handleGenerationFilter = (gen: number | null) => {
     setSelectedGeneration(gen);
@@ -195,6 +230,14 @@ export default function FamilyTreeView({ persons, onPersonSelect }: FamilyTreeVi
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-pink-500"></div>
               <span className="text-gray-700">Mother connection</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-green-500"></div>
+              <span className="text-gray-700">Active partnership 💑</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-0.5 bg-gray-400" style={{ backgroundImage: 'linear-gradient(to right, #94a3b8 50%, transparent 50%)', backgroundSize: '8px 2px', height: '2px' }}></div>
+              <span className="text-gray-700">Ended partnership</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-blue-500"></div>

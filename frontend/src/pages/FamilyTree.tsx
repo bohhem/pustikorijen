@@ -3,11 +3,13 @@ import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
 import { getBranchById } from '../api/branch';
+import { getBranchPartnerships } from '../api/partnership';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import FamilyTreeView from '../components/tree/FamilyTreeView';
 import type { Person } from '../types/person';
 import type { Branch } from '../types/branch';
+import type { Partnership } from '../types/partnership';
 
 export default function FamilyTree() {
   const { branchId } = useParams<{ branchId: string }>();
@@ -15,6 +17,7 @@ export default function FamilyTree() {
   const toast = useToast();
   const [persons, setPersons] = useState<Person[]>([]);
   const [branch, setBranch] = useState<Branch | null>(null);
+  const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
@@ -27,12 +30,14 @@ export default function FamilyTree() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [personsData, branchData] = await Promise.all([
+      const [personsData, branchData, partnershipsData] = await Promise.all([
         getPersonsByBranch(branchId!),
-        getBranchById(branchId!)
+        getBranchById(branchId!),
+        getBranchPartnerships(branchId!)
       ]);
       setPersons(personsData);
       setBranch(branchData);
+      setPartnerships(partnershipsData);
     } catch (err: any) {
       toast.error(err.response?.data?.error || t('persons.loadError'));
     } finally {
@@ -113,7 +118,7 @@ export default function FamilyTree() {
           </div>
         ) : (
           <div className="space-y-6">
-            <FamilyTreeView persons={persons} onPersonSelect={handlePersonSelect} />
+            <FamilyTreeView persons={persons} partnerships={partnerships} onPersonSelect={handlePersonSelect} />
 
             {/* Selected Person Details */}
             {selectedPerson && (
