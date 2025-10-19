@@ -14,7 +14,8 @@
     "close": "Zatvori",
     "confirm": "Potvrdi",
     "yes": "Da",
-    "no": "Ne"
+    "no": "Ne",
+    "you": "vi"
   },
   "auth": {
     "login": "Prijava",
@@ -98,6 +99,14 @@
     "backToBranches": "Nazad na grane",
     "treeView": "Pregled stabla",
     "listView": "Pregled liste",
+    "members": "Članovi",
+    "manageMember": "Upravljaj članovima",
+    "promoteToGuru": "Promoviši u Gurua",
+    "demoteToMember": "Degradiraj u člana",
+    "confirmPromote": "Jeste li sigurni da želite promovirati ovog člana u Gurua?",
+    "confirmDemote": "Jeste li sigurni da želite degradirati ovog Gurua u člana?",
+    "roleUpdated": "Uloga člana uspješno ažurirana",
+    "roleUpdateFailed": "Greška pri ažuriranju uloge člana",
     "role": {
       "guru": "Guru",
       "member": "Član"

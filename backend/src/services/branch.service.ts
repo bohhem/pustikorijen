@@ -437,3 +437,95 @@ export async function getPendingJoinRequests(branchId: string, guruUserId: strin
 
   return requests;
 }
+
+/**
+ * Update member role (Guru only)
+ */
+export async function updateMemberRole(
+  branchId: string,
+  memberUserId: string,
+  newRole: string,
+  guruUserId: string
+) {
+  // Verify requester is a Guru
+  const guru = await prisma.branchMember.findUnique({
+    where: {
+      branchId_userId: {
+        branchId,
+        userId: guruUserId,
+      },
+    },
+  });
+
+  if (!guru || guru.role !== 'guru') {
+    throw new Error('Only Gurus can update member roles');
+  }
+
+  // Validate role
+  if (!['member', 'guru'].includes(newRole)) {
+    throw new Error('Invalid role. Must be "member" or "guru"');
+  }
+
+  // Find the member to update
+  const member = await prisma.branchMember.findUnique({
+    where: {
+      branchId_userId: {
+        branchId,
+        userId: memberUserId,
+      },
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!member) {
+    throw new Error('Member not found in this branch');
+  }
+
+  // Prevent demoting yourself if you're the only guru
+  if (member.userId === guruUserId && newRole === 'member') {
+    const guruCount = await prisma.branchMember.count({
+      where: {
+        branchId,
+        role: 'guru',
+        status: 'active',
+      },
+    });
+
+    if (guruCount === 1) {
+      throw new Error('Cannot demote yourself. You are the only Guru in this branch.');
+    }
+  }
+
+  // Update role
+  const updatedMember = await prisma.branchMember.update({
+    where: {
+      branchId_userId: {
+        branchId,
+        userId: memberUserId,
+      },
+    },
+    data: {
+      role: newRole,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          currentLocation: true,
+        },
+      },
+    },
+  });
+
+  return updatedMember;
+}

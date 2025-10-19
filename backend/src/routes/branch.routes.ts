@@ -8,6 +8,7 @@ import {
   getPendingRequests,
   approveRequest,
   rejectRequest,
+  updateRole,
 } from '../controllers/branch.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
@@ -26,5 +27,6 @@ router.post('/:id/join', authenticateToken, joinRequest); // Request to join
 router.get('/:id/join-requests', authenticateToken, getPendingRequests); // Get pending requests
 router.post('/:id/join-requests/approve', authenticateToken, approveRequest); // Approve request
 router.post('/:id/join-requests/reject', authenticateToken, rejectRequest); // Reject request
+router.patch('/:id/members/:userId/role', authenticateToken, updateRole); // Update member role
 
 export default router;

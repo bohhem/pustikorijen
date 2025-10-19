@@ -14,6 +14,7 @@ import {
   approveJoinRequest,
   rejectJoinRequest,
   getPendingJoinRequests,
+  updateMemberRole,
 } from '../services/branch.service';
 
 /**
@@ -253,5 +254,46 @@ export async function rejectRequest(req: Request, res: Response): Promise<void> 
 
     console.error('Reject request error:', error);
     res.status(500).json({ error: 'Failed to reject join request' });
+  }
+}
+
+/**
+ * Update member role (Guru only)
+ * PATCH /api/v1/branches/:id/members/:userId/role
+ */
+export async function updateRole(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { id, userId } = req.params;
+    const { role } = req.body;
+
+    if (!role) {
+      res.status(400).json({ error: 'Role is required' });
+      return;
+    }
+
+    const updatedMember = await updateMemberRole(id, userId, role, req.user.userId);
+
+    res.status(200).json({
+      message: 'Member role updated successfully',
+      member: updatedMember,
+    });
+  } catch (error: any) {
+    if (error.message.includes('Only Gurus')) {
+      res.status(403).json({ error: error.message });
+      return;
+    }
+
+    if (error.message.includes('Invalid role') || error.message.includes('Member not found') || error.message.includes('Cannot demote')) {
+      res.status(400).json({ error: error.message });
+      return;
+    }
+
+    console.error('Update role error:', error);
+    res.status(500).json({ error: 'Failed to update member role' });
   }
 }

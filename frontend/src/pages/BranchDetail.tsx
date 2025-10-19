@@ -5,6 +5,7 @@ import { getBranchById, getBranchMembers, requestJoinBranch } from '../api/branc
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
+import MemberManagementSection from '../components/branch/MemberManagementSection';
 import type { Branch, BranchMember } from '../types/branch';
 
 export default function BranchDetail() {
@@ -60,6 +61,7 @@ export default function BranchDetail() {
   };
 
   const isMember = members.some(m => m.userId === user?.id && m.status === 'active');
+  const isGuru = members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active');
 
   if (loading) {
     return (
@@ -159,26 +161,13 @@ export default function BranchDetail() {
           )}
         </div>
 
-        <div className="bg-white shadow rounded-lg p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">{t('branches.members')} ({members.length})</h2>
-          <div className="space-y-3">
-            {members.map(member => (
-              <div key={member.id} className="flex justify-between items-center py-3 border-b last:border-0">
-                <div>
-                  <p className="font-medium">{member.user?.fullName}</p>
-                  {member.user?.currentLocation && (
-                    <p className="text-sm text-gray-600">{member.user.currentLocation}</p>
-                  )}
-                </div>
-                <span className={`px-3 py-1 rounded text-sm font-medium ${
-                  member.role === 'guru' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {t(`branchDetail.role.${member.role}`)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <MemberManagementSection
+          branchId={branch.id}
+          members={members}
+          currentUserId={user?.id || ''}
+          isGuru={isGuru}
+          onMemberUpdated={loadMembers}
+        />
       </div>
     </Layout>
   );

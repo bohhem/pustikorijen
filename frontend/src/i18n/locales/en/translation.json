@@ -14,7 +14,8 @@
     "close": "Close",
     "confirm": "Confirm",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "you": "you"
   },
   "auth": {
     "login": "Login",
@@ -98,6 +99,14 @@
     "backToBranches": "Back to Branches",
     "treeView": "Tree View",
     "listView": "List View",
+    "members": "Members",
+    "manageMember": "Manage Members",
+    "promoteToGuru": "Promote to Guru",
+    "demoteToMember": "Demote to Member",
+    "confirmPromote": "Are you sure you want to promote this member to Guru?",
+    "confirmDemote": "Are you sure you want to demote this Guru to Member?",
+    "roleUpdated": "Member role updated successfully",
+    "roleUpdateFailed": "Failed to update member role",
     "role": {
       "guru": "Guru",
       "member": "Member"

@@ -14,7 +14,8 @@
     "close": "Schließen",
     "confirm": "Bestätigen",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "you": "Sie"
   },
   "auth": {
     "login": "Anmelden",
@@ -98,6 +99,14 @@
     "backToBranches": "Zurück zu Zweigen",
     "treeView": "Baumansicht",
     "listView": "Listenansicht",
+    "members": "Mitglieder",
+    "manageMember": "Mitglieder verwalten",
+    "promoteToGuru": "Zum Guru befördern",
+    "demoteToMember": "Zum Mitglied degradieren",
+    "confirmPromote": "Möchten Sie dieses Mitglied wirklich zum Guru befördern?",
+    "confirmDemote": "Möchten Sie diesen Guru wirklich zum Mitglied degradieren?",
+    "roleUpdated": "Mitgliederrolle erfolgreich aktualisiert",
+    "roleUpdateFailed": "Fehler beim Aktualisieren der Mitgliederrolle",
     "role": {
       "guru": "Guru",
       "member": "Mitglied"

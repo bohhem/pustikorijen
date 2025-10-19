@@ -59,6 +59,7 @@ export interface BranchMember {
   user?: {
     id: string;
     fullName: string;
+    email?: string;
     currentLocation: string | null;
   };
   person?: {

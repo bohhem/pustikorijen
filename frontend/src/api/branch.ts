@@ -70,3 +70,11 @@ export async function rejectJoinRequest(branchId: string, userId: string): Promi
   const response = await api.post(`/branches/${branchId}/join-requests/reject`, { userId });
   return response.data;
 }
+
+/**
+ * Update member role (Guru only)
+ */
+export async function updateMemberRole(branchId: string, userId: string, role: 'member' | 'guru'): Promise<{ message: string; member: BranchMember }> {
+  const response = await api.patch(`/branches/${branchId}/members/${userId}/role`, { role });
+  return response.data;
+}
