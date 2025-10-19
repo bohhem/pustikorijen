@@ -1,0 +1,23 @@
+{
+  "errors": {
+    "unauthorized": "Unbefugter Zugriff",
+    "notFound": "Ressource nicht gefunden",
+    "validationError": "Validierungsfehler",
+    "serverError": "Interner Serverfehler",
+    "invalidCredentials": "Ungültige E-Mail oder Passwort",
+    "emailAlreadyExists": "E-Mail bereits registriert",
+    "branchNotFound": "Zweig nicht gefunden",
+    "personNotFound": "Person nicht gefunden",
+    "notBranchMember": "Sie müssen Mitglied dieses Zweigs sein",
+    "onlyGuruCanDelete": "Nur Gurus können Personen löschen",
+    "cannotDeleteWithChildren": "Person mit Kindern kann nicht gelöscht werden"
+  },
+  "success": {
+    "loginSuccess": "Anmeldung erfolgreich",
+    "registerSuccess": "Registrierung erfolgreich",
+    "branchCreated": "Zweig erfolgreich erstellt",
+    "personCreated": "Person erfolgreich hinzugefügt",
+    "personUpdated": "Person erfolgreich aktualisiert",
+    "personDeleted": "Person erfolgreich gelöscht"
+  }
+}

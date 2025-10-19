@@ -1,0 +1,23 @@
+{
+  "errors": {
+    "unauthorized": "Unauthorized access",
+    "notFound": "Resource not found",
+    "validationError": "Validation error",
+    "serverError": "Internal server error",
+    "invalidCredentials": "Invalid email or password",
+    "emailAlreadyExists": "Email already registered",
+    "branchNotFound": "Branch not found",
+    "personNotFound": "Person not found",
+    "notBranchMember": "You must be a member of this branch",
+    "onlyGuruCanDelete": "Only Gurus can delete people",
+    "cannotDeleteWithChildren": "Cannot delete person with children"
+  },
+  "success": {
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful",
+    "branchCreated": "Branch created successfully",
+    "personCreated": "Person added successfully",
+    "personUpdated": "Person updated successfully",
+    "personDeleted": "Person deleted successfully"
+  }
+}

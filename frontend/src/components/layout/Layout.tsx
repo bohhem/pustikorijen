@@ -1,12 +1,15 @@
 import { ReactNode } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -43,7 +46,7 @@ export default function Layout({ children }: LayoutProps) {
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    Dashboard
+                    {t('navigation.dashboard')}
                   </Link>
                   <Link
                     to="/branches"
@@ -53,26 +56,30 @@ export default function Layout({ children }: LayoutProps) {
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
-                    Branches
+                    {t('navigation.branches')}
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* User menu */}
-            {user && (
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:block text-sm text-gray-700">
-                  {user.fullName}
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
+            {/* User menu and Language Switcher */}
+            <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
+
+              {user && (
+                <>
+                  <div className="hidden md:block text-sm text-gray-700">
+                    {user.fullName}
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                  >
+                    {t('auth.logout')}
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </nav>

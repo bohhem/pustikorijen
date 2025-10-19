@@ -1,0 +1,23 @@
+{
+  "errors": {
+    "unauthorized": "Neautorizovan pristup",
+    "notFound": "Resurs nije pronađen",
+    "validationError": "Greška validacije",
+    "serverError": "Interna greška servera",
+    "invalidCredentials": "Neispravan email ili lozinka",
+    "emailAlreadyExists": "Email je već registrovan",
+    "branchNotFound": "Grana nije pronađena",
+    "personNotFound": "Osoba nije pronađena",
+    "notBranchMember": "Morate biti član ove grane",
+    "onlyGuruCanDelete": "Samo Gurui mogu brisati osobe",
+    "cannotDeleteWithChildren": "Ne možete obrisati osobu sa djecom"
+  },
+  "success": {
+    "loginSuccess": "Prijava uspješna",
+    "registerSuccess": "Registracija uspješna",
+    "branchCreated": "Grana uspješno kreirana",
+    "personCreated": "Osoba uspješno dodana",
+    "personUpdated": "Osoba uspješno ažurirana",
+    "personDeleted": "Osoba uspješno obrisana"
+  }
+}
