@@ -230,6 +230,35 @@ export default function FamilyTree() {
                           </dd>
                         </div>
                       )}
+                      {partnerships.filter(p => p.person1Id === selectedPerson.id || p.person2Id === selectedPerson.id).length > 0 && (
+                        <div>
+                          <dt className="text-gray-600">{t('personDetail.partnerships')}:</dt>
+                          <dd className="text-gray-900 font-medium space-y-1">
+                            {partnerships
+                              .filter(p => p.person1Id === selectedPerson.id || p.person2Id === selectedPerson.id)
+                              .map(partnership => {
+                                const partnerId = partnership.person1Id === selectedPerson.id ? partnership.person2Id : partnership.person1Id;
+                                const partner = persons.find(p => p.id === partnerId);
+                                if (!partner) return null;
+
+                                return (
+                                  <div key={partnership.id} className="flex items-center gap-1">
+                                    <span>
+                                      {partner.givenName || partner.firstName} {partner.surname || partner.lastName}
+                                      {partner.maidenName && ` (${partner.maidenName})`}
+                                    </span>
+                                    <span className="text-xs">
+                                      {partnership.partnershipType === 'marriage' ? '💑' : '🤝'}
+                                    </span>
+                                    {partnership.status !== 'active' && (
+                                      <span className="text-xs text-gray-500">({t('partnerships.ended')})</span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                          </dd>
+                        </div>
+                      )}
                     </dl>
                   </div>
                 </div>
