@@ -8,6 +8,15 @@ export interface User {
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
+  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  superGuruRegions: SuperGuruRegion[];
+}
+
+export interface SuperGuruRegion {
+  id: string;
+  name: string;
+  code: string;
+  isPrimary: boolean;
 }
 
 export interface LoginCredentials {

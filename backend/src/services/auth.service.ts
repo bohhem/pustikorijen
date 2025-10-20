@@ -1,14 +1,115 @@
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
-import { generateTokens, verifyRefreshToken, generateAccessToken, type TokenPair } from '../utils/jwt';
+import { generateTokens, verifyRefreshToken, generateAccessToken, type TokenPair, type JwtPayload } from '../utils/jwt';
 import type { RegisterInput, LoginInput } from '../schemas/auth.schema';
 
 const prisma = new PrismaClient();
 
+interface SuperGuruRegionSummary {
+  id: string;
+  name: string;
+  code: string;
+  isPrimary: boolean;
+}
+
+interface SanitizedUser {
+  id: string;
+  email: string;
+  fullName: string;
+  birthYear: number | null;
+  currentLocation: string | null;
+  preferredLanguage: string;
+  emailVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  superGuruRegions: SuperGuruRegionSummary[];
+}
+
+interface AuthBuildResult {
+  user: SanitizedUser;
+  tokens: TokenPair;
+}
+
+async function fetchUserWithRegions(userId: string): Promise<{ user: SanitizedUser; payload: JwtPayload }> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      birthYear: true,
+      currentLocation: true,
+      preferredLanguage: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      globalRole: true,
+    },
+  });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const assignments = await prisma.superGuruAssignment.findMany({
+    where: { userId },
+    include: {
+      region: {
+        select: {
+          id: true,
+          name: true,
+          code: true,
+        },
+      },
+    },
+  }) as Array<{
+    regionId: string;
+    isPrimary: boolean;
+    region: { id: string; name: string; code: string };
+  }>;
+
+  const superGuruRegions: SuperGuruRegionSummary[] = assignments.map((assignment) => ({
+    id: assignment.regionId,
+    name: assignment.region.name,
+    code: assignment.region.code,
+    isPrimary: assignment.isPrimary,
+  }));
+
+  const sanitizedUser: SanitizedUser = {
+    id: user.id,
+    email: user.email,
+    fullName: user.fullName,
+    birthYear: user.birthYear ?? null,
+    currentLocation: user.currentLocation ?? null,
+    preferredLanguage: user.preferredLanguage,
+    emailVerified: user.emailVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    globalRole: user.globalRole,
+    superGuruRegions,
+  };
+
+  const payload: JwtPayload = {
+    userId: user.id,
+    email: user.email,
+    globalRole: user.globalRole,
+    regionIds: superGuruRegions.map((region) => region.id),
+  };
+
+  return { user: sanitizedUser, payload };
+}
+
+async function buildAuthResponse(userId: string): Promise<AuthBuildResult> {
+  const { user, payload } = await fetchUserWithRegions(userId);
+  const tokens = generateTokens(payload);
+  return { user, tokens };
+}
+
 /**
  * User registration service
  */
-export async function registerUser(data: RegisterInput): Promise<{ user: any; tokens: TokenPair }> {
+export async function registerUser(data: RegisterInput): Promise<AuthBuildResult> {
   const { email, password, firstName, lastName, language } = data;
 
   // Check if user already exists
@@ -34,25 +135,13 @@ export async function registerUser(data: RegisterInput): Promise<{ user: any; to
     },
   });
 
-  // Generate tokens
-  const tokens = generateTokens({
-    userId: user.id,
-    email: user.email,
-  });
-
-  // Remove password from response
-  const { passwordHash: _, ...userWithoutPassword } = user;
-
-  return {
-    user: userWithoutPassword,
-    tokens,
-  };
+  return buildAuthResponse(user.id);
 }
 
 /**
  * User login service
  */
-export async function loginUser(data: LoginInput): Promise<{ user: any; tokens: TokenPair }> {
+export async function loginUser(data: LoginInput): Promise<AuthBuildResult> {
   const { email, password } = data;
 
   // Find user
@@ -71,19 +160,7 @@ export async function loginUser(data: LoginInput): Promise<{ user: any; tokens: 
     throw new Error('Invalid email or password');
   }
 
-  // Generate tokens
-  const tokens = generateTokens({
-    userId: user.id,
-    email: user.email,
-  });
-
-  // Remove password from response
-  const { passwordHash: _, ...userWithoutPassword } = user;
-
-  return {
-    user: userWithoutPassword,
-    tokens,
-  };
+  return buildAuthResponse(user.id);
 }
 
 /**
@@ -103,10 +180,9 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
   }
 
   // Generate new access token
-  const accessToken = generateAccessToken({
-    userId: user.id,
-    email: user.email,
-  });
+  const { payload: authPayload } = await fetchUserWithRegions(user.id);
+
+  const accessToken = generateAccessToken(authPayload);
 
   return { accessToken };
 }
@@ -115,25 +191,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
  * Get user by ID
  */
 export async function getUserById(userId: string) {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      email: true,
-      fullName: true,
-      birthYear: true,
-      currentLocation: true,
-      preferredLanguage: true,
-      emailVerified: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  if (!user) {
-    throw new Error('User not found');
-  }
-
+  const { user } = await fetchUserWithRegions(userId);
   return user;
 }
 
@@ -163,22 +221,12 @@ export async function updateUserProfile(userId: string, data: { firstName?: stri
     updateData.preferredLanguage = data.language;
   }
 
-  const user = await prisma.user.update({
+  await prisma.user.update({
     where: { id: userId },
     data: updateData,
-    select: {
-      id: true,
-      email: true,
-      fullName: true,
-      birthYear: true,
-      currentLocation: true,
-      preferredLanguage: true,
-      emailVerified: true,
-      createdAt: true,
-      updatedAt: true,
-    },
   });
 
+  const { user } = await fetchUserWithRegions(userId);
   return user;
 }
 

@@ -8,6 +8,8 @@ const JWT_REFRESH_EXPIRES_IN = (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as j
 export interface JwtPayload {
   userId: string;
   email: string;
+  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  regionIds: string[];
 }
 
 export interface TokenPair {

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting database seed...');
 
-  // Create test user
+  // Create baseline users
   const testUser = await prisma.user.upsert({
     where: { email: 'test@pustikorijen.ba' },
     update: {},
@@ -18,12 +18,63 @@ async function main() {
     },
   });
 
-  console.log('✅ Created test user:', testUser.email);
+  const superGuruUser = await prisma.user.upsert({
+    where: { email: 'superguru@pustikorijen.ba' },
+    update: {
+      globalRole: 'SUPER_GURU',
+      emailVerified: true,
+    },
+    create: {
+      email: 'superguru@pustikorijen.ba',
+      passwordHash: '$2a$10$YourHashedPasswordHere', // Replace with actual hashed password
+      fullName: 'Super Guru',
+      emailVerified: true,
+      preferredLanguage: 'en',
+      globalRole: 'SUPER_GURU',
+    },
+  });
 
-  // Create sample family branch
+  console.log('✅ Users ready:', testUser.email, superGuruUser.email);
+
+  // Create administrative region
+  const sarajevoRegion = await prisma.adminRegion.upsert({
+    where: { code: 'BA-SAR' },
+    update: {},
+    create: {
+      name: 'Sarajevo Canton',
+      code: 'BA-SAR',
+      country: 'Bosnia and Herzegovina',
+      description: 'Administrative region covering Sarajevo and surrounding municipalities.',
+    },
+  });
+
+  console.log('✅ Admin region ready:', sarajevoRegion.name);
+
+  // Assign SuperGuru to region
+  await prisma.superGuruAssignment.upsert({
+    where: {
+      userId_regionId: {
+        userId: superGuruUser.id,
+        regionId: sarajevoRegion.id,
+      },
+    },
+    update: {
+      isPrimary: true,
+    },
+    create: {
+      userId: superGuruUser.id,
+      regionId: sarajevoRegion.id,
+      isPrimary: true,
+      createdById: superGuruUser.id,
+    },
+  });
+
+  // Create sample family branch linked to admin region
   const sampleBranch = await prisma.familyBranch.upsert({
     where: { id: 'FB-SA-HODZIC-001' },
-    update: {},
+    update: {
+      adminRegionId: sarajevoRegion.id,
+    },
     create: {
       id: 'FB-SA-HODZIC-001',
       surname: 'Hodžić',
@@ -31,6 +82,7 @@ async function main() {
       cityCode: 'SA',
       cityName: 'Sarajevo',
       region: 'Sarajevski kanton',
+      adminRegionId: sarajevoRegion.id,
       country: 'Bosnia and Herzegovina',
       description: 'Hodžić family from Sarajevo',
       foundedById: testUser.id,

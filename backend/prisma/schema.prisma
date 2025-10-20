@@ -18,24 +18,27 @@ model User {
   id String @id @default(uuid()) @map("user_id")
 
   // Authentication
-  email        String  @unique @db.VarChar(255)
-  passwordHash String  @map("password_hash") @db.VarChar(255)
-  fullName     String  @map("full_name") @db.VarChar(255)
+  email        String @unique @db.VarChar(255)
+  passwordHash String @map("password_hash") @db.VarChar(255)
+  fullName     String @map("full_name") @db.VarChar(255)
 
   // Profile
-  birthYear       Int?    @map("birth_year")
-  currentLocation String? @map("current_location") @db.VarChar(255)
-  preferredLanguage String @default("bs") @map("preferred_language") @db.VarChar(10)
+  birthYear         Int?    @map("birth_year")
+  currentLocation   String? @map("current_location") @db.VarChar(255)
+  preferredLanguage String  @default("bs") @map("preferred_language") @db.VarChar(10)
 
   // Verification
-  emailVerified           Boolean @default(false) @map("email_verified")
-  emailVerificationToken  String? @map("email_verification_token") @db.VarChar(255)
+  emailVerified          Boolean @default(false) @map("email_verified")
+  emailVerificationToken String? @map("email_verification_token") @db.VarChar(255)
+
+  // Roles
+  globalRole UserGlobalRole @default(USER) @map("global_role")
 
   // Security
-  twoFactorEnabled  Boolean @default(false) @map("two_factor_enabled")
-  twoFactorSecret   String? @map("two_factor_secret") @db.VarChar(255)
-  resetPasswordToken    String? @map("reset_password_token") @db.VarChar(255)
-  resetPasswordExpires  DateTime? @map("reset_password_expires")
+  twoFactorEnabled     Boolean   @default(false) @map("two_factor_enabled")
+  twoFactorSecret      String?   @map("two_factor_secret") @db.VarChar(255)
+  resetPasswordToken   String?   @map("reset_password_token") @db.VarChar(255)
+  resetPasswordExpires DateTime? @map("reset_password_expires")
 
   // Status
   isActive  Boolean   @default(true) @map("is_active")
@@ -46,24 +49,26 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  foundedBranches       FamilyBranch[]          @relation("FoundedBy")
-  branchMemberships     BranchMember[]
-  createdPersons        Person[]                @relation("CreatedBy")
-  verifiedPersons       Person[]                @relation("VerifiedBy")
-  createdPartnerships   Partnership[]           @relation("PartnershipCreatedBy")
-  verifiedPartnerships  Partnership[]           @relation("PartnershipVerifiedBy")
-  stories               Story[]
-  uploadedDocuments     Document[]
-  rootChangeProposals   RootChangeProposal[]
-  raisedDisputes        Dispute[]               @relation("RaisedBy")
-  resolvedDisputes      Dispute[]               @relation("ResolvedBy")
-  notifications         Notification[]
-  auditLogs             AuditLog[]
-  invitedMembers        BranchMember[]          @relation("InvitedBy")
-  approvedMembers       BranchMember[]          @relation("ApprovedBy")
-  approvedStories       Story[]                 @relation("ApprovedBy")
-  verifiedDocuments     Document[]              @relation("VerifiedBy")
-  disputedAuditLogs     AuditLog[]              @relation("DisputedBy")
+  foundedBranches             FamilyBranch[]        @relation("FoundedBy")
+  branchMemberships           BranchMember[]
+  createdPersons              Person[]              @relation("CreatedBy")
+  verifiedPersons             Person[]              @relation("VerifiedBy")
+  createdPartnerships         Partnership[]         @relation("PartnershipCreatedBy")
+  verifiedPartnerships        Partnership[]         @relation("PartnershipVerifiedBy")
+  stories                     Story[]
+  uploadedDocuments           Document[]
+  rootChangeProposals         RootChangeProposal[]
+  raisedDisputes              Dispute[]             @relation("RaisedBy")
+  resolvedDisputes            Dispute[]             @relation("ResolvedBy")
+  notifications               Notification[]
+  auditLogs                   AuditLog[]
+  invitedMembers              BranchMember[]        @relation("InvitedBy")
+  approvedMembers             BranchMember[]        @relation("ApprovedBy")
+  approvedStories             Story[]               @relation("ApprovedBy")
+  verifiedDocuments           Document[]            @relation("VerifiedBy")
+  disputedAuditLogs           AuditLog[]            @relation("DisputedBy")
+  superGuruAssignments        SuperGuruAssignment[] @relation("SuperGuruUser")
+  createdSuperGuruAssignments SuperGuruAssignment[] @relation("SuperGuruCreatedBy")
 
   @@index([email])
   @@index([isActive])
@@ -82,14 +87,16 @@ model FamilyBranch {
   surnameNormalized String @map("surname_normalized") @db.VarChar(100)
 
   // Geographic Origin
-  cityCode  String @map("city_code") @db.VarChar(10)
-  cityName  String @map("city_name") @db.VarChar(100)
-  region    String? @db.VarChar(100)
-  country   String @default("Bosnia and Herzegovina") @db.VarChar(100)
+  cityCode      String       @map("city_code") @db.VarChar(10)
+  cityName      String       @map("city_name") @db.VarChar(100)
+  region        String?      @db.VarChar(100)
+  adminRegionId String?      @map("admin_region_id")
+  adminRegion   AdminRegion? @relation(fields: [adminRegionId], references: [id])
+  country       String       @default("Bosnia and Herzegovina") @db.VarChar(100)
 
   // Root Ancestor
-  rootPersonId        String? @map("root_person_id")
-  oldestAncestorYear  Int?    @map("oldest_ancestor_year")
+  rootPersonId       String? @map("root_person_id")
+  oldestAncestorYear Int?    @map("oldest_ancestor_year")
 
   // Statistics
   totalPeople      Int @default(0) @map("total_people")
@@ -108,8 +115,8 @@ model FamilyBranch {
   verificationDate DateTime? @map("verification_date")
 
   // Evolution
-  rootChangeCount   Int       @default(0) @map("root_change_count")
-  lastMajorUpdate   DateTime? @map("last_major_update")
+  rootChangeCount Int       @default(0) @map("root_change_count")
+  lastMajorUpdate DateTime? @map("last_major_update")
 
   // Timestamps
   createdAt DateTime @default(now()) @map("created_at")
@@ -128,6 +135,7 @@ model FamilyBranch {
   @@index([surnameNormalized])
   @@index([cityCode])
   @@index([visibility])
+  @@index([adminRegionId])
   @@map("family_branches")
 }
 
@@ -136,8 +144,8 @@ model FamilyBranch {
 // ============================================================================
 
 model Person {
-  id       String @id @default(uuid()) @map("person_id")
-  branchId String @map("branch_id") @db.VarChar(50)
+  id       String       @id @default(uuid()) @map("person_id")
+  branchId String       @map("branch_id") @db.VarChar(50)
   branch   FamilyBranch @relation(fields: [branchId], references: [id])
 
   // Identity
@@ -177,12 +185,12 @@ model Person {
   isBranchRoot     Boolean @default(false) @map("is_branch_root")
 
   // Relationships
-  fatherId String? @map("father_id")
-  father   Person? @relation("FatherChildren", fields: [fatherId], references: [id])
+  fatherId String?  @map("father_id")
+  father   Person?  @relation("FatherChildren", fields: [fatherId], references: [id])
   children Person[] @relation("FatherChildren")
 
-  motherId String? @map("mother_id")
-  mother   Person? @relation("MotherChildren", fields: [motherId], references: [id])
+  motherId           String?  @map("mother_id")
+  mother             Person?  @relation("MotherChildren", fields: [motherId], references: [id])
   childrenFromMother Person[] @relation("MotherChildren")
 
   // Reference Codes
@@ -190,11 +198,11 @@ model Person {
   urlSlug       String? @map("url_slug") @db.VarChar(255)
 
   // Quality & Verification
-  qualityScore      Int     @default(0) @map("quality_score")
-  verificationLevel Int     @default(1) @map("verification_level")
-  isVerified        Boolean @default(false) @map("is_verified")
-  verifiedById      String? @map("verified_by")
-  verifiedBy        User?   @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  qualityScore      Int       @default(0) @map("quality_score")
+  verificationLevel Int       @default(1) @map("verification_level")
+  isVerified        Boolean   @default(false) @map("is_verified")
+  verifiedById      String?   @map("verified_by")
+  verifiedBy        User?     @relation("VerifiedBy", fields: [verifiedById], references: [id])
   verifiedAt        DateTime? @map("verified_at")
 
   // Metadata
@@ -210,15 +218,15 @@ model Person {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  relationships1    Relationship[] @relation("Person1")
-  relationships2    Relationship[] @relation("Person2")
-  partnershipsAsPerson1 Partnership[] @relation("Partner1")
-  partnershipsAsPerson2 Partnership[] @relation("Partner2")
-  branchMemberships BranchMember[]
-  documents         Document[]
-  auditLogs         AuditLog[]
-  oldRootProposals  RootChangeProposal[] @relation("OldRoot")
-  newRootProposals  RootChangeProposal[] @relation("NewRoot")
+  relationships1        Relationship[]       @relation("Person1")
+  relationships2        Relationship[]       @relation("Person2")
+  partnershipsAsPerson1 Partnership[]        @relation("Partner1")
+  partnershipsAsPerson2 Partnership[]        @relation("Partner2")
+  branchMemberships     BranchMember[]
+  documents             Document[]
+  auditLogs             AuditLog[]
+  oldRootProposals      RootChangeProposal[] @relation("OldRoot")
+  newRootProposals      RootChangeProposal[] @relation("NewRoot")
 
   @@index([branchId])
   @@index([branchId, generationNumber])
@@ -292,11 +300,11 @@ model Partnership {
   partnershipType String @default("marriage") @map("partnership_type") @db.VarChar(50) // marriage, domestic_partnership, common_law, etc.
 
   // Marriage/Partnership Details
-  startDate     DateTime? @map("start_date") @db.Date // Wedding/partnership start date
-  startPlace    String?   @map("start_place") @db.VarChar(255)
-  endDate       DateTime? @map("end_date") @db.Date // Divorce/separation/death date
-  endPlace      String?   @map("end_place") @db.VarChar(255)
-  endReason     String?   @map("end_reason") @db.VarChar(50) // divorce, death, separation
+  startDate  DateTime? @map("start_date") @db.Date // Wedding/partnership start date
+  startPlace String?   @map("start_place") @db.VarChar(255)
+  endDate    DateTime? @map("end_date") @db.Date // Divorce/separation/death date
+  endPlace   String?   @map("end_place") @db.VarChar(255)
+  endReason  String?   @map("end_reason") @db.VarChar(50) // divorce, death, separation
 
   // Status
   status    String  @default("active") @db.VarChar(20) // active, ended, annulled
@@ -306,7 +314,7 @@ model Partnership {
   orderNumber Int @default(1) @map("order_number")
 
   // Additional Info
-  notes       String? @db.Text
+  notes        String? @db.Text
   ceremonyType String? @map("ceremony_type") @db.VarChar(100) // religious, civil, etc.
 
   // Metadata
@@ -314,11 +322,11 @@ model Partnership {
   createdBy   User?   @relation("PartnershipCreatedBy", fields: [createdById], references: [id])
 
   // Quality & Verification
-  qualityScore      Int     @default(0) @map("quality_score")
-  verificationLevel Int     @default(1) @map("verification_level")
-  isVerified        Boolean @default(false) @map("is_verified")
-  verifiedById      String? @map("verified_by")
-  verifiedBy        User?   @relation("PartnershipVerifiedBy", fields: [verifiedById], references: [id])
+  qualityScore      Int       @default(0) @map("quality_score")
+  verificationLevel Int       @default(1) @map("verification_level")
+  isVerified        Boolean   @default(false) @map("is_verified")
+  verifiedById      String?   @map("verified_by")
+  verifiedBy        User?     @relation("PartnershipVerifiedBy", fields: [verifiedById], references: [id])
   verifiedAt        DateTime? @map("verified_at")
 
   // Privacy
@@ -358,16 +366,16 @@ model BranchMember {
   person   Person? @relation(fields: [personId], references: [id])
 
   // Permissions
-  canEditGenerations    String?  @map("can_edit_generations") @db.VarChar(50)
-  autoApprovePhotos     Boolean  @default(false) @map("auto_approve_photos")
-  autoApproveStories    Boolean  @default(false) @map("auto_approve_stories")
+  canEditGenerations String? @map("can_edit_generations") @db.VarChar(50)
+  autoApprovePhotos  Boolean @default(false) @map("auto_approve_photos")
+  autoApproveStories Boolean @default(false) @map("auto_approve_stories")
 
   // Status
-  status      String    @default("pending") @db.VarChar(20) // pending, active, suspended, removed
-  invitedById String?   @map("invited_by")
-  invitedBy   User?     @relation("InvitedBy", fields: [invitedById], references: [id])
-  approvedById String?  @map("approved_by")
-  approvedBy   User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  status       String    @default("pending") @db.VarChar(20) // pending, active, suspended, removed
+  invitedById  String?   @map("invited_by")
+  invitedBy    User?     @relation("InvitedBy", fields: [invitedById], references: [id])
+  approvedById String?   @map("approved_by")
+  approvedBy   User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
   approvedAt   DateTime? @map("approved_at")
 
   // Activity
@@ -384,6 +392,39 @@ model BranchMember {
   @@index([branchId, role])
   @@index([branchId, status])
   @@map("branch_members")
+}
+
+model AdminRegion {
+  id          String   @id @default(uuid()) @map("region_id")
+  name        String   @db.VarChar(150)
+  code        String   @unique @db.VarChar(50)
+  description String?  @db.Text
+  country     String?  @db.VarChar(100)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  branches    FamilyBranch[]
+  assignments SuperGuruAssignment[]
+
+  @@index([code])
+  @@map("admin_regions")
+}
+
+model SuperGuruAssignment {
+  id          String   @id @default(uuid()) @map("assignment_id")
+  userId      String   @map("user_id")
+  regionId    String   @map("region_id")
+  isPrimary   Boolean  @default(false) @map("is_primary")
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdById String?  @map("created_by")
+
+  user      User        @relation("SuperGuruUser", fields: [userId], references: [id])
+  region    AdminRegion @relation(fields: [regionId], references: [id])
+  createdBy User?       @relation("SuperGuruCreatedBy", fields: [createdById], references: [id])
+
+  @@unique([userId, regionId])
+  @@index([regionId])
+  @@map("super_guru_assignments")
 }
 
 // ============================================================================
@@ -420,14 +461,14 @@ model AuditLog {
   reason String? @db.Text
 
   // Quality
-  qualityScore       Int?    @map("quality_score")
-  verificationStatus String  @default("unverified") @map("verification_status") @db.VarChar(50)
+  qualityScore       Int?   @map("quality_score")
+  verificationStatus String @default("unverified") @map("verification_status") @db.VarChar(50)
 
   // Disputes
-  isDisputed  Boolean @default(false) @map("is_disputed")
+  isDisputed   Boolean @default(false) @map("is_disputed")
   disputedById String? @map("disputed_by")
   disputedBy   User?   @relation("DisputedBy", fields: [disputedById], references: [id])
-  disputeId   String? @map("dispute_id") @db.VarChar(50)
+  disputeId    String? @map("dispute_id") @db.VarChar(50)
 
   // Special Events
   rootChangeId String? @map("root_change_id") @db.VarChar(50)
@@ -473,10 +514,10 @@ model Dispute {
   level  Int    @default(1)
 
   // Timeline
-  deadline    DateTime?
-  resolvedAt  DateTime? @map("resolved_at")
-  resolvedById String?  @map("resolved_by")
-  resolvedBy   User?    @relation("ResolvedBy", fields: [resolvedById], references: [id])
+  deadline     DateTime?
+  resolvedAt   DateTime? @map("resolved_at")
+  resolvedById String?   @map("resolved_by")
+  resolvedBy   User?     @relation("ResolvedBy", fields: [resolvedById], references: [id])
 
   // Evidence & Discussion
   evidence            Json?   @db.JsonB
@@ -539,8 +580,8 @@ model RootChangeProposal {
   expertReviews Json? @map("expert_reviews") @db.JsonB
 
   // Execution
-  executedAt    DateTime? @map("executed_at")
-  executionLog  Json?     @map("execution_log") @db.JsonB
+  executedAt   DateTime? @map("executed_at")
+  executionLog Json?     @map("execution_log") @db.JsonB
 
   // Impact
   peopleAffected     Int? @map("people_affected")
@@ -570,9 +611,9 @@ model Story {
   author   User   @relation(fields: [authorId], references: [id])
 
   // Content
-  title     String  @db.VarChar(500)
-  content   String  @db.Text
-  storyType String  @default("memory") @map("story_type") @db.VarChar(50)
+  title     String @db.VarChar(500)
+  content   String @db.Text
+  storyType String @default("memory") @map("story_type") @db.VarChar(50)
 
   // Tags
   tags String[] @db.Text
@@ -598,9 +639,9 @@ model Story {
   commentsCount Int  @default(0) @map("comments_count")
 
   // Moderation
-  status      String    @default("pending") @db.VarChar(50)
-  approvedById String?  @map("approved_by")
-  approvedBy   User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  status       String    @default("pending") @db.VarChar(50)
+  approvedById String?   @map("approved_by")
+  approvedBy   User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
   approvedAt   DateTime? @map("approved_at")
 
   // Privacy
@@ -636,19 +677,19 @@ model Document {
   story   Story?  @relation(fields: [storyId], references: [id])
 
   // File Info
-  fileName     String @map("file_name") @db.VarChar(500)
-  fileType     String @map("file_type") @db.VarChar(100)
-  fileSize     Int    @map("file_size")
-  fileUrl      String @map("file_url") @db.VarChar(1000)
+  fileName     String  @map("file_name") @db.VarChar(500)
+  fileType     String  @map("file_type") @db.VarChar(100)
+  fileSize     Int     @map("file_size")
+  fileUrl      String  @map("file_url") @db.VarChar(1000)
   thumbnailUrl String? @map("thumbnail_url") @db.VarChar(1000)
 
   // Document Type
   documentType String? @map("document_type") @db.VarChar(100)
 
   // Metadata
-  title         String?   @db.VarChar(500)
-  description   String?   @db.Text
-  documentDate  DateTime? @map("document_date") @db.Date
+  title        String?   @db.VarChar(500)
+  description  String?   @db.Text
+  documentDate DateTime? @map("document_date") @db.Date
 
   // OCR & Search
   extractedText String? @map("extracted_text") @db.Text
@@ -714,4 +755,10 @@ model Notification {
   @@index([userId, isRead])
   @@index([createdAt(sort: Desc)])
   @@map("notifications")
+}
+
+enum UserGlobalRole {
+  USER
+  SUPER_GURU
+  ADMIN
 }

@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import type { Partnership } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -41,7 +40,7 @@ export interface UpdatePartnershipInput {
 export async function createPartnership(
   input: CreatePartnershipInput,
   userId: string
-): Promise<Partnership> {
+): Promise<unknown> {
   const { branchId, person1Id, person2Id, startDate, endDate, ...rest } = input;
 
   // Validate that both persons exist and belong to the branch

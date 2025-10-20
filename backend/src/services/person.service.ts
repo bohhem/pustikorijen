@@ -267,12 +267,13 @@ export class PersonService {
     const persons = await prisma.person.findMany({
       where: { branchId },
       select: { generationNumber: true },
-    });
+    }) as Array<{ generationNumber: number | null }>;
 
     const totalPeople = persons.length;
-    const totalGenerations = persons.length > 0
-      ? Math.max(...persons.map(p => p.generationNumber || 0))
-      : 0;
+    const totalGenerations = persons.reduce((max, current) => {
+      const value = current.generationNumber ?? 0;
+      return value > max ? value : max;
+    }, 0);
 
     await prisma.familyBranch.update({
       where: { id: branchId },
@@ -288,13 +289,22 @@ export class PersonService {
    * Uses depth-first search from root ancestors and adjusts spouses
    */
   async recalculateGenerations(branchId: string) {
+    type GenerationPerson = {
+      id: string;
+      fatherId: string | null;
+      motherId: string | null;
+      generationNumber: number | null;
+    };
+
     const persons = await prisma.person.findMany({
       where: { branchId },
-      include: {
-        father: true,
-        mother: true,
+      select: {
+        id: true,
+        fatherId: true,
+        motherId: true,
+        generationNumber: true,
       },
-    });
+    }) as GenerationPerson[];
 
     // Map to store calculated generations
     const generationMap = new Map<string, number>();
@@ -313,18 +323,18 @@ export class PersonService {
 
       visited.add(personId);
 
-      const person = persons.find(p => p.id === personId);
+      const person = persons.find((p) => p.id === personId);
       if (!person) {
         return 1;
       }
 
       // If no parents, check if they have children to infer generation
       if (!person.fatherId && !person.motherId) {
-        const children = persons.filter(p => p.fatherId === person.id || p.motherId === person.id);
+        const children = persons.filter((p) => p.fatherId === person.id || p.motherId === person.id);
 
         if (children.length > 0) {
           // Calculate generation based on children (their gen - 1)
-          const childGenerations = children.map(child => calculateGeneration(child.id, new Set(visited)));
+          const childGenerations = children.map((child) => calculateGeneration(child.id, new Set(visited)));
           const minChildGen = Math.min(...childGenerations);
           const inferredGen = Math.max(1, minChildGen - 1);
           generationMap.set(personId, inferredGen);

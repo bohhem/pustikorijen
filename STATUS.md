@@ -132,6 +132,11 @@ Phase 5: Member Management    ████████████████�
 - 🚧 Better error messages
 - 🚧 Toast notification styling
 
+### **Admin Platform**
+- 🚀 SuperGuru region mapping + authentication payloads 🆕
+- 🚧 Region management API surface
+- 🚧 Backup/restore, import/export queueing
+
 ---
 
 ## ⏳ Planned Features (Not Started)
@@ -309,6 +314,7 @@ Phase 5: Member Management    ████████████████�
 - ✅ **Complete i18n Migration** - All pages now support 3 languages
 - ✅ **Person CRUD Enhancements** - Edit/delete flows, date parsing, Guru-only delete guard
 - ✅ **Tree Focus Overlay** - Slide-in edit card + backdrop when selecting nodes
+- ✅ **SuperGuru Foundations** - Global roles, admin regions, and token upgrades
 
 ### **October 18, 2025**
 - ✅ Multilingual support (Bosnian, English, German)
@@ -385,3 +391,13 @@ Phase 5: Member Management    ████████████████�
 
 **Status compiled on:** October 19, 2025, 18:45 CEST
 **By:** Claude Code + bohhem@gmail.com
+- ✅ SuperGuru role scaffolding (global admin region oversight) 🆕
+- ✅ Admin region taxonomy (Sarajevo pilot) 🆕
+- ✅ Token payload extended with admin context 🆕
+
+### **9. SuperGuru Foundations** (30%) 🆕
+- ✅ Global role model + JWT claims for SuperGurus
+- ✅ AdminRegion domain model linked to branches
+- ✅ SuperGuru assignment records with seed data
+- 🔄 Backend seed creates baseline SuperGuru and region
+- ⏳ Admin console UI & API surface (Milestone 2)
