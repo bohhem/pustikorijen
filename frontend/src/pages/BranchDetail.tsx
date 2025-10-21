@@ -1,12 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getBranchById, getBranchMembers, requestJoinBranch } from '../api/branch';
+import {
+  getBranchById,
+  getBranchMembers,
+  requestJoinBranch,
+  getPendingJoinRequests,
+  getPersonLinks,
+  approvePersonLinkRequest,
+  rejectPersonLinkRequest,
+} from '../api/branch';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import MemberManagementSection from '../components/branch/MemberManagementSection';
-import type { Branch, BranchMember } from '../types/branch';
+import PendingPersonLinks from '../components/branch/PendingPersonLinks';
+import type { Branch, BranchMember, PersonLinkRecord } from '../types/branch';
 
 export default function BranchDetail() {
   const { t } = useTranslation();
@@ -16,43 +25,97 @@ export default function BranchDetail() {
   const toast = useToast();
   const [branch, setBranch] = useState<Branch | null>(null);
   const [members, setMembers] = useState<BranchMember[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<BranchMember[]>([]);
+  const [pendingPersonLinks, setPendingPersonLinks] = useState<PersonLinkRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [joining, setJoining] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      loadBranch();
-      loadMembers();
-    }
-  }, [id]);
+  const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
+  const isMember = useMemo(() => members.some(m => m.userId === user?.id && m.status === 'active'), [members, user?.id]);
+  const isGuru = useMemo(
+    () => members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active'),
+    [members, user?.id]
+  );
+  const canViewProtectedTools = useMemo(() => isMember || isSuperGuru, [isMember, isSuperGuru]);
+  const canModerateBranch = useMemo(() => isGuru || isSuperGuru, [isGuru, isSuperGuru]);
 
-  const loadBranch = async () => {
+  const loadBranch = useCallback(async () => {
+    if (!id) {
+      return;
+    }
     try {
-      const data = await getBranchById(id!);
+      const data = await getBranchById(id);
       setBranch(data);
     } catch (err: any) {
       setError(err.response?.data?.error || t('branches.loadError'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, t]);
 
-  const loadMembers = async () => {
+  const loadMembers = useCallback(async () => {
+    if (!id) {
+      return;
+    }
+
     try {
-      const data = await getBranchMembers(id!);
+      const data = await getBranchMembers(id);
       setMembers(data);
     } catch (err) {
       console.error('Failed to load members:', err);
     }
-  };
+  }, [id]);
+
+  const loadPendingRequests = useCallback(async () => {
+    if (!id || !canModerateBranch) {
+      setPendingRequests([]);
+      return;
+    }
+
+    try {
+      const requests = await getPendingJoinRequests(id);
+      setPendingRequests(requests);
+    } catch (err: any) {
+      if (err?.response?.status === 403) {
+        setPendingRequests([]);
+      } else {
+        console.error('Failed to load pending requests:', err);
+      }
+    }
+  }, [id, canModerateBranch]);
+
+  const loadPendingPersonLinks = useCallback(async () => {
+    if (!id || !canModerateBranch) {
+      setPendingPersonLinks([]);
+      return;
+    }
+
+    try {
+      const links = await getPersonLinks(id, 'pending');
+      setPendingPersonLinks(links);
+    } catch (err) {
+      console.error('Failed to load person link requests:', err);
+      setPendingPersonLinks([]);
+    }
+  }, [id, canModerateBranch]);
+
+  useEffect(() => {
+    void loadBranch();
+    void loadMembers();
+  }, [loadBranch, loadMembers]);
+
+  useEffect(() => {
+    void loadPendingRequests();
+    void loadPendingPersonLinks();
+  }, [loadPendingRequests, loadPendingPersonLinks]);
 
   const handleJoin = async () => {
     setJoining(true);
     try {
       await requestJoinBranch(id!);
       toast.success(t('branchDetail.joinRequestSubmitted'));
-      loadMembers();
+      await loadMembers();
     } catch (err: any) {
       toast.error(err.response?.data?.error || t('branchDetail.joinRequestFailed'));
     } finally {
@@ -60,8 +123,37 @@ export default function BranchDetail() {
     }
   };
 
-  const isMember = members.some(m => m.userId === user?.id && m.status === 'active');
-  const isGuru = members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active');
+  const handleMemberRefresh = useCallback(async () => {
+    await Promise.all([loadMembers(), loadPendingRequests(), loadPendingPersonLinks()]);
+  }, [loadMembers, loadPendingRequests, loadPendingPersonLinks]);
+
+  const handleApprovePersonLink = useCallback(
+    async (linkId: string) => {
+      if (!id) return;
+      try {
+        await approvePersonLinkRequest(id, linkId);
+        toast.success(t('branchDetail.linkApproved'));
+        await loadPendingPersonLinks();
+      } catch (err: any) {
+        toast.error(err?.response?.data?.error || t('branchDetail.linkApprovalFailed'));
+      }
+    },
+    [id, loadPendingPersonLinks, t, toast]
+  );
+
+  const handleRejectPersonLink = useCallback(
+    async (linkId: string) => {
+      if (!id) return;
+      try {
+        await rejectPersonLinkRequest(id, linkId);
+        toast.success(t('branchDetail.linkRejected'));
+        await loadPendingPersonLinks();
+      } catch (err: any) {
+        toast.error(err?.response?.data?.error || t('branchDetail.linkRejectionFailed'));
+      }
+    },
+    [id, loadPendingPersonLinks, t, toast]
+  );
 
   if (loading) {
     return (
@@ -98,7 +190,7 @@ export default function BranchDetail() {
               <p className="text-gray-600">{branch.cityName}, {branch.region || branch.country}</p>
               <p className="text-sm text-gray-500 font-mono mt-2">{branch.id}</p>
             </div>
-            {!isMember && user && (
+            {!isMember && !isSuperGuru && user && (
               <button
                 onClick={handleJoin}
                 disabled={joining}
@@ -135,7 +227,7 @@ export default function BranchDetail() {
             </div>
           </div>
 
-          {isMember && (
+          {canViewProtectedTools && (
             <div className="mt-6 pt-6 border-t">
               <div className="grid grid-cols-3 gap-3">
                 <Link
@@ -150,24 +242,40 @@ export default function BranchDetail() {
                 >
                   📋 {t('branchDetail.listView')}
                 </Link>
-                <Link
-                  to={`/branches/${branch.id}/persons/create`}
-                  className="text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-                >
-                  ➕ {t('persons.create')}
-                </Link>
+                {isGuru && (
+                  <Link
+                    to={`/branches/${branch.id}/persons/create`}
+                    className="text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  >
+                    ➕ {t('persons.create')}
+                  </Link>
+                )}
               </div>
             </div>
           )}
         </div>
 
-        <MemberManagementSection
-          branchId={branch.id}
-          members={members}
-          currentUserId={user?.id || ''}
-          isGuru={isGuru}
-          onMemberUpdated={loadMembers}
-        />
+        {canModerateBranch && (
+          <MemberManagementSection
+            branchId={branch.id}
+            members={members}
+            pendingRequests={pendingRequests}
+            currentUserId={user?.id || ''}
+            isGuru={canModerateBranch}
+            onRefresh={handleMemberRefresh}
+          />
+        )}
+
+        {canModerateBranch && (
+          <div className="mt-6">
+            <PendingPersonLinks
+              branchId={branch.id}
+              links={pendingPersonLinks}
+              onApprove={handleApprovePersonLink}
+              onReject={handleRejectPersonLink}
+            />
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -6,6 +6,7 @@ import {
   getProfile,
   updateProfile,
   changePassword,
+  socialLogin,
 } from '../controllers/auth.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
@@ -15,6 +16,7 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.post('/refresh', refresh);
+router.post('/social', socialLogin);
 
 // Protected routes (require authentication)
 router.get('/me', authenticateToken, getProfile);

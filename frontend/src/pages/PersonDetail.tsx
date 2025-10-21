@@ -216,6 +216,11 @@ export default function PersonDetail() {
               </div>
             </div>
           </div>
+          {person.isLinked && person.linkedFromBranch && (
+            <div className="px-6 py-3 bg-indigo-50 border-t border-indigo-100 text-sm text-indigo-900">
+              {t('branchDetail.linkedNotice', { branch: person.linkedFromBranch.surname })}
+            </div>
+          )}
 
           {/* Life Information */}
           <div className="border-t border-gray-200 px-6 py-4">

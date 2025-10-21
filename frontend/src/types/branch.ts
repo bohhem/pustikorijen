@@ -52,6 +52,7 @@ export interface BranchMember {
   autoApprovePhotos: boolean;
   autoApproveStories: boolean;
   status: 'pending' | 'active' | 'suspended' | 'removed';
+  joinMessage?: string | null;
   contributionCount: number;
   lastContribution: string | null;
   joinedAt: string;
@@ -79,5 +80,54 @@ export interface BranchesResponse {
     limit: number;
     total: number;
     totalPages: number;
+  };
+}
+
+export interface PersonLinkCandidate {
+  id: string;
+  fullName: string;
+  givenName?: string | null;
+  surname?: string | null;
+  maidenName?: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
+  homeBranch: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+  } | null;
+}
+
+export interface PersonLinkRecord {
+  id: string;
+  status: 'pending' | 'approved' | 'rejected';
+  displayName?: string | null;
+  notes?: string | null;
+  sourceBranchId: string;
+  targetBranchId: string;
+  requestedBy?: {
+    id: string;
+    fullName: string | null;
+    email: string | null;
+  } | null;
+  sourceApprovedBy?: string | null;
+  sourceApprovedAt?: string | null;
+  targetApprovedBy?: string | null;
+  targetApprovedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  person: {
+    id: string;
+    fullName: string;
+    givenName?: string | null;
+    surname?: string | null;
+    maidenName?: string | null;
+    birthDate?: string | null;
+    deathDate?: string | null;
+    homeBranch?: {
+      id: string;
+      surname: string;
+      cityName?: string | null;
+    } | null;
   };
 }

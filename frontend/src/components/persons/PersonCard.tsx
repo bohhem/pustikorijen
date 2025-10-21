@@ -44,6 +44,7 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
   const { t } = useTranslation();
   const firstName = person.givenName || person.firstName || '';
   const lastName = person.surname || person.lastName || '';
+  const displayName = person.linkDisplayName || person.fullName || `${firstName} ${lastName}`.trim() || t('personList.person');
   const isAlive = person.isAlive !== false; // Default to true if not specified
 
   const age = person.birthDate && isAlive
@@ -84,7 +85,7 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold text-gray-900 truncate">
-                {person.fullName || `${firstName} ${lastName}`}
+                {displayName}
                 {person.maidenName && (
                   <span className="text-sm text-gray-500 ml-1">
                     (née {person.maidenName})
@@ -110,6 +111,17 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
           {person.biography && (
             <p className="text-sm text-gray-600 mt-2 line-clamp-2">
               {person.biography}
+            </p>
+          )}
+
+          {person.isLinked && person.linkedFromBranch && (
+            <p className="text-xs text-indigo-600 mt-2 flex items-center gap-1">
+              <span>🔗</span>
+              <span>
+                {t('personList.linkedFrom', {
+                  branch: person.linkedFromBranch.surname,
+                })}
+              </span>
             </p>
           )}
 

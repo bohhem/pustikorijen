@@ -2,9 +2,12 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import SuperGuruRoute from './components/auth/SuperGuruRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminRegions from './pages/admin/AdminRegions';
 import Branches from './pages/Branches';
 import BranchDetail from './pages/BranchDetail';
 import CreateBranch from './pages/CreateBranch';
@@ -29,6 +32,22 @@ function App() {
                 <ProtectedRoute>
                   <Dashboard />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <SuperGuruRoute>
+                  <AdminDashboard />
+                </SuperGuruRoute>
+              }
+            />
+            <Route
+              path="/admin/regions"
+              element={
+                <SuperGuruRoute>
+                  <AdminRegions />
+                </SuperGuruRoute>
               }
             />
             <Route path="/branches" element={<Branches />} />

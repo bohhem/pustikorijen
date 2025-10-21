@@ -12,6 +12,7 @@
 ## Backend API
 
 - [ ] `/admin/regions` endpoints to list/manage regions + assigned gurus.
+- [ ] Refactor Prisma model/comment naming (e.g., add `@@map` or update service calls) so admin APIs use typed delegates without `as any`.
 - [ ] Invite workflow: issue/email invites, track status, allow acceptance.
 - [ ] User assistance endpoints (password reset trigger, manual verification, impersonation guardrails).
 - [ ] Backup/restore API hooks (trigger snapshots, list backups, restore).
@@ -43,4 +44,3 @@
 - [ ] Runbooks for backup/restore, import/export, user assistance.
 - [ ] Update STATUS.md roadmap to include admin module milestones.
 - [ ] Security review checklist for new endpoints.
-

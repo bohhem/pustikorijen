@@ -29,6 +29,16 @@ export const loginSchema = z.object({
 export type LoginInput = z.infer<typeof loginSchema>;
 
 /**
+ * Social login schema
+ */
+export const socialLoginSchema = z.object({
+  provider: z.enum(['google', 'facebook']),
+  token: z.string().min(1, 'Token is required'),
+});
+
+export type SocialLoginInput = z.infer<typeof socialLoginSchema>;
+
+/**
  * Refresh token schema
  */
 export const refreshTokenSchema = z.object({

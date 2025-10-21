@@ -1,6 +1,3 @@
-// Prisma Schema for Pustikorijen
-// Database: PostgreSQL 15+
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,751 +7,501 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ============================================================================
-// USERS & AUTHENTICATION
-// ============================================================================
-
-model User {
-  id String @id @default(uuid()) @map("user_id")
-
-  // Authentication
-  email        String @unique @db.VarChar(255)
-  passwordHash String @map("password_hash") @db.VarChar(255)
-  fullName     String @map("full_name") @db.VarChar(255)
-
-  // Profile
-  birthYear         Int?    @map("birth_year")
-  currentLocation   String? @map("current_location") @db.VarChar(255)
-  preferredLanguage String  @default("bs") @map("preferred_language") @db.VarChar(10)
-
-  // Verification
-  emailVerified          Boolean @default(false) @map("email_verified")
-  emailVerificationToken String? @map("email_verification_token") @db.VarChar(255)
-
-  // Roles
-  globalRole UserGlobalRole @default(USER) @map("global_role")
-
-  // Security
-  twoFactorEnabled     Boolean   @default(false) @map("two_factor_enabled")
-  twoFactorSecret      String?   @map("two_factor_secret") @db.VarChar(255)
-  resetPasswordToken   String?   @map("reset_password_token") @db.VarChar(255)
-  resetPasswordExpires DateTime? @map("reset_password_expires")
-
-  // Status
-  isActive  Boolean   @default(true) @map("is_active")
-  lastLogin DateTime? @map("last_login")
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  foundedBranches             FamilyBranch[]        @relation("FoundedBy")
-  branchMemberships           BranchMember[]
-  createdPersons              Person[]              @relation("CreatedBy")
-  verifiedPersons             Person[]              @relation("VerifiedBy")
-  createdPartnerships         Partnership[]         @relation("PartnershipCreatedBy")
-  verifiedPartnerships        Partnership[]         @relation("PartnershipVerifiedBy")
-  stories                     Story[]
-  uploadedDocuments           Document[]
-  rootChangeProposals         RootChangeProposal[]
-  raisedDisputes              Dispute[]             @relation("RaisedBy")
-  resolvedDisputes            Dispute[]             @relation("ResolvedBy")
-  notifications               Notification[]
-  auditLogs                   AuditLog[]
-  invitedMembers              BranchMember[]        @relation("InvitedBy")
-  approvedMembers             BranchMember[]        @relation("ApprovedBy")
-  approvedStories             Story[]               @relation("ApprovedBy")
-  verifiedDocuments           Document[]            @relation("VerifiedBy")
-  disputedAuditLogs           AuditLog[]            @relation("DisputedBy")
-  superGuruAssignments        SuperGuruAssignment[] @relation("SuperGuruUser")
-  createdSuperGuruAssignments SuperGuruAssignment[] @relation("SuperGuruCreatedBy")
-
-  @@index([email])
-  @@index([isActive])
-  @@map("users")
-}
-
-// ============================================================================
-// FAMILY BRANCHES
-// ============================================================================
-
-model FamilyBranch {
-  id String @id @map("branch_id") @db.VarChar(50) // FB-SA-HODZIC-001
-
-  // Identity
-  surname           String @db.VarChar(100)
-  surnameNormalized String @map("surname_normalized") @db.VarChar(100)
-
-  // Geographic Origin
-  cityCode      String       @map("city_code") @db.VarChar(10)
-  cityName      String       @map("city_name") @db.VarChar(100)
-  region        String?      @db.VarChar(100)
-  adminRegionId String?      @map("admin_region_id")
-  adminRegion   AdminRegion? @relation(fields: [adminRegionId], references: [id])
-  country       String       @default("Bosnia and Herzegovina") @db.VarChar(100)
-
-  // Root Ancestor
-  rootPersonId       String? @map("root_person_id")
-  oldestAncestorYear Int?    @map("oldest_ancestor_year")
-
-  // Statistics
-  totalPeople      Int @default(0) @map("total_people")
-  totalGenerations Int @default(0) @map("total_generations")
-
-  // Metadata
-  description String? @db.Text
-  foundedById String? @map("founded_by")
-  foundedBy   User?   @relation("FoundedBy", fields: [foundedById], references: [id])
-
-  // Privacy
-  visibility String @default("public") @db.VarChar(20) // public, family_only, private
-
-  // Status
-  isVerified       Boolean   @default(false) @map("is_verified")
-  verificationDate DateTime? @map("verification_date")
-
-  // Evolution
-  rootChangeCount Int       @default(0) @map("root_change_count")
-  lastMajorUpdate DateTime? @map("last_major_update")
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  persons             Person[]
-  partnerships        Partnership[]
-  members             BranchMember[]
-  stories             Story[]
-  documents           Document[]
-  rootChangeProposals RootChangeProposal[]
-  disputes            Dispute[]
-  auditLogs           AuditLog[]
-
-  @@index([surnameNormalized])
-  @@index([cityCode])
-  @@index([visibility])
-  @@index([adminRegionId])
-  @@map("family_branches")
-}
-
-// ============================================================================
-// PERSONS
-// ============================================================================
-
-model Person {
-  id       String       @id @default(uuid()) @map("person_id")
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  // Identity
-  fullName   String  @map("full_name") @db.VarChar(255)
-  givenName  String? @map("given_name") @db.VarChar(100)
-  surname    String? @db.VarChar(100)
-  maidenName String? @map("maiden_name") @db.VarChar(100)
-  nickname   String? @db.VarChar(100)
-
-  // Core Dates & Places
-  birthYear  Int?      @map("birth_year")
-  birthDate  DateTime? @map("birth_date") @db.Date
-  birthPlace String?   @map("birth_place") @db.VarChar(255)
-
-  deathYear  Int?      @map("death_year")
-  deathDate  DateTime? @map("death_date") @db.Date
-  deathPlace String?   @map("death_place") @db.VarChar(255)
-
-  isLiving Boolean? @map("is_living")
-
-  // Current Info (for living)
-  currentLocation String? @map("current_location") @db.VarChar(255)
-  currentCountry  String? @map("current_country") @db.VarChar(100)
-
-  // Additional Info
-  gender     String? @db.VarChar(20)
-  occupation String? @db.VarChar(255)
-  education  String? @db.Text
-  biography  String? @db.Text
-
-  // Photos
-  profilePhotoUrl String? @map("profile_photo_url") @db.VarChar(500)
-
-  // Tree Structure
-  generation       String? @db.VarChar(10) // G1, G2, G3
-  generationNumber Int?    @map("generation_number")
-  isBranchRoot     Boolean @default(false) @map("is_branch_root")
-
-  // Relationships
-  fatherId String?  @map("father_id")
-  father   Person?  @relation("FatherChildren", fields: [fatherId], references: [id])
-  children Person[] @relation("FatherChildren")
-
-  motherId           String?  @map("mother_id")
-  mother             Person?  @relation("MotherChildren", fields: [motherId], references: [id])
-  childrenFromMother Person[] @relation("MotherChildren")
-
-  // Reference Codes
-  referenceCode String? @map("reference_code") @db.VarChar(100)
-  urlSlug       String? @map("url_slug") @db.VarChar(255)
-
-  // Quality & Verification
-  qualityScore      Int       @default(0) @map("quality_score")
-  verificationLevel Int       @default(1) @map("verification_level")
-  isVerified        Boolean   @default(false) @map("is_verified")
-  verifiedById      String?   @map("verified_by")
-  verifiedBy        User?     @relation("VerifiedBy", fields: [verifiedById], references: [id])
-  verifiedAt        DateTime? @map("verified_at")
-
-  // Metadata
-  createdFromRootChange String? @map("created_from_root_change") @db.VarChar(50)
-  createdById           String? @map("created_by")
-  createdBy             User?   @relation("CreatedBy", fields: [createdById], references: [id])
-
-  // Privacy
-  visibility String @default("family_only") @db.VarChar(20)
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  relationships1        Relationship[]       @relation("Person1")
-  relationships2        Relationship[]       @relation("Person2")
-  partnershipsAsPerson1 Partnership[]        @relation("Partner1")
-  partnershipsAsPerson2 Partnership[]        @relation("Partner2")
-  branchMemberships     BranchMember[]
-  documents             Document[]
-  auditLogs             AuditLog[]
-  oldRootProposals      RootChangeProposal[] @relation("OldRoot")
-  newRootProposals      RootChangeProposal[] @relation("NewRoot")
-
-  @@index([branchId])
-  @@index([branchId, generationNumber])
-  @@index([surname, givenName])
-  @@index([fatherId])
-  @@index([motherId])
-  @@index([branchId, isBranchRoot])
-  @@index([birthYear])
-  @@map("persons")
-}
-
-// ============================================================================
-// RELATIONSHIPS
-// ============================================================================
-
-model Relationship {
-  id String @id @default(uuid()) @map("relationship_id")
-
-  person1Id String @map("person1_id")
-  person1   Person @relation("Person1", fields: [person1Id], references: [id])
-
-  person2Id String @map("person2_id")
-  person2   Person @relation("Person2", fields: [person2Id], references: [id])
-
-  relationshipType String @map("relationship_type") @db.VarChar(50)
-
-  // Marriage Details (for spouses)
-  marriageDate  DateTime? @map("marriage_date") @db.Date
-  marriagePlace String?   @map("marriage_place") @db.VarChar(255)
-  divorceDate   DateTime? @map("divorce_date") @db.Date
-
-  // Order
-  orderNumber Int @default(1) @map("order_number")
-
-  // Status
-  isCurrent Boolean @default(true) @map("is_current")
-
-  // Metadata
-  notes       String? @db.Text
-  createdById String? @map("created_by")
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([person1Id, person2Id, relationshipType])
-  @@index([person1Id])
-  @@index([person2Id])
-  @@index([relationshipType])
-  @@map("relationships")
-}
-
-// ============================================================================
-// PARTNERSHIPS (Marriages & Relationships)
-// ============================================================================
-
-model Partnership {
-  id String @id @default(uuid()) @map("partnership_id")
-
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  // Partners
-  person1Id String @map("person1_id")
-  person1   Person @relation("Partner1", fields: [person1Id], references: [id], onDelete: Cascade)
-
-  person2Id String @map("person2_id")
-  person2   Person @relation("Partner2", fields: [person2Id], references: [id], onDelete: Cascade)
-
-  // Partnership Type
-  partnershipType String @default("marriage") @map("partnership_type") @db.VarChar(50) // marriage, domestic_partnership, common_law, etc.
-
-  // Marriage/Partnership Details
-  startDate  DateTime? @map("start_date") @db.Date // Wedding/partnership start date
-  startPlace String?   @map("start_place") @db.VarChar(255)
-  endDate    DateTime? @map("end_date") @db.Date // Divorce/separation/death date
-  endPlace   String?   @map("end_place") @db.VarChar(255)
-  endReason  String?   @map("end_reason") @db.VarChar(50) // divorce, death, separation
-
-  // Status
-  status    String  @default("active") @db.VarChar(20) // active, ended, annulled
-  isCurrent Boolean @default(true) @map("is_current")
-
-  // Order (for multiple marriages)
-  orderNumber Int @default(1) @map("order_number")
-
-  // Additional Info
-  notes        String? @db.Text
-  ceremonyType String? @map("ceremony_type") @db.VarChar(100) // religious, civil, etc.
-
-  // Metadata
-  createdById String? @map("created_by")
-  createdBy   User?   @relation("PartnershipCreatedBy", fields: [createdById], references: [id])
-
-  // Quality & Verification
-  qualityScore      Int       @default(0) @map("quality_score")
-  verificationLevel Int       @default(1) @map("verification_level")
-  isVerified        Boolean   @default(false) @map("is_verified")
-  verifiedById      String?   @map("verified_by")
-  verifiedBy        User?     @relation("PartnershipVerifiedBy", fields: [verifiedById], references: [id])
-  verifiedAt        DateTime? @map("verified_at")
-
-  // Privacy
-  visibility String @default("family_only") @db.VarChar(20)
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([person1Id, person2Id, orderNumber])
-  @@index([branchId])
-  @@index([person1Id])
-  @@index([person2Id])
-  @@index([status])
-  @@index([startDate])
-  @@map("partnerships")
-}
-
-// ============================================================================
-// BRANCH MEMBERS (Access Control)
-// ============================================================================
-
-model BranchMember {
-  id String @id @default(uuid()) @map("member_id")
-
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Role
-  role String @default("member") @db.VarChar(50) // guest, member, editor, guru
-
-  // Person Link
-  personId String? @map("person_id")
-  person   Person? @relation(fields: [personId], references: [id])
-
-  // Permissions
-  canEditGenerations String? @map("can_edit_generations") @db.VarChar(50)
-  autoApprovePhotos  Boolean @default(false) @map("auto_approve_photos")
-  autoApproveStories Boolean @default(false) @map("auto_approve_stories")
-
-  // Status
-  status       String    @default("pending") @db.VarChar(20) // pending, active, suspended, removed
-  invitedById  String?   @map("invited_by")
-  invitedBy    User?     @relation("InvitedBy", fields: [invitedById], references: [id])
-  approvedById String?   @map("approved_by")
-  approvedBy   User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
-  approvedAt   DateTime? @map("approved_at")
-
-  // Activity
-  contributionCount Int       @default(0) @map("contribution_count")
-  lastContribution  DateTime? @map("last_contribution")
-
-  // Timestamps
-  joinedAt  DateTime @default(now()) @map("joined_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@unique([branchId, userId])
-  @@index([branchId])
-  @@index([userId])
-  @@index([branchId, role])
-  @@index([branchId, status])
-  @@map("branch_members")
-}
-
-model AdminRegion {
-  id          String   @id @default(uuid()) @map("region_id")
-  name        String   @db.VarChar(150)
-  code        String   @unique @db.VarChar(50)
-  description String?  @db.Text
-  country     String?  @db.VarChar(100)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  branches    FamilyBranch[]
-  assignments SuperGuruAssignment[]
+model admin_regions {
+  region_id              String                   @id
+  name                   String                   @db.VarChar(150)
+  code                   String                   @unique @db.VarChar(50)
+  description            String?
+  country                String?                  @db.VarChar(100)
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime
+  family_branches        family_branches[]
+  super_guru_assignments super_guru_assignments[]
 
   @@index([code])
-  @@map("admin_regions")
 }
 
-model SuperGuruAssignment {
-  id          String   @id @default(uuid()) @map("assignment_id")
-  userId      String   @map("user_id")
-  regionId    String   @map("region_id")
-  isPrimary   Boolean  @default(false) @map("is_primary")
-  createdAt   DateTime @default(now()) @map("created_at")
-  createdById String?  @map("created_by")
+model audit_log {
+  audit_id                           String           @id
+  entity_type                        String           @db.VarChar(50)
+  entity_id                          String           @db.VarChar(100)
+  action_type                        String           @db.VarChar(50)
+  field_changed                      String?          @db.VarChar(100)
+  old_value                          String?
+  new_value                          String?
+  branch_id                          String?          @db.VarChar(50)
+  person_id                          String?
+  source_type                        String?          @db.VarChar(50)
+  source_documentation               String?
+  user_id                            String?
+  reason                             String?
+  quality_score                      Int?
+  verification_status                String           @default("unverified") @db.VarChar(50)
+  is_disputed                        Boolean          @default(false)
+  disputed_by                        String?
+  dispute_id                         String?          @db.VarChar(50)
+  root_change_id                     String?          @db.VarChar(50)
+  merge_id                           String?          @db.VarChar(50)
+  ip_address                         String?          @db.Inet
+  user_agent                         String?
+  created_at                         DateTime         @default(now())
+  family_branches                    family_branches? @relation(fields: [branch_id], references: [branch_id])
+  users_audit_log_disputed_byTousers users?           @relation("audit_log_disputed_byTousers", fields: [disputed_by], references: [user_id])
+  persons                            persons?         @relation(fields: [person_id], references: [person_id])
+  users_audit_log_user_idTousers     users?           @relation("audit_log_user_idTousers", fields: [user_id], references: [user_id])
 
-  user      User        @relation("SuperGuruUser", fields: [userId], references: [id])
-  region    AdminRegion @relation(fields: [regionId], references: [id])
-  createdBy User?       @relation("SuperGuruCreatedBy", fields: [createdById], references: [id])
-
-  @@unique([userId, regionId])
-  @@index([regionId])
-  @@map("super_guru_assignments")
+  @@index([branch_id])
+  @@index([created_at(sort: Desc)])
+  @@index([entity_type, entity_id])
+  @@index([is_disputed])
+  @@index([person_id])
+  @@index([user_id])
 }
 
-// ============================================================================
-// AUDIT & GOVERNANCE
-// ============================================================================
+model branch_members {
+  member_id                               String          @id
+  branch_id                               String          @db.VarChar(50)
+  user_id                                 String
+  role                                    String          @default("member") @db.VarChar(50)
+  person_id                               String?
+  can_edit_generations                    String?         @db.VarChar(50)
+  auto_approve_photos                     Boolean         @default(false)
+  auto_approve_stories                    Boolean         @default(false)
+  status                                  String          @default("pending") @db.VarChar(20)
+  invited_by                              String?
+  approved_by                             String?
+  approved_at                             DateTime?
+  contribution_count                      Int             @default(0)
+  last_contribution                       DateTime?
+  joined_at                               DateTime        @default(now())
+  updated_at                              DateTime
+  join_message                            String?
+  users_branch_members_approved_byTousers users?          @relation("branch_members_approved_byTousers", fields: [approved_by], references: [user_id])
+  family_branches                         family_branches @relation(fields: [branch_id], references: [branch_id])
+  users_branch_members_invited_byTousers  users?          @relation("branch_members_invited_byTousers", fields: [invited_by], references: [user_id])
+  persons                                 persons?        @relation(fields: [person_id], references: [person_id])
+  users_branch_members_user_idTousers     users           @relation("branch_members_user_idTousers", fields: [user_id], references: [user_id])
 
-model AuditLog {
-  id String @id @default(uuid()) @map("audit_id")
-
-  // What Changed
-  entityType String @map("entity_type") @db.VarChar(50)
-  entityId   String @map("entity_id") @db.VarChar(100)
-  actionType String @map("action_type") @db.VarChar(50)
-
-  // Change Details
-  fieldChanged String? @map("field_changed") @db.VarChar(100)
-  oldValue     String? @map("old_value") @db.Text
-  newValue     String? @map("new_value") @db.Text
-
-  // Context
-  branchId String?       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch? @relation(fields: [branchId], references: [id])
-
-  personId String? @map("person_id")
-  person   Person? @relation(fields: [personId], references: [id])
-
-  // Source
-  sourceType          String? @map("source_type") @db.VarChar(50)
-  sourceDocumentation String? @map("source_documentation") @db.Text
-
-  // Who & Why
-  userId String? @map("user_id")
-  user   User?   @relation(fields: [userId], references: [id])
-  reason String? @db.Text
-
-  // Quality
-  qualityScore       Int?   @map("quality_score")
-  verificationStatus String @default("unverified") @map("verification_status") @db.VarChar(50)
-
-  // Disputes
-  isDisputed   Boolean @default(false) @map("is_disputed")
-  disputedById String? @map("disputed_by")
-  disputedBy   User?   @relation("DisputedBy", fields: [disputedById], references: [id])
-  disputeId    String? @map("dispute_id") @db.VarChar(50)
-
-  // Special Events
-  rootChangeId String? @map("root_change_id") @db.VarChar(50)
-  mergeId      String? @map("merge_id") @db.VarChar(50)
-
-  // Metadata
-  ipAddress String? @map("ip_address") @db.Inet
-  userAgent String? @map("user_agent") @db.Text
-
-  // Timestamp
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@index([entityType, entityId])
-  @@index([userId])
-  @@index([branchId])
-  @@index([personId])
-  @@index([createdAt(sort: Desc)])
-  @@index([isDisputed])
-  @@map("audit_log")
+  @@unique([branch_id, user_id])
+  @@index([branch_id])
+  @@index([branch_id, role])
+  @@index([branch_id, status])
+  @@index([user_id])
 }
 
-model Dispute {
-  id String @id @map("dispute_id") @db.VarChar(50) // DSP-00001
+model branch_person_links {
+  link_id                                          String          @id
+  person_id                                        String
+  branch_id                                        String          @db.VarChar(50)
+  source_branch_id                                 String          @db.VarChar(50)
+  status                                           String          @default("pending") @db.VarChar(30)
+  display_name                                     String?         @db.VarChar(255)
+  notes                                            String?
+  requested_by                                     String
+  source_approved_by                               String?
+  source_approved_at                               DateTime?
+  target_approved_by                               String?
+  target_approved_at                               DateTime?
+  created_at                                       DateTime         @default(now())
+  updated_at                                       DateTime         @updatedAt
+  persons                                          persons          @relation(fields: [person_id], references: [person_id])
+  family_branches                                  family_branches  @relation(fields: [branch_id], references: [branch_id])
+  users_branch_person_links_requested_byTousers    users            @relation("branch_person_links_requested_byTousers", fields: [requested_by], references: [user_id])
+  users_branch_person_links_source_approved_byTousers users?        @relation("branch_person_links_source_approved_byTousers", fields: [source_approved_by], references: [user_id])
+  users_branch_person_links_target_approved_byTousers users?        @relation("branch_person_links_target_approved_byTousers", fields: [target_approved_by], references: [user_id])
 
-  // What's Disputed
-  entityType String  @map("entity_type") @db.VarChar(50)
-  entityId   String  @map("entity_id") @db.VarChar(100)
-  fieldName  String? @map("field_name") @db.VarChar(100)
+  @@unique([person_id, branch_id])
+  @@index([branch_id, status])
+  @@index([source_branch_id, status])
+  @@index([requested_by])
+}
 
-  // Claims
-  currentValue  String? @map("current_value") @db.Text
-  proposedValue String? @map("proposed_value") @db.Text
+model disputes {
+  dispute_id                        String           @id @db.VarChar(50)
+  entity_type                       String           @db.VarChar(50)
+  entity_id                         String           @db.VarChar(100)
+  field_name                        String?          @db.VarChar(100)
+  current_value                     String?
+  proposed_value                    String?
+  raised_by                         String
+  affected_branch                   String?          @db.VarChar(50)
+  status                            String           @default("pending") @db.VarChar(50)
+  level                             Int              @default(1)
+  deadline                          DateTime?
+  resolved_at                       DateTime?
+  resolved_by                       String?
+  evidence                          Json?
+  explanation                       String?
+  resolution_reasoning              String?
+  family_votes                      Json?
+  guru_votes                        Json?
+  expert_reviews                    Json?
+  final_decision                    String?
+  accepted_value                    String?
+  created_at                        DateTime         @default(now())
+  updated_at                        DateTime
+  family_branches                   family_branches? @relation(fields: [affected_branch], references: [branch_id])
+  users_disputes_raised_byTousers   users            @relation("disputes_raised_byTousers", fields: [raised_by], references: [user_id])
+  users_disputes_resolved_byTousers users?           @relation("disputes_resolved_byTousers", fields: [resolved_by], references: [user_id])
 
-  // Parties
-  raisedById String @map("raised_by")
-  raisedBy   User   @relation("RaisedBy", fields: [raisedById], references: [id])
-
-  affectedBranchId String?       @map("affected_branch") @db.VarChar(50)
-  affectedBranch   FamilyBranch? @relation(fields: [affectedBranchId], references: [id])
-
-  // Resolution
-  status String @default("pending") @db.VarChar(50)
-  level  Int    @default(1)
-
-  // Timeline
-  deadline     DateTime?
-  resolvedAt   DateTime? @map("resolved_at")
-  resolvedById String?   @map("resolved_by")
-  resolvedBy   User?     @relation("ResolvedBy", fields: [resolvedById], references: [id])
-
-  // Evidence & Discussion
-  evidence            Json?   @db.JsonB
-  explanation         String? @db.Text
-  resolutionReasoning String? @map("resolution_reasoning") @db.Text
-
-  // Votes
-  familyVotes   Json? @map("family_votes") @db.JsonB
-  guruVotes     Json? @map("guru_votes") @db.JsonB
-  expertReviews Json? @map("expert_reviews") @db.JsonB
-
-  // Final Decision
-  finalDecision String? @map("final_decision") @db.Text
-  acceptedValue String? @map("accepted_value") @db.Text
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([entityType, entityId])
-  @@index([affectedBranchId])
+  @@index([affected_branch])
+  @@index([entity_type, entity_id])
+  @@index([raised_by])
   @@index([status])
-  @@index([raisedById])
-  @@map("disputes")
 }
 
-model RootChangeProposal {
-  id String @id @map("proposal_id") @db.VarChar(50) // RC-00001
+model documents {
+  document_id                        String          @id
+  branch_id                          String          @db.VarChar(50)
+  person_id                          String?
+  story_id                           String?
+  file_name                          String          @db.VarChar(500)
+  file_type                          String          @db.VarChar(100)
+  file_size                          Int
+  file_url                           String          @db.VarChar(1000)
+  thumbnail_url                      String?         @db.VarChar(1000)
+  document_type                      String?         @db.VarChar(100)
+  title                              String?         @db.VarChar(500)
+  description                        String?
+  document_date                      DateTime?       @db.Date
+  extracted_text                     String?
+  quality_score                      Int             @default(0)
+  is_verified                        Boolean         @default(false)
+  verified_by                        String?
+  uploaded_by                        String
+  visibility                         String          @default("family_only") @db.VarChar(50)
+  created_at                         DateTime        @default(now())
+  updated_at                         DateTime
+  family_branches                    family_branches @relation(fields: [branch_id], references: [branch_id])
+  persons                            persons?        @relation(fields: [person_id], references: [person_id])
+  stories                            stories?        @relation(fields: [story_id], references: [story_id])
+  users_documents_uploaded_byTousers users           @relation("documents_uploaded_byTousers", fields: [uploaded_by], references: [user_id])
+  users_documents_verified_byTousers users?          @relation("documents_verified_byTousers", fields: [verified_by], references: [user_id])
 
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  // Current vs Proposed
-  oldRootPersonId String? @map("old_root_person_id")
-  oldRootPerson   Person? @relation("OldRoot", fields: [oldRootPersonId], references: [id])
-
-  newRootPersonId String? @map("new_root_person_id")
-  newRootPerson   Person? @relation("NewRoot", fields: [newRootPersonId], references: [id])
-
-  // New Root Data
-  newRootData      Json?   @map("new_root_data") @db.JsonB
-  relationshipType String? @map("relationship_type") @db.VarChar(50)
-
-  // Proposer
-  proposedById String @map("proposed_by")
-  proposedBy   User   @relation(fields: [proposedById], references: [id])
-
-  // Evidence
-  evidenceDocuments Json?   @map("evidence_documents") @db.JsonB
-  evidenceScore     Int?    @map("evidence_score")
-  explanation       String? @db.Text
-
-  // Review Status
-  status         String    @default("pending") @db.VarChar(50)
-  reviewDeadline DateTime? @map("review_deadline")
-
-  // Approvals
-  guruVotes     Json? @map("guru_votes") @db.JsonB
-  familyVotes   Json? @map("family_votes") @db.JsonB
-  expertReviews Json? @map("expert_reviews") @db.JsonB
-
-  // Execution
-  executedAt   DateTime? @map("executed_at")
-  executionLog Json?     @map("execution_log") @db.JsonB
-
-  // Impact
-  peopleAffected     Int? @map("people_affected")
-  generationsShifted Int? @map("generations_shifted")
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([branchId])
-  @@index([status])
-  @@index([proposedById])
-  @@map("root_change_proposals")
+  @@index([branch_id])
+  @@index([document_type])
+  @@index([person_id])
+  @@index([uploaded_by])
 }
 
-// ============================================================================
-// CONTENT
-// ============================================================================
+model family_branches {
+  branch_id             String                  @id @db.VarChar(50)
+  surname               String                  @db.VarChar(100)
+  surname_normalized    String                  @db.VarChar(100)
+  city_code             String                  @db.VarChar(10)
+  city_name             String                  @db.VarChar(100)
+  region                String?                 @db.VarChar(100)
+  country               String                  @default("Bosnia and Herzegovina") @db.VarChar(100)
+  root_person_id        String?
+  oldest_ancestor_year  Int?
+  total_people          Int                     @default(0)
+  total_generations     Int                     @default(0)
+  description           String?
+  founded_by            String?
+  visibility            String                  @default("public") @db.VarChar(20)
+  is_verified           Boolean                 @default(false)
+  verification_date     DateTime?
+  root_change_count     Int                     @default(0)
+  last_major_update     DateTime?
+  created_at            DateTime                @default(now())
+  updated_at            DateTime
+  admin_region_id       String?
+  audit_log             audit_log[]
+  branch_members        branch_members[]
+  branch_person_links   branch_person_links[]
+  disputes              disputes[]
+  documents             documents[]
+  admin_regions         admin_regions?          @relation(fields: [admin_region_id], references: [region_id])
+  users                 users?                  @relation(fields: [founded_by], references: [user_id])
+  partnerships          partnerships[]
+  persons               persons[]
+  root_change_proposals root_change_proposals[]
+  stories               stories[]
 
-model Story {
-  id String @id @default(uuid()) @map("story_id")
-
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  authorId String @map("author_id")
-  author   User   @relation(fields: [authorId], references: [id])
-
-  // Content
-  title     String @db.VarChar(500)
-  content   String @db.Text
-  storyType String @default("memory") @map("story_type") @db.VarChar(50)
-
-  // Tags
-  tags String[] @db.Text
-
-  // People Tagged
-  taggedPeople String[] @map("tagged_people")
-
-  // Location
-  location String? @db.VarChar(255)
-
-  // Date Context
-  storyDate DateTime? @map("story_date") @db.Date
-  storyYear Int?      @map("story_year")
-
-  // Media
-  photos Json? @db.JsonB
-  videos Json? @db.JsonB
-  audio  Json? @db.JsonB
-
-  // Engagement
-  viewsCount    Int  @default(0) @map("views_count")
-  reactions     Json @default("{}") @db.JsonB
-  commentsCount Int  @default(0) @map("comments_count")
-
-  // Moderation
-  status       String    @default("pending") @db.VarChar(50)
-  approvedById String?   @map("approved_by")
-  approvedBy   User?     @relation("ApprovedBy", fields: [approvedById], references: [id])
-  approvedAt   DateTime? @map("approved_at")
-
-  // Privacy
-  visibility String @default("family_only") @db.VarChar(50)
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  documents Document[]
-
-  @@index([branchId])
-  @@index([authorId])
-  @@index([status])
+  @@index([admin_region_id])
+  @@index([city_code])
+  @@index([surname_normalized])
   @@index([visibility])
-  @@index([storyType])
-  @@index([createdAt(sort: Desc)])
-  @@map("stories")
 }
 
-model Document {
-  id String @id @default(uuid()) @map("document_id")
+model notifications {
+  notification_id String    @id
+  user_id         String
+  type            String    @db.VarChar(100)
+  title           String    @db.VarChar(500)
+  message         String
+  entity_type     String?   @db.VarChar(50)
+  entity_id       String?   @db.VarChar(100)
+  action_url      String?   @db.VarChar(500)
+  is_read         Boolean   @default(false)
+  read_at         DateTime?
+  priority        String    @default("normal") @db.VarChar(20)
+  sent_via_email  Boolean   @default(false)
+  email_sent_at   DateTime?
+  created_at      DateTime  @default(now())
+  users           users     @relation(fields: [user_id], references: [user_id])
 
-  // Associations
-  branchId String       @map("branch_id") @db.VarChar(50)
-  branch   FamilyBranch @relation(fields: [branchId], references: [id])
-
-  personId String? @map("person_id")
-  person   Person? @relation(fields: [personId], references: [id])
-
-  storyId String? @map("story_id")
-  story   Story?  @relation(fields: [storyId], references: [id])
-
-  // File Info
-  fileName     String  @map("file_name") @db.VarChar(500)
-  fileType     String  @map("file_type") @db.VarChar(100)
-  fileSize     Int     @map("file_size")
-  fileUrl      String  @map("file_url") @db.VarChar(1000)
-  thumbnailUrl String? @map("thumbnail_url") @db.VarChar(1000)
-
-  // Document Type
-  documentType String? @map("document_type") @db.VarChar(100)
-
-  // Metadata
-  title        String?   @db.VarChar(500)
-  description  String?   @db.Text
-  documentDate DateTime? @map("document_date") @db.Date
-
-  // OCR & Search
-  extractedText String? @map("extracted_text") @db.Text
-
-  // Quality
-  qualityScore Int     @default(0) @map("quality_score")
-  isVerified   Boolean @default(false) @map("is_verified")
-  verifiedById String? @map("verified_by")
-  verifiedBy   User?   @relation("VerifiedBy", fields: [verifiedById], references: [id])
-
-  // Uploader
-  uploadedById String @map("uploaded_by")
-  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
-
-  // Privacy
-  visibility String @default("family_only") @db.VarChar(50)
-
-  // Timestamps
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([branchId])
-  @@index([personId])
-  @@index([uploadedById])
-  @@index([documentType])
-  @@map("documents")
+  @@index([created_at(sort: Desc)])
+  @@index([user_id, is_read])
 }
 
-// ============================================================================
-// NOTIFICATIONS
-// ============================================================================
+model partnerships {
+  partnership_id                           String          @id
+  branch_id                                String          @db.VarChar(50)
+  person1_id                               String
+  person2_id                               String
+  partnership_type                         String          @default("marriage") @db.VarChar(50)
+  start_date                               DateTime?       @db.Date
+  start_place                              String?         @db.VarChar(255)
+  end_date                                 DateTime?       @db.Date
+  end_place                                String?         @db.VarChar(255)
+  end_reason                               String?         @db.VarChar(50)
+  status                                   String          @default("active") @db.VarChar(20)
+  is_current                               Boolean         @default(true)
+  order_number                             Int             @default(1)
+  notes                                    String?
+  ceremony_type                            String?         @db.VarChar(100)
+  created_by                               String?
+  quality_score                            Int             @default(0)
+  verification_level                       Int             @default(1)
+  is_verified                              Boolean         @default(false)
+  verified_by                              String?
+  verified_at                              DateTime?
+  visibility                               String          @default("family_only") @db.VarChar(20)
+  created_at                               DateTime        @default(now())
+  updated_at                               DateTime
+  family_branches                          family_branches @relation(fields: [branch_id], references: [branch_id])
+  users_partnerships_created_byTousers     users?          @relation("partnerships_created_byTousers", fields: [created_by], references: [user_id])
+  persons_partnerships_person1_idTopersons persons         @relation("partnerships_person1_idTopersons", fields: [person1_id], references: [person_id], onDelete: Cascade)
+  persons_partnerships_person2_idTopersons persons         @relation("partnerships_person2_idTopersons", fields: [person2_id], references: [person_id], onDelete: Cascade)
+  users_partnerships_verified_byTousers    users?          @relation("partnerships_verified_byTousers", fields: [verified_by], references: [user_id])
 
-model Notification {
-  id String @id @default(uuid()) @map("notification_id")
+  @@unique([person1_id, person2_id, order_number])
+  @@index([branch_id])
+  @@index([person1_id])
+  @@index([person2_id])
+  @@index([start_date])
+  @@index([status])
+}
 
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
+model persons {
+  person_id                                                               String                  @id
+  branch_id                                                               String                  @db.VarChar(50)
+  full_name                                                               String                  @db.VarChar(255)
+  given_name                                                              String?                 @db.VarChar(100)
+  surname                                                                 String?                 @db.VarChar(100)
+  maiden_name                                                             String?                 @db.VarChar(100)
+  nickname                                                                String?                 @db.VarChar(100)
+  birth_year                                                              Int?
+  birth_date                                                              DateTime?               @db.Date
+  birth_place                                                             String?                 @db.VarChar(255)
+  death_year                                                              Int?
+  death_date                                                              DateTime?               @db.Date
+  death_place                                                             String?                 @db.VarChar(255)
+  is_living                                                               Boolean?
+  current_location                                                        String?                 @db.VarChar(255)
+  current_country                                                         String?                 @db.VarChar(100)
+  gender                                                                  String?                 @db.VarChar(20)
+  occupation                                                              String?                 @db.VarChar(255)
+  education                                                               String?
+  biography                                                               String?
+  profile_photo_url                                                       String?                 @db.VarChar(500)
+  generation                                                              String?                 @db.VarChar(10)
+  generation_number                                                       Int?
+  is_branch_root                                                          Boolean                 @default(false)
+  father_id                                                               String?
+  mother_id                                                               String?
+  reference_code                                                          String?                 @db.VarChar(100)
+  url_slug                                                                String?                 @db.VarChar(255)
+  quality_score                                                           Int                     @default(0)
+  verification_level                                                      Int                     @default(1)
+  is_verified                                                             Boolean                 @default(false)
+  verified_by                                                             String?
+  verified_at                                                             DateTime?
+  created_from_root_change                                                String?                 @db.VarChar(50)
+  created_by                                                              String?
+  visibility                                                              String                  @default("family_only") @db.VarChar(20)
+  created_at                                                              DateTime                @default(now())
+  updated_at                                                              DateTime
+  audit_log                                                               audit_log[]
+  branch_members                                                          branch_members[]
+  documents                                                               documents[]
+  partnerships_partnerships_person1_idTopersons                           partnerships[]          @relation("partnerships_person1_idTopersons")
+  partnerships_partnerships_person2_idTopersons                           partnerships[]          @relation("partnerships_person2_idTopersons")
+  family_branches                                                         family_branches         @relation(fields: [branch_id], references: [branch_id])
+  users_persons_created_byTousers                                         users?                  @relation("persons_created_byTousers", fields: [created_by], references: [user_id])
+  persons_persons_father_idTopersons                                      persons?                @relation("persons_father_idTopersons", fields: [father_id], references: [person_id])
+  other_persons_persons_father_idTopersons                                persons[]               @relation("persons_father_idTopersons")
+  persons_persons_mother_idTopersons                                      persons?                @relation("persons_mother_idTopersons", fields: [mother_id], references: [person_id])
+  other_persons_persons_mother_idTopersons                                persons[]               @relation("persons_mother_idTopersons")
+  users_persons_verified_byTousers                                        users?                  @relation("persons_verified_byTousers", fields: [verified_by], references: [user_id])
+  relationships_relationships_person1_idTopersons                         relationships[]         @relation("relationships_person1_idTopersons")
+  relationships_relationships_person2_idTopersons                         relationships[]         @relation("relationships_person2_idTopersons")
+  root_change_proposals_root_change_proposals_new_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_new_root_person_idTopersons")
+  root_change_proposals_root_change_proposals_old_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_old_root_person_idTopersons")
+  branch_person_links                                                        branch_person_links[]
 
-  // Type & Content
-  type    String @db.VarChar(100)
-  title   String @db.VarChar(500)
-  message String @db.Text
+  @@index([birth_year])
+  @@index([branch_id, generation_number])
+  @@index([branch_id])
+  @@index([branch_id, is_branch_root])
+  @@index([father_id])
+  @@index([mother_id])
+  @@index([surname, given_name])
+}
 
-  // Links
-  entityType String? @map("entity_type") @db.VarChar(50)
-  entityId   String? @map("entity_id") @db.VarChar(100)
-  actionUrl  String? @map("action_url") @db.VarChar(500)
+model relationships {
+  relationship_id                           String    @id
+  person1_id                                String
+  person2_id                                String
+  relationship_type                         String    @db.VarChar(50)
+  marriage_date                             DateTime? @db.Date
+  marriage_place                            String?   @db.VarChar(255)
+  divorce_date                              DateTime? @db.Date
+  order_number                              Int       @default(1)
+  is_current                                Boolean   @default(true)
+  notes                                     String?
+  created_by                                String?
+  created_at                                DateTime  @default(now())
+  updated_at                                DateTime
+  persons_relationships_person1_idTopersons persons   @relation("relationships_person1_idTopersons", fields: [person1_id], references: [person_id])
+  persons_relationships_person2_idTopersons persons   @relation("relationships_person2_idTopersons", fields: [person2_id], references: [person_id])
 
-  // Status
-  isRead Boolean   @default(false) @map("is_read")
-  readAt DateTime? @map("read_at")
+  @@unique([person1_id, person2_id, relationship_type])
+  @@index([person1_id])
+  @@index([person2_id])
+  @@index([relationship_type])
+}
 
-  // Priority
-  priority String @default("normal") @db.VarChar(20)
+model root_change_proposals {
+  proposal_id                                               String          @id @db.VarChar(50)
+  branch_id                                                 String          @db.VarChar(50)
+  old_root_person_id                                        String?
+  new_root_person_id                                        String?
+  new_root_data                                             Json?
+  relationship_type                                         String?         @db.VarChar(50)
+  proposed_by                                               String
+  evidence_documents                                        Json?
+  evidence_score                                            Int?
+  explanation                                               String?
+  status                                                    String          @default("pending") @db.VarChar(50)
+  review_deadline                                           DateTime?
+  guru_votes                                                Json?
+  family_votes                                              Json?
+  expert_reviews                                            Json?
+  executed_at                                               DateTime?
+  execution_log                                             Json?
+  people_affected                                           Int?
+  generations_shifted                                       Int?
+  created_at                                                DateTime        @default(now())
+  updated_at                                                DateTime
+  family_branches                                           family_branches @relation(fields: [branch_id], references: [branch_id])
+  persons_root_change_proposals_new_root_person_idTopersons persons?        @relation("root_change_proposals_new_root_person_idTopersons", fields: [new_root_person_id], references: [person_id])
+  persons_root_change_proposals_old_root_person_idTopersons persons?        @relation("root_change_proposals_old_root_person_idTopersons", fields: [old_root_person_id], references: [person_id])
+  users                                                     users           @relation(fields: [proposed_by], references: [user_id])
 
-  // Channel
-  sentViaEmail Boolean   @default(false) @map("sent_via_email")
-  emailSentAt  DateTime? @map("email_sent_at")
+  @@index([branch_id])
+  @@index([proposed_by])
+  @@index([status])
+}
 
-  // Timestamp
-  createdAt DateTime @default(now()) @map("created_at")
+model stories {
+  story_id                         String          @id
+  branch_id                        String          @db.VarChar(50)
+  author_id                        String
+  title                            String          @db.VarChar(500)
+  content                          String
+  story_type                       String          @default("memory") @db.VarChar(50)
+  tags                             String[]
+  tagged_people                    String[]
+  location                         String?         @db.VarChar(255)
+  story_date                       DateTime?       @db.Date
+  story_year                       Int?
+  photos                           Json?
+  videos                           Json?
+  audio                            Json?
+  views_count                      Int             @default(0)
+  reactions                        Json            @default("{}")
+  comments_count                   Int             @default(0)
+  status                           String          @default("pending") @db.VarChar(50)
+  approved_by                      String?
+  approved_at                      DateTime?
+  visibility                       String          @default("family_only") @db.VarChar(50)
+  created_at                       DateTime        @default(now())
+  updated_at                       DateTime
+  documents                        documents[]
+  users_stories_approved_byTousers users?          @relation("stories_approved_byTousers", fields: [approved_by], references: [user_id])
+  users_stories_author_idTousers   users           @relation("stories_author_idTousers", fields: [author_id], references: [user_id])
+  family_branches                  family_branches @relation(fields: [branch_id], references: [branch_id])
 
-  @@index([userId, isRead])
-  @@index([createdAt(sort: Desc)])
-  @@map("notifications")
+  @@index([author_id])
+  @@index([branch_id])
+  @@index([created_at(sort: Desc)])
+  @@index([status])
+  @@index([story_type])
+  @@index([visibility])
+}
+
+model super_guru_assignments {
+  assignment_id                                  String        @id
+  user_id                                        String
+  region_id                                      String
+  is_primary                                     Boolean       @default(false)
+  created_at                                     DateTime      @default(now())
+  created_by                                     String?
+  users_super_guru_assignments_created_byTousers users?        @relation("super_guru_assignments_created_byTousers", fields: [created_by], references: [user_id])
+  admin_regions                                  admin_regions @relation(fields: [region_id], references: [region_id])
+  users_super_guru_assignments_user_idTousers    users         @relation("super_guru_assignments_user_idTousers", fields: [user_id], references: [user_id])
+
+  @@unique([user_id, region_id])
+  @@index([region_id])
+}
+
+model users {
+  user_id                                                         String                   @id
+  email                                                           String                   @unique @db.VarChar(255)
+  password_hash                                                   String                   @db.VarChar(255)
+  full_name                                                       String                   @db.VarChar(255)
+  birth_year                                                      Int?
+  current_location                                                String?                  @db.VarChar(255)
+  preferred_language                                              String                   @default("bs") @db.VarChar(10)
+  email_verified                                                  Boolean                  @default(false)
+  email_verification_token                                        String?                  @db.VarChar(255)
+  two_factor_enabled                                              Boolean                  @default(false)
+  two_factor_secret                                               String?                  @db.VarChar(255)
+  reset_password_token                                            String?                  @db.VarChar(255)
+  reset_password_expires                                          DateTime?
+  is_active                                                       Boolean                  @default(true)
+  last_login                                                      DateTime?
+  created_at                                                      DateTime                 @default(now())
+  updated_at                                                      DateTime
+  global_role                                                     UserGlobalRole           @default(USER)
+  audit_log_audit_log_disputed_byTousers                          audit_log[]              @relation("audit_log_disputed_byTousers")
+  audit_log_audit_log_user_idTousers                              audit_log[]              @relation("audit_log_user_idTousers")
+  branch_members_branch_members_approved_byTousers                branch_members[]         @relation("branch_members_approved_byTousers")
+  branch_members_branch_members_invited_byTousers                 branch_members[]         @relation("branch_members_invited_byTousers")
+  branch_members_branch_members_user_idTousers                    branch_members[]         @relation("branch_members_user_idTousers")
+  disputes_disputes_raised_byTousers                              disputes[]               @relation("disputes_raised_byTousers")
+  disputes_disputes_resolved_byTousers                            disputes[]               @relation("disputes_resolved_byTousers")
+  documents_documents_uploaded_byTousers                          documents[]              @relation("documents_uploaded_byTousers")
+  documents_documents_verified_byTousers                          documents[]              @relation("documents_verified_byTousers")
+  family_branches                                                 family_branches[]
+  notifications                                                   notifications[]
+  partnerships_partnerships_created_byTousers                     partnerships[]           @relation("partnerships_created_byTousers")
+  partnerships_partnerships_verified_byTousers                    partnerships[]           @relation("partnerships_verified_byTousers")
+  persons_persons_created_byTousers                               persons[]                @relation("persons_created_byTousers")
+  persons_persons_verified_byTousers                              persons[]                @relation("persons_verified_byTousers")
+  root_change_proposals                                           root_change_proposals[]
+  stories_stories_approved_byTousers                              stories[]                @relation("stories_approved_byTousers")
+  stories_stories_author_idTousers                                stories[]                @relation("stories_author_idTousers")
+  super_guru_assignments_super_guru_assignments_created_byTousers super_guru_assignments[] @relation("super_guru_assignments_created_byTousers")
+  super_guru_assignments_super_guru_assignments_user_idTousers    super_guru_assignments[] @relation("super_guru_assignments_user_idTousers")
+  branch_person_links_branch_person_links_requested_byTousers     branch_person_links[]    @relation("branch_person_links_requested_byTousers")
+  branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
+  branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
+
+  @@index([email])
+  @@index([is_active])
 }
 
 enum UserGlobalRole {

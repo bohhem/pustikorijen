@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import personService from '../services/person.service';
+import { getErrorMessage } from '../utils/error.util';
 
 /**
  * Recalculate generation numbers for a branch
@@ -15,11 +16,12 @@ export async function recalculateGenerations(req: Request, res: Response): Promi
       message: 'Generations recalculated successfully',
       result,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Recalculate generations error:', error);
+    const message = getErrorMessage(error);
     res.status(500).json({
       error: 'Failed to recalculate generations',
-      details: error.message,
+      details: message || undefined,
     });
   }
 }

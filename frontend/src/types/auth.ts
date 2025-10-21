@@ -24,6 +24,8 @@ export interface LoginCredentials {
   password: string;
 }
 
+export type SocialProvider = 'google' | 'facebook';
+
 export interface RegisterData {
   email: string;
   password: string;
@@ -47,6 +49,7 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  socialLogin: (provider: SocialProvider, token: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }

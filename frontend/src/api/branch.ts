@@ -1,5 +1,13 @@
 import api from '../lib/axios';
-import type { Branch, CreateBranchInput, BranchesResponse, BranchMember, JoinRequest } from '../types/branch';
+import type {
+  Branch,
+  CreateBranchInput,
+  BranchesResponse,
+  BranchMember,
+  JoinRequest,
+  PersonLinkCandidate,
+  PersonLinkRecord,
+} from '../types/branch';
 
 /**
  * Create a new family branch
@@ -76,5 +84,37 @@ export async function rejectJoinRequest(branchId: string, userId: string): Promi
  */
 export async function updateMemberRole(branchId: string, userId: string, role: 'member' | 'guru'): Promise<{ message: string; member: BranchMember }> {
   const response = await api.patch(`/branches/${branchId}/members/${userId}/role`, { role });
+  return response.data;
+}
+
+export async function searchPersonLinkCandidates(branchId: string, query?: string, limit?: number): Promise<PersonLinkCandidate[]> {
+  const response = await api.get(`/branches/${branchId}/person-links/candidates`, {
+    params: {
+      q: query,
+      limit,
+    },
+  });
+  return response.data.results ?? [];
+}
+
+export async function requestPersonLink(branchId: string, data: { personId: string; displayName?: string | null; notes?: string | null }): Promise<{ message: string; link: PersonLinkRecord }> {
+  const response = await api.post(`/branches/${branchId}/person-links`, data);
+  return response.data;
+}
+
+export async function getPersonLinks(branchId: string, status?: 'pending' | 'approved' | 'rejected'): Promise<PersonLinkRecord[]> {
+  const response = await api.get(`/branches/${branchId}/person-links`, {
+    params: status ? { status } : undefined,
+  });
+  return response.data.links ?? [];
+}
+
+export async function approvePersonLinkRequest(branchId: string, linkId: string): Promise<{ message: string; link: PersonLinkRecord }> {
+  const response = await api.post(`/branches/${branchId}/person-links/${linkId}/approve`);
+  return response.data;
+}
+
+export async function rejectPersonLinkRequest(branchId: string, linkId: string, notes?: string): Promise<{ message: string; link: PersonLinkRecord }> {
+  const response = await api.post(`/branches/${branchId}/person-links/${linkId}/reject`, notes ? { notes } : {});
   return response.data;
 }

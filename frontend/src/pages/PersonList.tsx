@@ -59,7 +59,7 @@ export default function PersonList() {
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      const fullName = (person.fullName || `${person.givenName} ${person.surname}`).toLowerCase();
+      const fullName = (person.linkDisplayName || person.fullName || `${person.givenName || ''} ${person.surname || ''}`).toLowerCase();
       const maidenName = person.maidenName?.toLowerCase() || '';
       return fullName.includes(query) || maidenName.includes(query);
     }
@@ -191,7 +191,7 @@ export default function PersonList() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {t('personList.living')} ({persons.filter(p => p.isAlive).length})
+                {t('personList.living')} ({persons.filter(p => p.isAlive !== false).length})
               </button>
               <button
                 onClick={() => setFilter('deceased')}
@@ -201,7 +201,7 @@ export default function PersonList() {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                {t('personList.deceased')} ({persons.filter(p => !p.isAlive).length})
+                {t('personList.deceased')} ({persons.filter(p => p.isAlive === false).length})
               </button>
             </div>
           </div>

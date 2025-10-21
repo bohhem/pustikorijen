@@ -32,6 +32,11 @@
     "haveAccount": "Već imate račun?",
     "createAccount": "Kreiraj račun",
     "creatingAccount": "Kreiranje računa...",
+    "orWithEmail": "ili nastavi s prijavom putem emaila",
+    "continueWithFacebook": "Nastavi s Facebookom",
+    "socialLoadError": "Nije moguće učitati društvenu prijavu. Osvježite stranicu i pokušajte ponovo.",
+    "socialLoginError": "Društvena prijava nije uspjela. Pokušajte ponovo.",
+    "socialCancelled": "Prijava je otkazana.",
     "loginError": "Prijava neuspješna. Provjerite vaše podatke.",
     "registerError": "Registracija neuspješna. Pokušajte ponovo."
   },
@@ -41,7 +46,8 @@
     "people": "Osobe",
     "tree": "Porodično stablo",
     "profile": "Profil",
-    "settings": "Postavke"
+    "settings": "Postavke",
+    "admin": "SuperGuru"
   },
   "dashboard": {
     "title": "Kontrolna ploča",
@@ -110,7 +116,42 @@
     "role": {
       "guru": "Guru",
       "member": "Član"
-    }
+    },
+    "pendingRequestsTitle": "Zahtjevi na čekanju ({{count}})",
+    "pendingRequestsCaption": "Samo gurui mogu odobriti ili odbiti zahtjeve.",
+    "pendingStatus": "Na čekanju",
+    "approveRequest": "Odobri",
+    "rejectRequest": "Odbij",
+    "noPendingRequests": "Trenutno nema zahtjeva na čekanju.",
+    "requestApproved": "Zahtjev je odobren",
+    "requestRejected": "Zahtjev je odbijen",
+    "requestActionFailed": "Greška pri obradi zahtjeva",
+    "unknownUser": "Nepoznat korisnik",
+    "noMembersYet": "Još nema članova.",
+    "linkExistingModalTitle": "Poveži postojeću osobu",
+    "linkExistingModalSubtitle": "Pretražite osobe iz povezanih grana kako biste ponovo iskoristili njihove podatke.",
+    "linkSearchPlaceholder": "Pretraga po imenu ili djevojačkom prezimenu...",
+    "linkSearchError": "Nije moguće učitati osobe. Pokušajte ponovo.",
+    "linkNoResults": "Nijedna osoba nije pronađena za \"{{query}}\".",
+    "linkRequestAction": "Pošalji zahtjev",
+    "linkRequestSubmitted": "Zahtjev za povezivanje je poslan.",
+    "linkRequestFailed": "Greška pri slanju zahtjeva.",
+    "maidenNameLabel": "djevojačko {{name}}",
+    "linkHomeBranch": "Matična porodica: {{branch}} {{city}}",
+    "linkBirthYear": "Rođen(a) {{year}}",
+    "pendingPersonLinksTitle": "Zahtjevi za povezivanje osoba",
+    "pendingPersonLinksCaption": "Vezu moraju odobriti gurui obje porodice.",
+    "awaitingSourceApproval": "Čeka se odobrenje matične porodice.",
+    "awaitingTargetApproval": "Čeka se odobrenje ove porodice.",
+    "awaitingOtherBranch": "Čeka se potvrda druge porodice.",
+    "approveLink": "Odobri vezu",
+    "rejectLink": "Odbij",
+    "confirmRejectLink": "Da li sigurno želite odbiti ovaj zahtjev?",
+    "linkApproved": "Veza je odobrena.",
+    "linkApprovalFailed": "Neuspješno odobravanje veze.",
+    "linkRejected": "Veza je odbijena.",
+    "linkRejectionFailed": "Neuspješno odbijanje veze.",
+    "linkedNotice": "Ova osoba potiče iz porodice {{branch}}. Osnovni podaci se uređuju tamo."
   },
   "personList": {
     "searchPlaceholder": "Pretraži po imenu...",
@@ -121,6 +162,7 @@
     "person": "osoba",
     "people": "osobe",
     "noResults": "Nema pronađenih osoba koje odgovaraju pretrazi.",
+    "linkedFrom": "Povezano iz porodice {{branch}}",
     "partnersLabel": "Partnerstva",
     "partnerStatus": {
       "active": "aktivno",
@@ -217,13 +259,15 @@
     "privacy": "Privatnost",
     "breadcrumbPeople": "Osobe",
     "breadcrumbAddPerson": "Dodaj osobu",
-    "loadDataError": "Greška pri učitavanju podataka"
+    "loadDataError": "Greška pri učitavanju podataka",
+    "linkExistingButton": "Poveži postojeću osobu"
   },
   "editPerson": {
     "title": "Uredi člana porodice",
     "updatePerson": "Sačuvaj izmjene",
     "updating": "Spremanje...",
-    "breadcrumbEditPerson": "Uredi osobu"
+    "breadcrumbEditPerson": "Uredi osobu",
+    "linkedReadOnly": "Ova osoba pripada drugoj porodici i može se uređivati samo tamo."
   },
   "personDetail": {
     "title": "Profil osobe",
@@ -337,5 +381,81 @@
     "unauthorized": "Niste autorizovani za ovu akciju.",
     "notFound": "Traženi resurs nije pronađen.",
     "serverError": "Greška servera. Pokušajte kasnije."
+  },
+  "admin": {
+    "title": "SuperGuru konzola",
+    "subtitle": "Pratite dodijeljene regione, koordinirajte podršku granama i održavajte porodice povezanim.",
+    "superGuruConsole": "SuperGuru kontrolna tabla",
+    "superGuruBadge": "SuperGuru",
+    "backToApp": "Nazad na aplikaciju",
+    "comingSoon": "Uskoro",
+    "loadError": "Nije moguće učitati admin podatke",
+    "noRegions": "Još uvijek nemate dodijeljenih regiona. Javite se core timu za pristup.",
+    "unknownCountry": "Država nepoznata",
+    "primaryAssignment": "Primarni region",
+    "supportingAssignment": "Pomoćni region",
+    "assignedSince": "Dodijeljen od {{date}}",
+    "manageRegions": {
+      "title": "Upravljaj regionima",
+      "subtitle": "Kreiraj regione i odredi koji SuperGuru je zadužen za njih."
+    },
+    "actions": {
+      "addRegion": "Dodaj region",
+      "createRegion": "Kreiraj region",
+      "cancel": "Otkaži",
+      "saving": "Snima...",
+      "assignGuru": "Dodijeli SuperGurua",
+      "closeAssign": "Zatvori",
+      "makePrimary": "Postavi kao primarnog",
+      "removeGuru": "Ukloni",
+      "confirmRemove": "Ukloniti ovog SuperGurua iz regiona?"
+    },
+    "forms": {
+      "regionName": "Naziv regiona",
+      "regionCode": "Šifra regiona",
+      "country": "Država",
+      "countryPlaceholder": "npr. Bosna i Hercegovina",
+      "description": "Opis",
+      "descriptionPlaceholder": "Koja područja pokriva ovaj region?",
+      "guruEmail": "SuperGuru email",
+      "makePrimary": "Postavi kao primarnog SuperGurua"
+    },
+    "metrics": {
+      "regions": "Regiona",
+      "branches": "Grana",
+      "gurus": "Gurua",
+      "members": "Aktivnih članova"
+    },
+    "sections": {
+      "overview": "Pregled",
+      "regions": "Regioni",
+      "users": "Korisnici",
+      "backups": "Backupi",
+      "activity": "Aktivnost"
+    },
+    "regionStats": {
+      "title": "Brzi pregled",
+      "branches": "Aktivne grane",
+      "members": "Aktivni članovi",
+      "gurus": "Dodijeljeni gurui",
+      "primaryGuru": "Primarni",
+      "supportingGuru": "Pomoćni",
+      "noGurus": "Još nema dodijeljenih gurua"
+    },
+    "recentBranches": {
+      "title": "Nedavne grane",
+      "subtitle": "Posljednjih 5 zapisa",
+      "empty": "Još nema grana u ovom regionu.",
+      "visibility": "Vidljivost",
+      "people": "{{count}} osoba"
+    },
+    "messages": {
+      "regionCreated": "Region je uspješno kreiran",
+      "guruAssigned": "Dodjela SuperGurua je ažurirana",
+      "primaryUpdated": "Primarni SuperGuru je ažuriran",
+      "guruRemoved": "SuperGuru je uklonjen",
+      "cannotRemoveLast": "Najmanje jedan SuperGuru mora ostati dodijeljen"
+    },
+    "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže."
   }
 }

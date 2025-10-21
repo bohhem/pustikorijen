@@ -1,7 +1,149 @@
-import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'crypto';
+import prisma from '../utils/prisma';
 import type { CreatePersonInput, UpdatePersonInput } from '../validators/person.validator';
 
-const prisma = new PrismaClient();
+type PersonRecord = {
+  person_id: string;
+  branch_id: string;
+  full_name: string;
+  given_name: string | null;
+  surname: string | null;
+  maiden_name: string | null;
+  nickname: string | null;
+  gender: string | null;
+  birth_date: Date | null;
+  birth_place: string | null;
+  death_date: Date | null;
+  death_place: string | null;
+  current_location: string | null;
+  current_country: string | null;
+  occupation: string | null;
+  education: string | null;
+  biography: string | null;
+  profile_photo_url: string | null;
+  generation: string | null;
+  generation_number: number | null;
+  father_id: string | null;
+  mother_id: string | null;
+  is_living: boolean | null;
+  visibility: string;
+  created_at: Date;
+  updated_at: Date;
+  created_by: string | null;
+  family_branches?: {
+    branch_id: string;
+    surname: string;
+    city_name: string | null;
+  } | null;
+};
+
+type PersonDto = {
+  id: string;
+  branchId: string;
+  fullName: string;
+  givenName?: string;
+  surname?: string;
+  maidenName?: string;
+  nickname?: string;
+  gender?: string;
+  birthDate?: string;
+  birthPlace?: string;
+  deathDate?: string;
+  deathPlace?: string;
+  currentLocation?: string;
+  currentCountry?: string;
+  occupation?: string;
+  education?: string;
+  biography?: string;
+  generation?: string;
+  generationNumber?: number;
+  fatherId?: string;
+  motherId?: string;
+  profilePhotoUrl?: string;
+  isAlive?: boolean;
+  privacyLevel?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdById?: string;
+  firstName?: string;
+  lastName?: string;
+  homeBranch?: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+  } | null;
+  isLinked: boolean;
+  linkId?: string;
+  linkedFromBranch?: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+  } | null;
+  linkStatus?: string;
+  linkDisplayName?: string | null;
+};
+
+const toIso = (value?: Date | null): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+  return value.toISOString();
+};
+
+function mapPerson(
+  record: PersonRecord,
+  options: {
+    isLinked?: boolean;
+    linkId?: string;
+    linkedFromBranch?: { id: string; surname: string; cityName?: string | null } | null;
+    linkStatus?: string;
+    linkDisplayName?: string | null;
+  } = {}
+): PersonDto {
+  return {
+    id: record.person_id,
+    branchId: record.branch_id,
+    fullName: record.full_name,
+    givenName: record.given_name ?? undefined,
+    surname: record.surname ?? undefined,
+    maidenName: record.maiden_name ?? undefined,
+    nickname: record.nickname ?? undefined,
+    gender: record.gender ?? undefined,
+    birthDate: toIso(record.birth_date),
+    birthPlace: record.birth_place ?? undefined,
+    deathDate: toIso(record.death_date),
+    deathPlace: record.death_place ?? undefined,
+    currentLocation: record.current_location ?? undefined,
+    currentCountry: record.current_country ?? undefined,
+    occupation: record.occupation ?? undefined,
+    education: record.education ?? undefined,
+    biography: record.biography ?? undefined,
+    generation: record.generation ?? undefined,
+    generationNumber: record.generation_number ?? undefined,
+    fatherId: record.father_id ?? undefined,
+    motherId: record.mother_id ?? undefined,
+    profilePhotoUrl: record.profile_photo_url ?? undefined,
+    isAlive: record.is_living ?? undefined,
+    privacyLevel: record.visibility ?? undefined,
+    createdAt: toIso(record.created_at),
+    updatedAt: toIso(record.updated_at),
+    createdById: record.created_by ?? undefined,
+    firstName: record.given_name ?? undefined,
+    lastName: record.surname ?? undefined,
+    homeBranch: record.family_branches
+      ? {
+          id: record.family_branches.branch_id,
+          surname: record.family_branches.surname,
+          cityName: record.family_branches.city_name,
+        }
+      : null,
+    isLinked: options.isLinked ?? false,
+    linkId: options.linkId,
+    linkedFromBranch: options.linkedFromBranch ?? null,
+    linkStatus: options.linkStatus,
+    linkDisplayName: options.linkDisplayName ?? null,
+  };
+}
 
 export class PersonService {
   // Create a new person
@@ -9,8 +151,8 @@ export class PersonService {
     // Verify user is a member of the branch
     const membership = await prisma.branchMember.findFirst({
       where: {
-        branchId,
-        userId,
+        branch_id: branchId,
+        user_id: userId,
         status: 'active',
       },
     });
@@ -30,95 +172,200 @@ export class PersonService {
       }
 
       const parent = await prisma.person.findUnique({
-        where: { id: parentId },
+        where: { person_id: parentId },
+        select: {
+          branch_id: true,
+          generation_number: true,
+        },
       });
 
       if (!parent) {
         throw new Error('Parent not found');
       }
 
-      if (parent.branchId !== branchId) {
+      if (parent.branch_id !== branchId) {
         throw new Error('Parent must be in the same branch');
       }
 
-      generationNumber = (parent.generationNumber || 1) + 1;
+      generationNumber = (parent.generation_number || 1) + 1;
     }
 
     // Create the person
     const person = await prisma.person.create({
       data: {
-        branchId,
-        fullName: `${data.firstName} ${data.lastName}`,
+        person_id: randomUUID(),
+        branch_id: branchId,
+        full_name: `${data.firstName} ${data.lastName}`,
         surname: data.lastName,
-        givenName: data.firstName,
-        maidenName: data.maidenName,
+        given_name: data.firstName,
+        maiden_name: data.maidenName ?? null,
         gender: data.gender,
-        generationNumber,
+        generation_number: generationNumber,
         generation: `G${generationNumber}`,
-        birthDate: data.birthDate ? new Date(data.birthDate) : null,
-        birthPlace: data.birthPlace ?? null,
-        deathDate: data.deathDate ? new Date(data.deathDate) : null,
-        deathPlace: data.deathPlace ?? null,
+        birth_date: data.birthDate ? new Date(data.birthDate) : null,
+        birth_place: data.birthPlace ?? null,
+        death_date: data.deathDate ? new Date(data.deathDate) : null,
+        death_place: data.deathPlace ?? null,
         biography: data.biography ?? null,
-        isLiving: data.isAlive,
+        is_living: data.isAlive,
         visibility: data.privacyLevel ?? 'family_only',
-        fatherId: data.fatherId ?? null,
-        motherId: data.motherId ?? null,
-        createdById: userId,
+        father_id: data.fatherId ?? null,
+        mother_id: data.motherId ?? null,
+        created_by: userId,
+        created_at: new Date(),
+        updated_at: new Date(),
       },
       include: {
-        father: true,
-        mother: true,
+        family_branches: {
+          select: {
+            branch_id: true,
+            surname: true,
+            city_name: true,
+          },
+        },
       },
     });
 
     // Update branch statistics
     await this.updateBranchStatistics(branchId);
 
-    return person;
+    return mapPerson(person as PersonRecord);
   }
 
   // Get all persons in a branch
   async getPersonsByBranch(branchId: string) {
-    const persons = await prisma.person.findMany({
-      where: {
-        branchId,
-        // TODO: Add privacy filtering based on user membership
-      },
-      include: {
-        father: true,
-        mother: true,
-        children: true,
-      },
-      orderBy: [
-        { generationNumber: 'asc' },
-        { birthDate: 'asc' },
-      ],
-    });
+    const [canonicalPersons, linkedPersons] = await Promise.all([
+      prisma.person.findMany({
+        where: {
+          branch_id: branchId,
+        },
+        include: {
+          family_branches: {
+            select: {
+              branch_id: true,
+              surname: true,
+              city_name: true,
+            },
+          },
+        },
+        orderBy: [
+          { generation_number: 'asc' },
+          { birth_date: 'asc' },
+        ],
+      }),
+      prisma.branchPersonLink.findMany({
+        where: {
+          branch_id: branchId,
+          status: 'approved',
+        },
+        include: {
+          persons: {
+            include: {
+              family_branches: {
+                select: {
+                  branch_id: true,
+                  surname: true,
+                  city_name: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      }),
+    ]);
 
-    return persons;
+    const canonicalRecords = canonicalPersons as PersonRecord[];
+    const linkRecords = linkedPersons as Array<{
+      link_id: string;
+      status: string;
+      display_name: string | null;
+      persons: PersonRecord;
+    }>;
+
+    const canonicalDtos = canonicalRecords.map((record) => mapPerson(record));
+
+    const linkedDtos = linkRecords.map((link) =>
+      mapPerson(link.persons as PersonRecord, {
+        isLinked: true,
+        linkId: link.link_id,
+        linkedFromBranch: link.persons.family_branches
+          ? {
+              id: link.persons.family_branches.branch_id,
+              surname: link.persons.family_branches.surname,
+              cityName: link.persons.family_branches.city_name,
+            }
+          : null,
+        linkStatus: link.status,
+        linkDisplayName: link.display_name,
+      })
+    );
+
+    return [...canonicalDtos, ...linkedDtos];
   }
 
   // Get a single person by ID
   async getPersonById(branchId: string, personId: string) {
-    const person = await prisma.person.findFirst({
+    const canonical = await prisma.person.findFirst({
       where: {
-        id: personId,
-        branchId,
+        person_id: personId,
+        branch_id: branchId,
       },
       include: {
-        father: true,
-        mother: true,
-        children: true,
-        branch: true,
+        family_branches: {
+          select: {
+            branch_id: true,
+            surname: true,
+            city_name: true,
+          },
+        },
       },
     });
 
-    if (!person) {
+    if (canonical) {
+      return mapPerson(canonical as PersonRecord);
+    }
+
+    const link = await prisma.branchPersonLink.findFirst({
+      where: {
+        branch_id: branchId,
+        person_id: personId,
+        status: 'approved',
+      },
+      include: {
+        persons: {
+          include: {
+            family_branches: {
+              select: {
+                branch_id: true,
+                surname: true,
+                city_name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!link) {
       throw new Error('Person not found');
     }
 
-    return person;
+    return mapPerson(link.persons as PersonRecord, {
+      isLinked: true,
+      linkId: link.link_id,
+      linkedFromBranch: link.persons.family_branches
+        ? {
+            id: link.persons.family_branches.branch_id,
+            surname: link.persons.family_branches.surname,
+            cityName: link.persons.family_branches.city_name,
+          }
+        : null,
+      linkStatus: link.status,
+      linkDisplayName: link.display_name,
+    });
   }
 
   // Update a person
@@ -126,8 +373,8 @@ export class PersonService {
     // Verify user is a member of the branch
     const membership = await prisma.branchMember.findFirst({
       where: {
-        branchId,
-        userId,
+        branch_id: branchId,
+        user_id: userId,
         status: 'active',
       },
     });
@@ -139,8 +386,8 @@ export class PersonService {
     // Verify person exists and belongs to branch
     const existingPerson = await prisma.person.findFirst({
       where: {
-        id: personId,
-        branchId,
+        person_id: personId,
+        branch_id: branchId,
       },
     });
 
@@ -149,53 +396,66 @@ export class PersonService {
     }
 
     // Build update data
-    const updateData: any = {};
+    const updateData: {
+      full_name?: string;
+      given_name?: string | null;
+      surname?: string | null;
+      maiden_name?: string | null;
+      gender?: string | null;
+      birth_date?: Date | null;
+      birth_place?: string | null;
+      death_date?: Date | null;
+      death_place?: string | null;
+      biography?: string | null;
+      is_living?: boolean | null;
+      visibility?: string;
+      father_id?: string | null;
+      mother_id?: string | null;
+    } = {};
 
     if (data.firstName || data.lastName) {
-      const firstName = data.firstName || existingPerson.givenName || '';
+      const firstName = data.firstName || existingPerson.given_name || '';
       const lastName = data.lastName || existingPerson.surname || '';
-      updateData.fullName = `${firstName} ${lastName}`;
-      if (data.firstName) updateData.givenName = data.firstName;
-      if (data.lastName) updateData.surname = data.lastName;
+      updateData.full_name = `${firstName} ${lastName}`.trim();
+      if (data.firstName !== undefined) updateData.given_name = data.firstName;
+      if (data.lastName !== undefined) updateData.surname = data.lastName;
     }
 
-    if (data.maidenName !== undefined) updateData.maidenName = data.maidenName;
+    if (data.maidenName !== undefined) updateData.maiden_name = data.maidenName;
     if (data.gender) updateData.gender = data.gender;
 
     if (data.birthDate !== undefined) {
-      updateData.birthDate = data.birthDate ? new Date(data.birthDate) : null;
+      updateData.birth_date = data.birthDate ? new Date(data.birthDate) : null;
     }
 
     if (data.birthPlace !== undefined) {
-      updateData.birthPlace = data.birthPlace;
+      updateData.birth_place = data.birthPlace ?? null;
     }
 
     if (data.deathDate !== undefined) {
-      updateData.deathDate = data.deathDate ? new Date(data.deathDate) : null;
+      updateData.death_date = data.deathDate ? new Date(data.deathDate) : null;
     }
 
     if (data.deathPlace !== undefined) {
-      updateData.deathPlace = data.deathPlace;
+      updateData.death_place = data.deathPlace ?? null;
     }
 
     if (data.biography !== undefined) updateData.biography = data.biography;
-    if (data.isAlive !== undefined) updateData.isLiving = data.isAlive;
+    if (data.isAlive !== undefined) updateData.is_living = data.isAlive;
     if (data.privacyLevel) updateData.visibility = data.privacyLevel;
-    if (data.fatherId !== undefined) updateData.fatherId = data.fatherId;
-    if (data.motherId !== undefined) updateData.motherId = data.motherId;
+    if (data.fatherId !== undefined) updateData.father_id = data.fatherId;
+    if (data.motherId !== undefined) updateData.mother_id = data.motherId;
 
     // Update the person
     const person = await prisma.person.update({
-      where: { id: personId },
-      data: updateData,
-      include: {
-        father: true,
-        mother: true,
-        children: true,
+      where: { person_id: personId },
+      data: {
+        ...updateData,
+        updated_at: new Date(),
       },
     });
 
-    return person;
+    return mapPerson(person as PersonRecord);
   }
 
   // Delete a person
@@ -203,8 +463,8 @@ export class PersonService {
     // Verify user is a Guru of the branch
     const membership = await prisma.branchMember.findFirst({
       where: {
-        branchId,
-        userId,
+        branch_id: branchId,
+        user_id: userId,
         status: 'active',
         role: 'guru',
       },
@@ -217,11 +477,18 @@ export class PersonService {
     // Check if person has children
     const person = await prisma.person.findFirst({
       where: {
-        id: personId,
-        branchId,
+        person_id: personId,
+        branch_id: branchId,
       },
       include: {
-        children: true,
+        branch_person_links: {
+          where: {
+            status: 'approved',
+          },
+          select: {
+            link_id: true,
+          },
+        },
       },
     });
 
@@ -229,13 +496,24 @@ export class PersonService {
       throw new Error('Person not found');
     }
 
-    if (person.children && person.children.length > 0) {
+    const childCount = await prisma.person.count({
+      where: {
+        branch_id: branchId,
+        OR: [{ father_id: personId }, { mother_id: personId }],
+      },
+    });
+
+    if (childCount > 0) {
       throw new Error('Cannot delete person with children. Remove children first or reassign them.');
+    }
+
+    if (person.branch_person_links && person.branch_person_links.length > 0) {
+      throw new Error('Cannot delete person with active cross-branch links');
     }
 
     // Delete the person
     await prisma.person.delete({
-      where: { id: personId },
+      where: { person_id: personId },
     });
 
     // Update branch statistics
@@ -247,39 +525,34 @@ export class PersonService {
   // Get family tree for a branch
   async getFamilyTree(branchId: string) {
     const persons = await prisma.person.findMany({
-      where: { branchId },
-      include: {
-        father: true,
-        mother: true,
-        children: true,
-      },
+      where: { branch_id: branchId },
       orderBy: [
-        { generationNumber: 'asc' },
-        { birthDate: 'asc' },
+        { generation_number: 'asc' },
+        { birth_date: 'asc' },
       ],
     });
 
-    return persons;
+    return (persons as PersonRecord[]).map((record) => mapPerson(record));
   }
 
   // Update branch statistics
   private async updateBranchStatistics(branchId: string) {
     const persons = await prisma.person.findMany({
-      where: { branchId },
-      select: { generationNumber: true },
-    }) as Array<{ generationNumber: number | null }>;
+      where: { branch_id: branchId },
+      select: { generation_number: true },
+    }) as Array<{ generation_number: number | null }>;
 
     const totalPeople = persons.length;
     const totalGenerations = persons.reduce((max, current) => {
-      const value = current.generationNumber ?? 0;
+      const value = current.generation_number ?? 0;
       return value > max ? value : max;
     }, 0);
 
     await prisma.familyBranch.update({
-      where: { id: branchId },
+      where: { branch_id: branchId },
       data: {
-        totalPeople,
-        totalGenerations,
+        total_people: totalPeople,
+        total_generations: totalGenerations,
       },
     });
   }
@@ -290,19 +563,19 @@ export class PersonService {
    */
   async recalculateGenerations(branchId: string) {
     type GenerationPerson = {
-      id: string;
-      fatherId: string | null;
-      motherId: string | null;
-      generationNumber: number | null;
+      person_id: string;
+      father_id: string | null;
+      mother_id: string | null;
+      generation_number: number | null;
     };
 
     const persons = await prisma.person.findMany({
-      where: { branchId },
+      where: { branch_id: branchId },
       select: {
-        id: true,
-        fatherId: true,
-        motherId: true,
-        generationNumber: true,
+        person_id: true,
+        father_id: true,
+        mother_id: true,
+        generation_number: true,
       },
     }) as GenerationPerson[];
 
@@ -323,18 +596,22 @@ export class PersonService {
 
       visited.add(personId);
 
-      const person = persons.find((p) => p.id === personId);
+      const person = persons.find((p) => p.person_id === personId);
       if (!person) {
         return 1;
       }
 
       // If no parents, check if they have children to infer generation
-      if (!person.fatherId && !person.motherId) {
-        const children = persons.filter((p) => p.fatherId === person.id || p.motherId === person.id);
+      if (!person.father_id && !person.mother_id) {
+        const children = persons.filter(
+          (p) => p.father_id === person.person_id || p.mother_id === person.person_id
+        );
 
         if (children.length > 0) {
           // Calculate generation based on children (their gen - 1)
-          const childGenerations = children.map((child) => calculateGeneration(child.id, new Set(visited)));
+          const childGenerations = children.map((child) =>
+            calculateGeneration(child.person_id, new Set(visited))
+          );
           const minChildGen = Math.min(...childGenerations);
           const inferredGen = Math.max(1, minChildGen - 1);
           generationMap.set(personId, inferredGen);
@@ -349,13 +626,13 @@ export class PersonService {
       // Calculate based on parents (take max + 1)
       let parentGeneration = 0;
 
-      if (person.fatherId) {
-        const fatherGen = calculateGeneration(person.fatherId, new Set(visited));
+      if (person.father_id) {
+        const fatherGen = calculateGeneration(person.father_id, new Set(visited));
         parentGeneration = Math.max(parentGeneration, fatherGen);
       }
 
-      if (person.motherId) {
-        const motherGen = calculateGeneration(person.motherId, new Set(visited));
+      if (person.mother_id) {
+        const motherGen = calculateGeneration(person.mother_id, new Set(visited));
         parentGeneration = Math.max(parentGeneration, motherGen);
       }
 
@@ -365,8 +642,8 @@ export class PersonService {
     };
 
     // Calculate generations for all persons
-    persons.forEach(person => {
-      calculateGeneration(person.id);
+    persons.forEach((person) => {
+      calculateGeneration(person.person_id);
     });
 
     // Update all persons with correct generation numbers
@@ -374,10 +651,11 @@ export class PersonService {
     for (const [personId, generationNum] of generationMap.entries()) {
       updates.push(
         prisma.person.update({
-          where: { id: personId },
+          where: { person_id: personId },
           data: {
-            generationNumber: generationNum,
+            generation_number: generationNum,
             generation: `G${generationNum}`,
+            updated_at: new Date(),
           },
         })
       );
@@ -390,10 +668,11 @@ export class PersonService {
     const totalPeople = persons.length;
 
     await prisma.familyBranch.update({
-      where: { id: branchId },
+      where: { branch_id: branchId },
       data: {
-        totalGenerations: maxGeneration,
-        totalPeople,
+        total_generations: maxGeneration,
+        total_people: totalPeople,
+        updated_at: new Date(),
       },
     });
 

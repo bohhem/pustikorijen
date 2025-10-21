@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import type { LoginCredentials } from '../types/auth';
 import LanguageSwitcher from '../components/layout/LanguageSwitcher';
+import SocialLogin from '../components/auth/SocialLogin';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -12,6 +13,14 @@ export default function Login() {
   const { login } = useAuth();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const hasSocialLogin = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID || import.meta.env.VITE_FACEBOOK_APP_ID);
+  const handleSocialSuccess = useCallback(() => {
+    setError('');
+    navigate('/');
+  }, [navigate]);
+  const handleSocialError = useCallback((message: string) => {
+    setError(message);
+  }, []);
 
   const {
     register,
@@ -57,6 +66,23 @@ export default function Login() {
           {error && (
             <div className="rounded-md bg-red-50 p-4">
               <div className="text-sm text-red-700">{error}</div>
+            </div>
+          )}
+
+          {hasSocialLogin && (
+            <div className="space-y-4">
+              <SocialLogin
+                onSuccess={handleSocialSuccess}
+                onError={handleSocialError}
+              />
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                  <div className="w-full border-t border-gray-200" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">{t('auth.orWithEmail')}</span>
+                </div>
+              </div>
             </div>
           )}
 

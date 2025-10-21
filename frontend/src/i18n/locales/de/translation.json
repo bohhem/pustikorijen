@@ -32,6 +32,11 @@
     "haveAccount": "Bereits ein Konto?",
     "createAccount": "Konto erstellen",
     "creatingAccount": "Konto wird erstellt...",
+    "orWithEmail": "oder mit E-Mail fortfahren",
+    "continueWithFacebook": "Mit Facebook fortfahren",
+    "socialLoadError": "Soziale Anmeldung konnte nicht geladen werden. Bitte Seite neu laden und erneut versuchen.",
+    "socialLoginError": "Soziale Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+    "socialCancelled": "Anmeldung wurde abgebrochen.",
     "loginError": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Zugangsdaten.",
     "registerError": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
   },
@@ -41,7 +46,8 @@
     "people": "Personen",
     "tree": "Stammbaum",
     "profile": "Profil",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "admin": "SuperGuru"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -110,7 +116,42 @@
     "role": {
       "guru": "Guru",
       "member": "Mitglied"
-    }
+    },
+    "pendingRequestsTitle": "Ausstehende Anfragen ({{count}})",
+    "pendingRequestsCaption": "Nur Gurus können Beitrittsanfragen verwalten.",
+    "pendingStatus": "Ausstehend",
+    "approveRequest": "Annehmen",
+    "rejectRequest": "Ablehnen",
+    "noPendingRequests": "Keine ausstehenden Anfragen.",
+    "requestApproved": "Beitrittsanfrage genehmigt",
+    "requestRejected": "Beitrittsanfrage abgelehnt",
+    "requestActionFailed": "Anfrage konnte nicht verarbeitet werden",
+    "unknownUser": "Unbekannter Benutzer",
+    "noMembersYet": "Noch keine Mitglieder.",
+    "linkExistingModalTitle": "Bestehende Person verknüpfen",
+    "linkExistingModalSubtitle": "Suchen Sie nach Personen aus verwandten Zweigen, um deren Stammdaten zu verwenden.",
+    "linkSearchPlaceholder": "Nach Name oder Mädchenname suchen...",
+    "linkSearchError": "Personen konnten nicht geladen werden. Bitte erneut versuchen.",
+    "linkNoResults": "Keine Personen für \"{{query}}\" gefunden.",
+    "linkRequestAction": "Verknüpfung anfragen",
+    "linkRequestSubmitted": "Verknüpfungsanfrage wurde gesendet.",
+    "linkRequestFailed": "Verknüpfungsanfrage fehlgeschlagen.",
+    "maidenNameLabel": "geb. {{name}}",
+    "linkHomeBranch": "Heimatzweig: {{branch}} {{city}}",
+    "linkBirthYear": "Geboren {{year}}",
+    "pendingPersonLinksTitle": "Ausstehende Verknüpfungsanfragen",
+    "pendingPersonLinksCaption": "Verknüpfungen müssen von Gurus beider Zweige bestätigt werden.",
+    "awaitingSourceApproval": "Warten auf Zustimmung des Heimatzweigs.",
+    "awaitingTargetApproval": "Warten auf Zustimmung dieses Zweigs.",
+    "awaitingOtherBranch": "Warten auf die andere Seite.",
+    "approveLink": "Verknüpfung annehmen",
+    "rejectLink": "Ablehnen",
+    "confirmRejectLink": "Möchten Sie diese Verknüpfung wirklich ablehnen?",
+    "linkApproved": "Verknüpfung wurde genehmigt.",
+    "linkApprovalFailed": "Verknüpfung konnte nicht genehmigt werden.",
+    "linkRejected": "Verknüpfung wurde abgelehnt.",
+    "linkRejectionFailed": "Verknüpfung konnte nicht abgelehnt werden.",
+    "linkedNotice": "Diese Person stammt aus dem Zweig {{branch}}. Die Stammdaten werden dort verwaltet."
   },
   "personList": {
     "searchPlaceholder": "Nach Namen suchen...",
@@ -121,6 +162,7 @@
     "person": "Person",
     "people": "Personen",
     "noResults": "Keine Personen gefunden, die Ihrer Suche entsprechen.",
+    "linkedFrom": "Verknüpft mit dem Zweig {{branch}}",
     "partnersLabel": "Partnerschaften",
     "partnerStatus": {
       "active": "aktiv",
@@ -217,13 +259,15 @@
     "privacy": "Privatsphäre",
     "breadcrumbPeople": "Personen",
     "breadcrumbAddPerson": "Person hinzufügen",
-    "loadDataError": "Fehler beim Laden der Daten"
+    "loadDataError": "Fehler beim Laden der Daten",
+    "linkExistingButton": "Bestehende Person verknüpfen"
   },
   "editPerson": {
     "title": "Familienmitglied bearbeiten",
     "updatePerson": "Änderungen speichern",
     "updating": "Speichern...",
-    "breadcrumbEditPerson": "Person bearbeiten"
+    "breadcrumbEditPerson": "Person bearbeiten",
+    "linkedReadOnly": "Diese Person gehört zu einem anderen Zweig und kann nur dort bearbeitet werden."
   },
   "personDetail": {
     "title": "Personenprofil",
@@ -337,5 +381,81 @@
     "unauthorized": "Sie sind nicht berechtigt, diese Aktion durchzuführen.",
     "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
     "serverError": "Serverfehler. Bitte versuchen Sie es später erneut."
+  },
+  "admin": {
+    "title": "SuperGuru-Konsole",
+    "subtitle": "Überwachen Sie Ihre zugewiesenen Regionen, koordinieren Sie Branch-Unterstützung und halten Sie Familien verbunden.",
+    "superGuruConsole": "SuperGuru-Dashboard",
+    "superGuruBadge": "SuperGuru",
+    "backToApp": "Zurück zur App",
+    "comingSoon": "Demnächst",
+    "loadError": "Admin-Daten konnten nicht geladen werden",
+    "noRegions": "Es sind noch keine Regionen zugewiesen. Bitte wenden Sie sich an das Kernteam, um Zugriff zu erhalten.",
+    "unknownCountry": "Land unbekannt",
+    "primaryAssignment": "Primärregion",
+    "supportingAssignment": "Unterstützende Region",
+    "assignedSince": "Zugewiesen seit {{date}}",
+    "manageRegions": {
+      "title": "Regionen verwalten",
+      "subtitle": "Erstellen Sie Regionen und legen Sie fest, welcher SuperGuru verantwortlich ist."
+    },
+    "actions": {
+      "addRegion": "Region hinzufügen",
+      "createRegion": "Region erstellen",
+      "cancel": "Abbrechen",
+      "saving": "Speichern...",
+      "assignGuru": "SuperGuru zuweisen",
+      "closeAssign": "Schließen",
+      "makePrimary": "Als primär festlegen",
+      "removeGuru": "Entfernen",
+      "confirmRemove": "Diesen SuperGuru aus der Region entfernen?"
+    },
+    "forms": {
+      "regionName": "Regionsname",
+      "regionCode": "Regionscode",
+      "country": "Land",
+      "countryPlaceholder": "z. B. Bosnien und Herzegowina",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Welche Gebiete umfasst diese Region?",
+      "guruEmail": "SuperGuru-E-Mail",
+      "makePrimary": "Als primären SuperGuru setzen"
+    },
+    "metrics": {
+      "regions": "Regionen",
+      "branches": "Zweige",
+      "gurus": "Gurus",
+      "members": "Aktive Mitglieder"
+    },
+    "sections": {
+      "overview": "Übersicht",
+      "regions": "Regionen",
+      "users": "Benutzer",
+      "backups": "Backups",
+      "activity": "Aktivität"
+    },
+    "regionStats": {
+      "title": "Region im Überblick",
+      "branches": "Aktive Zweige",
+      "members": "Aktive Mitglieder",
+      "gurus": "Zugewiesene Gurus",
+      "primaryGuru": "Primär",
+      "supportingGuru": "Unterstützend",
+      "noGurus": "Noch keine Gurus zugewiesen"
+    },
+    "recentBranches": {
+      "title": "Neueste Zweige",
+      "subtitle": "Letzte 5 Einträge",
+      "empty": "In dieser Region gibt es noch keine Zweige.",
+      "visibility": "Sichtbarkeit",
+      "people": "{{count}} Personen"
+    },
+    "messages": {
+      "regionCreated": "Region erfolgreich erstellt",
+      "guruAssigned": "SuperGuru-Zuweisung aktualisiert",
+      "primaryUpdated": "Primärer SuperGuru aktualisiert",
+      "guruRemoved": "SuperGuru entfernt",
+      "cannotRemoveLast": "Mindestens ein SuperGuru muss zugewiesen bleiben"
+    },
+    "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze."
   }
 }

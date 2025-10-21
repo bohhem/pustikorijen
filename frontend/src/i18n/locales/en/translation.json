@@ -32,6 +32,11 @@
     "haveAccount": "Already have an account?",
     "createAccount": "Create account",
     "creatingAccount": "Creating account...",
+    "orWithEmail": "or continue with email",
+    "continueWithFacebook": "Continue with Facebook",
+    "socialLoadError": "Unable to load social login. Please refresh the page and try again.",
+    "socialLoginError": "Unable to complete social login. Please try again.",
+    "socialCancelled": "Login was cancelled.",
     "loginError": "Login failed. Please check your credentials.",
     "registerError": "Registration failed. Please try again."
   },
@@ -41,7 +46,8 @@
     "people": "People",
     "tree": "Family Tree",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "admin": "SuperGuru"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -110,7 +116,42 @@
     "role": {
       "guru": "Guru",
       "member": "Member"
-    }
+    },
+    "pendingRequestsTitle": "Pending Requests ({{count}})",
+    "pendingRequestsCaption": "Only Gurus can approve or reject join requests.",
+    "pendingStatus": "Pending",
+    "approveRequest": "Approve",
+    "rejectRequest": "Reject",
+    "noPendingRequests": "No pending requests right now.",
+    "requestApproved": "Join request approved",
+    "requestRejected": "Join request rejected",
+    "requestActionFailed": "Failed to update join request",
+    "unknownUser": "Unknown user",
+    "noMembersYet": "No members yet.",
+    "linkExistingModalTitle": "Link an existing person",
+    "linkExistingModalSubtitle": "Search canonical records from related branches to reuse their details.",
+    "linkSearchPlaceholder": "Search by name or maiden name...",
+    "linkSearchError": "Unable to load people. Please try again.",
+    "linkNoResults": "No people found for \"{{query}}\".",
+    "linkRequestAction": "Request link",
+    "linkRequestSubmitted": "Link request sent for approval.",
+    "linkRequestFailed": "Failed to create link request.",
+    "maidenNameLabel": "née {{name}}",
+    "linkHomeBranch": "Home branch: {{branch}} {{city}}",
+    "linkBirthYear": "Born {{year}}",
+    "pendingPersonLinksTitle": "Pending person link approvals",
+    "pendingPersonLinksCaption": "Links must be approved by a Guru from both branches.",
+    "awaitingSourceApproval": "Waiting for the home branch to approve.",
+    "awaitingTargetApproval": "Waiting for this branch to approve.",
+    "awaitingOtherBranch": "Awaiting confirmation from the other branch.",
+    "approveLink": "Approve link",
+    "rejectLink": "Reject",
+    "confirmRejectLink": "Are you sure you want to reject this link request?",
+    "linkApproved": "Person link approved.",
+    "linkApprovalFailed": "Failed to approve person link.",
+    "linkRejected": "Person link rejected.",
+    "linkRejectionFailed": "Failed to reject person link.",
+    "linkedNotice": "This person originates from the {{branch}} branch. Core details are managed there."
   },
   "personList": {
     "searchPlaceholder": "Search by name...",
@@ -121,6 +162,7 @@
     "person": "person",
     "people": "people",
     "noResults": "No persons found matching your search.",
+    "linkedFrom": "Linked from the {{branch}} branch",
     "partnersLabel": "Partnerships",
     "partnerStatus": {
       "active": "active",
@@ -217,13 +259,15 @@
     "privacy": "Privacy",
     "breadcrumbPeople": "People",
     "breadcrumbAddPerson": "Add Person",
-    "loadDataError": "Failed to load data"
+    "loadDataError": "Failed to load data",
+    "linkExistingButton": "Link existing person"
   },
   "editPerson": {
     "title": "Edit Family Member",
     "updatePerson": "Save Changes",
     "updating": "Saving...",
-    "breadcrumbEditPerson": "Edit Person"
+    "breadcrumbEditPerson": "Edit Person",
+    "linkedReadOnly": "This person belongs to another branch and can only be edited there."
   },
   "personDetail": {
     "title": "Person Profile",
@@ -337,5 +381,81 @@
     "unauthorized": "You are not authorized to perform this action.",
     "notFound": "The requested resource was not found.",
     "serverError": "Server error. Please try again later."
+  },
+  "admin": {
+    "title": "SuperGuru Console",
+    "subtitle": "Monitor assigned regions, coordinate branch support, and keep families growing.",
+    "superGuruConsole": "SuperGuru Dashboard",
+    "superGuruBadge": "SuperGuru",
+    "backToApp": "Back to app",
+    "comingSoon": "Coming soon",
+    "loadError": "Unable to load admin data",
+    "noRegions": "No regions have been assigned yet. Reach out to the core team to get access.",
+    "unknownCountry": "Country unknown",
+    "primaryAssignment": "Primary region",
+    "supportingAssignment": "Supporting region",
+    "assignedSince": "Assigned since {{date}}",
+    "manageRegions": {
+      "title": "Manage regions",
+      "subtitle": "Create regions and coordinate which SuperGuru is responsible for them."
+    },
+    "actions": {
+      "addRegion": "Add region",
+      "createRegion": "Create region",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "assignGuru": "Assign SuperGuru",
+      "closeAssign": "Close",
+      "makePrimary": "Make primary",
+      "removeGuru": "Remove",
+      "confirmRemove": "Remove this SuperGuru from the region?"
+    },
+    "forms": {
+      "regionName": "Region name",
+      "regionCode": "Region code",
+      "country": "Country",
+      "countryPlaceholder": "e.g., Bosnia and Herzegovina",
+      "description": "Description",
+      "descriptionPlaceholder": "What areas does this region cover?",
+      "guruEmail": "SuperGuru email",
+      "makePrimary": "Set as primary SuperGuru"
+    },
+    "metrics": {
+      "regions": "Regions",
+      "branches": "Branches",
+      "gurus": "Gurus",
+      "members": "Active members"
+    },
+    "sections": {
+      "overview": "Overview",
+      "regions": "Regions",
+      "users": "Users",
+      "backups": "Backups",
+      "activity": "Activity"
+    },
+    "regionStats": {
+      "title": "Region snapshot",
+      "branches": "Active branches",
+      "members": "Active members",
+      "gurus": "Assigned gurus",
+      "primaryGuru": "Primary",
+      "supportingGuru": "Supporting",
+      "noGurus": "No gurus assigned yet"
+    },
+    "recentBranches": {
+      "title": "Recent branches",
+      "subtitle": "Last 5 records",
+      "empty": "No branches recorded in this region yet.",
+      "visibility": "Visibility",
+      "people": "{{count}} people"
+    },
+    "messages": {
+      "regionCreated": "Region created successfully",
+      "guruAssigned": "SuperGuru assignment updated",
+      "primaryUpdated": "Primary SuperGuru updated",
+      "guruRemoved": "SuperGuru removed",
+      "cannotRemoveLast": "At least one SuperGuru must remain assigned"
+    },
+    "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon."
   }
 }

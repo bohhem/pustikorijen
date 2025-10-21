@@ -1,5 +1,5 @@
 import api from '../lib/axios';
-import type { LoginCredentials, RegisterData, AuthResponse, User } from '../types/auth';
+import type { LoginCredentials, RegisterData, AuthResponse, User, SocialProvider } from '../types/auth';
 
 /**
  * Register a new user
@@ -14,6 +14,17 @@ export async function registerUser(data: RegisterData): Promise<AuthResponse> {
  */
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
   const response = await api.post<AuthResponse>('/auth/login', credentials);
+  return response.data;
+}
+
+/**
+ * Social login
+ */
+export async function socialLoginWithProvider(provider: SocialProvider, token: string): Promise<AuthResponse> {
+  const response = await api.post<AuthResponse>('/auth/social', {
+    provider,
+    token,
+  });
   return response.data;
 }
 

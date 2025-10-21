@@ -12,6 +12,7 @@ import {
   createPartnershipSchema,
   updatePartnershipSchema,
 } from '../validators/partnership.validator';
+import { getErrorMessage } from '../utils/error.util';
 
 /**
  * Create partnership
@@ -20,6 +21,10 @@ import {
 export async function create(req: Request, res: Response): Promise<void> {
   try {
     const { branchId } = req.params;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const validation = createPartnershipSchema.safeParse({
       ...req.body,
       branchId,
@@ -35,14 +40,15 @@ export async function create(req: Request, res: Response): Promise<void> {
 
     const partnership = await createPartnership(
       validation.data,
-      req.user!.userId
+      req.user.userId
     );
 
     res.status(201).json({ partnership });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Create partnership error:', error);
-    if (error.message.includes('not found') || error.message.includes('already exists')) {
-      res.status(400).json({ error: error.message });
+    const message = getErrorMessage(error);
+    if (message.includes('not found') || message.includes('already exists')) {
+      res.status(400).json({ error: message });
       return;
     }
     res.status(500).json({ error: 'Failed to create partnership' });
@@ -58,7 +64,7 @@ export async function list(req: Request, res: Response): Promise<void> {
     const { branchId } = req.params;
     const partnerships = await getBranchPartnerships(branchId);
     res.status(200).json({ partnerships });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('List partnerships error:', error);
     res.status(500).json({ error: 'Failed to fetch partnerships' });
   }
@@ -73,7 +79,7 @@ export async function getByPerson(req: Request, res: Response): Promise<void> {
     const { personId } = req.params;
     const partnerships = await getPersonPartnerships(personId);
     res.status(200).json({ partnerships });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get person partnerships error:', error);
     res.status(500).json({ error: 'Failed to fetch partnerships' });
   }
@@ -88,9 +94,10 @@ export async function getById(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const partnership = await getPartnershipById(id);
     res.status(200).json({ partnership });
-  } catch (error: any) {
-    if (error.message === 'Partnership not found') {
-      res.status(404).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    if (message === 'Partnership not found') {
+      res.status(404).json({ error: message });
       return;
     }
     console.error('Get partnership error:', error);
@@ -105,6 +112,10 @@ export async function getById(req: Request, res: Response): Promise<void> {
 export async function update(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const validation = updatePartnershipSchema.safeParse(req.body);
 
     if (!validation.success) {
@@ -118,13 +129,14 @@ export async function update(req: Request, res: Response): Promise<void> {
     const partnership = await updatePartnership(
       id,
       validation.data,
-      req.user!.userId
+      req.user.userId
     );
 
     res.status(200).json({ partnership });
-  } catch (error: any) {
-    if (error.message === 'Partnership not found') {
-      res.status(404).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    if (message === 'Partnership not found') {
+      res.status(404).json({ error: message });
       return;
     }
     console.error('Update partnership error:', error);
@@ -139,11 +151,16 @@ export async function update(req: Request, res: Response): Promise<void> {
 export async function remove(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params;
-    const result = await deletePartnership(id, req.user!.userId);
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const result = await deletePartnership(id, req.user.userId);
     res.status(200).json(result);
-  } catch (error: any) {
-    if (error.message === 'Partnership not found') {
-      res.status(404).json({ error: error.message });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+    if (message === 'Partnership not found') {
+      res.status(404).json({ error: message });
       return;
     }
     console.error('Delete partnership error:', error);
@@ -166,7 +183,7 @@ export async function getSpouse(req: Request, res: Response): Promise<void> {
     }
 
     res.status(200).json({ spouse });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get spouse error:', error);
     res.status(500).json({ error: 'Failed to fetch spouse' });
   }

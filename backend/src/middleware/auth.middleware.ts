@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyAccessToken, type JwtPayload } from '../utils/jwt';
 
-// Extend Express Request type to include user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: JwtPayload;
   }
 }
 
@@ -34,6 +31,31 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
   } catch (error) {
     res.status(403).json({ error: 'Invalid or expired token' });
   }
+}
+
+/**
+ * Middleware to require SuperGuru (or higher) privileges for admin endpoints
+ */
+export function requireSuperGuru(req: Request, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  const hasElevatedAccess = req.user.globalRole === 'SUPER_GURU' || req.user.globalRole === 'ADMIN';
+
+  if (!hasElevatedAccess) {
+    res.status(403).json({ error: 'SuperGuru access required' });
+    return;
+  }
+
+  // Ensure SuperGuru assignments exist unless user is platform admin
+  if (req.user.globalRole === 'SUPER_GURU' && (!req.user.regionIds || req.user.regionIds.length === 0)) {
+    res.status(403).json({ error: 'SuperGuru region assignment required' });
+    return;
+  }
+
+  next();
 }
 
 /**

@@ -435,6 +435,13 @@ rm -rf prisma/migrations
 npm run db:migrate
 ```
 
+### Runtime 500 Errors After Build (Unknown `branchId`/`createdAt`)
+
+- **Symptoms:** Backend logs report `Unknown argument 'branchId'` (or `createdAt`) on Prisma queries once TypeScript has been compiled.
+- **Root Cause:** The production database uses **snake_case** column names (`branch_id`, `created_at`, …) while a portion of our service layer was still calling the camelCase accessors that Prisma generates for *virtual* camel models. The ESBuild/TS compilation step strips the earlier alias hacks, so at runtime Prisma receives invalid field names and throws 500s.
+- **Fix:** Always go through the shared Prisma alias (`backend/src/utils/prisma.ts`) or map raw results manually. When adding new queries, double-check the actual field name in `backend/prisma/schema.prisma` and convert the record back to camelCase before returning it to the frontend.
+- **Verification:** Run `npm run build` (backend) and hit the affected endpoint (e.g. `/api/v1/branches/:id/partnerships`). If the response is 200 and the logs show no `Unknown argument` errors, the mapping is correct.
+
 ### Frontend Build Errors
 
 ```bash

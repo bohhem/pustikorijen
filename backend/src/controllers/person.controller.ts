@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
 import personService from '../services/person.service';
 import { createPersonSchema, updatePersonSchema } from '../validators/person.validator';
+import { getErrorMessage, isZodError } from '../utils/error.util';
 
 export const createPerson = async (req: Request, res: Response) => {
   try {
     const { branchId } = req.params;
-    const userId = (req as any).user.userId;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userId = req.user.userId;
 
     // Validate input
     const validatedData = createPersonSchema.parse(req.body);
@@ -16,14 +21,16 @@ export const createPerson = async (req: Request, res: Response) => {
       message: 'Person created successfully',
       person,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating person:', error);
 
-    if (error.name === 'ZodError') {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+    if (isZodError(error)) {
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
 
-    return res.status(400).json({ error: error.message || 'Failed to create person' });
+    const message = getErrorMessage(error) || 'Failed to create person';
+
+    return res.status(400).json({ error: message });
   }
 };
 
@@ -34,9 +41,10 @@ export const getPersonsByBranch = async (req: Request, res: Response) => {
     const persons = await personService.getPersonsByBranch(branchId);
 
     return res.json({ persons });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching persons:', error);
-    return res.status(400).json({ error: error.message || 'Failed to fetch persons' });
+    const message = getErrorMessage(error) || 'Failed to fetch persons';
+    return res.status(400).json({ error: message });
   }
 };
 
@@ -47,16 +55,21 @@ export const getPersonById = async (req: Request, res: Response) => {
     const person = await personService.getPersonById(branchId, personId);
 
     res.json({ person });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching person:', error);
-    res.status(404).json({ error: error.message || 'Person not found' });
+    const message = getErrorMessage(error) || 'Person not found';
+    res.status(404).json({ error: message });
   }
 };
 
 export const updatePerson = async (req: Request, res: Response) => {
   try {
     const { branchId, personId } = req.params;
-    const userId = (req as any).user.userId;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userId = req.user.userId;
 
     // Validate input
     const validatedData = updatePersonSchema.parse(req.body);
@@ -67,28 +80,34 @@ export const updatePerson = async (req: Request, res: Response) => {
       message: 'Person updated successfully',
       person,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating person:', error);
 
-    if (error.name === 'ZodError') {
-      return res.status(400).json({ error: 'Validation error', details: error.errors });
+    if (isZodError(error)) {
+      return res.status(400).json({ error: 'Validation error', details: error.issues });
     }
 
-    return res.status(400).json({ error: error.message || 'Failed to update person' });
+    const message = getErrorMessage(error) || 'Failed to update person';
+    return res.status(400).json({ error: message });
   }
 };
 
 export const deletePerson = async (req: Request, res: Response) => {
   try {
     const { branchId, personId } = req.params;
-    const userId = (req as any).user.userId;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userId = req.user.userId;
 
     await personService.deletePerson(branchId, personId, userId);
 
     res.json({ message: 'Person deleted successfully' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting person:', error);
-    res.status(400).json({ error: error.message || 'Failed to delete person' });
+    const message = getErrorMessage(error) || 'Failed to delete person';
+    res.status(400).json({ error: message });
   }
 };
 
@@ -99,8 +118,9 @@ export const getFamilyTree = async (req: Request, res: Response) => {
     const tree = await personService.getFamilyTree(branchId);
 
     res.json({ tree });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching family tree:', error);
-    res.status(400).json({ error: error.message || 'Failed to fetch family tree' });
+    const message = getErrorMessage(error) || 'Failed to fetch family tree';
+    res.status(400).json({ error: message });
   }
 };

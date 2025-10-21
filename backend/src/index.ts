@@ -3,12 +3,13 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { getErrorMessage } from './utils/error.util';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = Number(process.env.PORT) || 5000;
 
 // Middleware
 app.use(helmet());
@@ -27,6 +28,7 @@ import authRoutes from './routes/auth.routes';
 import branchRoutes from './routes/branch.routes';
 import personRoutes from './routes/person.routes';
 import partnershipRoutes from './routes/partnership.routes';
+import adminRoutes from './routes/admin.routes';
 import { authenticateToken } from './middleware/auth.middleware';
 
 app.get('/api/v1', (_req, res) => {
@@ -48,6 +50,9 @@ app.use('/api/v1/branches/:branchId/persons', personRoutes);
 // Partnership routes (nested under branches)
 app.use('/api/v1/branches/:branchId/partnerships', partnershipRoutes);
 
+// Admin routes
+app.use('/api/v1/admin', adminRoutes);
+
 // Family tree route (separate from persons to avoid conflict)
 app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) => {
   try {
@@ -55,9 +60,10 @@ app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) =
     const personService = (await import('./services/person.service')).default;
     const tree = await personService.getFamilyTree(branchId);
     res.json({ tree });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching family tree:', error);
-    res.status(400).json({ error: error.message || 'Failed to fetch family tree' });
+    const message = getErrorMessage(error) || 'Failed to fetch family tree';
+    res.status(400).json({ error: message });
   }
 });
 
@@ -71,11 +77,12 @@ app.post('/api/v1/branches/:branchId/recalculate-generations', authenticateToken
       message: 'Generations recalculated successfully',
       result
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error recalculating generations:', error);
+    const message = getErrorMessage(error);
     res.status(500).json({
       error: 'Failed to recalculate generations',
-      details: error.message
+      details: message || undefined
     });
   }
 });
@@ -86,10 +93,17 @@ app.use((_req, res) => {
 });
 
 // Error handler
-app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error'
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const errorWithStatus = err as { status?: number };
+  const status = typeof errorWithStatus.status === 'number' ? errorWithStatus.status : 500;
+  const message = getErrorMessage(err) || 'Internal server error';
+  if (err instanceof Error && err.stack) {
+    console.error(err.stack);
+  } else {
+    console.error(err);
+  }
+  res.status(status).json({
+    error: message
   });
 });
 

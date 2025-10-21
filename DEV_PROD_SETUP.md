@@ -92,11 +92,17 @@ npm run dev
   - `PORT=5000`
   - `NODE_ENV=production`
   - `API_URL=https://api-pustikorijen.vibengin.com`
+  - `GOOGLE_CLIENT_ID=<google-oauth-client-id>`
+  - `FACEBOOK_APP_ID=<facebook-app-id>`
+  - `FACEBOOK_APP_SECRET=<facebook-app-secret>`
 
 - **`.env.development`** - Used by `npm run dev` (local development)
   - `PORT=5001`
   - `NODE_ENV=development`
   - `API_URL=http://localhost:5001`
+  - `GOOGLE_CLIENT_ID=<google-oauth-client-id>`
+  - `FACEBOOK_APP_ID=<facebook-app-id>`
+  - `FACEBOOK_APP_SECRET=<facebook-app-secret>`
 
 - **`.env`** - Deprecated, kept for backwards compatibility
   - Falls back to development settings
@@ -105,9 +111,13 @@ npm run dev
 
 - **`.env.production`** - Used by `npm run build` (production builds)
   - `VITE_API_URL=https://api-pustikorijen.vibengin.com`
+  - `VITE_GOOGLE_CLIENT_ID=<google-oauth-client-id>`
+  - `VITE_FACEBOOK_APP_ID=<facebook-app-id>`
 
 - **`.env.development`** - Used by `npm run dev` (local development)
   - `VITE_API_URL=http://localhost:5001`
+  - `VITE_GOOGLE_CLIENT_ID=<google-oauth-client-id>`
+  - `VITE_FACEBOOK_APP_ID=<facebook-app-id>`
 
 - **`.env`** - Deprecated, kept for backwards compatibility
   - Falls back to development settings

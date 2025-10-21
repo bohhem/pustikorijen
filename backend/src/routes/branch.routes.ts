@@ -9,6 +9,11 @@ import {
   approveRequest,
   rejectRequest,
   updateRole,
+  searchLinkCandidates,
+  createPersonLink,
+  listPersonLinksController,
+  approvePersonLinkRequest,
+  rejectPersonLinkRequest,
 } from '../controllers/branch.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
@@ -28,5 +33,10 @@ router.get('/:id/join-requests', authenticateToken, getPendingRequests); // Get 
 router.post('/:id/join-requests/approve', authenticateToken, approveRequest); // Approve request
 router.post('/:id/join-requests/reject', authenticateToken, rejectRequest); // Reject request
 router.patch('/:id/members/:userId/role', authenticateToken, updateRole); // Update member role
+router.get('/:id/person-links/candidates', authenticateToken, searchLinkCandidates);
+router.get('/:id/person-links', authenticateToken, listPersonLinksController);
+router.post('/:id/person-links', authenticateToken, createPersonLink);
+router.post('/:id/person-links/:linkId/approve', authenticateToken, approvePersonLinkRequest);
+router.post('/:id/person-links/:linkId/reject', authenticateToken, rejectPersonLinkRequest);
 
 export default router;

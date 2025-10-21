@@ -30,6 +30,22 @@ export interface Person {
   mother?: Person;
   children?: Person[];
 
+  // Cross-branch linking metadata
+  isLinked?: boolean;
+  linkId?: string;
+  linkStatus?: string;
+  linkDisplayName?: string | null;
+  linkedFromBranch?: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+  } | null;
+  homeBranch?: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+  } | null;
+
   // Computed properties for backward compatibility
   firstName?: string;
   lastName?: string;

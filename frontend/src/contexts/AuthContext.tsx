@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { loginUser, registerUser, getCurrentUser, updateUserProfile } from '../api/auth';
-import type { User, LoginCredentials, RegisterData, AuthContextType } from '../types/auth';
+import { loginUser, registerUser, getCurrentUser, updateUserProfile, socialLoginWithProvider } from '../api/auth';
+import type { User, LoginCredentials, RegisterData, AuthContextType, SocialProvider } from '../types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -54,6 +54,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(response.user);
   };
 
+  const socialLogin = async (provider: SocialProvider, token: string) => {
+    const response = await socialLoginWithProvider(provider, token);
+
+    localStorage.setItem('accessToken', response.tokens.accessToken);
+    localStorage.setItem('refreshToken', response.tokens.refreshToken);
+
+    setUser(response.user);
+  };
+
   const logout = () => {
     // Clear tokens
     localStorage.removeItem('accessToken');
@@ -74,6 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: !!user,
     login,
     register,
+    socialLogin,
     logout,
     updateProfile,
   };

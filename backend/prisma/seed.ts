@@ -8,10 +8,12 @@ async function main() {
   // Create baseline users
   const testUser = await prisma.user.upsert({
     where: { email: 'test@pustikorijen.ba' },
-    update: {},
+    update: {
+      passwordHash: '$2a$10$HQl5tXaiy98MAZtHwOISsOt64uXdtGNW8Hhk.CC4HxFIlNofZ15mK',
+    },
     create: {
       email: 'test@pustikorijen.ba',
-      passwordHash: '$2a$10$YourHashedPasswordHere', // Replace with actual hashed password
+      passwordHash: '$2a$10$HQl5tXaiy98MAZtHwOISsOt64uXdtGNW8Hhk.CC4HxFIlNofZ15mK',
       fullName: 'Test User',
       emailVerified: true,
       preferredLanguage: 'bs',
@@ -21,12 +23,13 @@ async function main() {
   const superGuruUser = await prisma.user.upsert({
     where: { email: 'superguru@pustikorijen.ba' },
     update: {
+      passwordHash: '$2a$10$HQl5tXaiy98MAZtHwOISsOt64uXdtGNW8Hhk.CC4HxFIlNofZ15mK',
       globalRole: 'SUPER_GURU',
       emailVerified: true,
     },
     create: {
       email: 'superguru@pustikorijen.ba',
-      passwordHash: '$2a$10$YourHashedPasswordHere', // Replace with actual hashed password
+      passwordHash: '$2a$10$HQl5tXaiy98MAZtHwOISsOt64uXdtGNW8Hhk.CC4HxFIlNofZ15mK',
       fullName: 'Super Guru',
       emailVerified: true,
       preferredLanguage: 'en',

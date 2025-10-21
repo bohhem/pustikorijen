@@ -51,6 +51,12 @@ export default function EditPerson() {
         getPersonById(branchId!, personId!),
       ]);
 
+      if (personData.isLinked) {
+        toast.error(t('editPerson.linkedReadOnly'));
+        navigate(`/branches/${branchId}/persons/${personId}`);
+        return;
+      }
+
       setBranch(branchData);
       setPersons(personsData);
 
