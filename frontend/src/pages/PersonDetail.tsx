@@ -1,27 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch, deletePerson } from '../api/person';
 import { getPersonPartnerships } from '../api/partnership';
-import { getBranchById } from '../api/branch';
+import { getBranchById, getBranchMembers } from '../api/branch';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import PartnershipCard from '../components/persons/PartnershipCard';
+import PersonBusinessAddressesSection from '../components/business/PersonBusinessAddressesSection';
 import type { Person } from '../types/person';
-import type { Branch } from '../types/branch';
+import type { Branch, BranchMember } from '../types/branch';
 import type { Partnership } from '../types/partnership';
 
 export default function PersonDetail() {
   const { branchId, personId } = useParams<{ branchId: string; personId: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const toast = useToast();
   const [person, setPerson] = useState<Person | null>(null);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [allPersons, setAllPersons] = useState<Person[]>([]);
+  const [members, setMembers] = useState<BranchMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
+  const isGuru = useMemo(
+    () => members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active'),
+    [members, user?.id]
+  );
+  const canManage = useMemo(() => isGuru || isSuperGuru, [isGuru, isSuperGuru]);
 
   useEffect(() => {
     if (branchId && personId) {
@@ -32,9 +43,10 @@ export default function PersonDetail() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [personsData, branchData] = await Promise.all([
+      const [personsData, branchData, membersData] = await Promise.all([
         getPersonsByBranch(branchId!),
         getBranchById(branchId!),
+        getBranchMembers(branchId!),
       ]);
 
       const currentPerson = personsData.find(p => p.id === personId);
@@ -47,6 +59,7 @@ export default function PersonDetail() {
       setPerson(currentPerson);
       setBranch(branchData);
       setAllPersons(personsData);
+      setMembers(membersData);
 
       // Load partnerships
       try {
@@ -374,8 +387,15 @@ export default function PersonDetail() {
           </div>
         </div>
 
+        {/* Business Addresses Section */}
+        <PersonBusinessAddressesSection
+          branchId={branchId!}
+          personId={personId!}
+          canManage={canManage}
+        />
+
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-6">
           <Link
             to={`/branches/${branchId}/partnerships/add?person=${personId}`}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-sm font-medium"

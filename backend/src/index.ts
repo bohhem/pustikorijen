@@ -29,6 +29,8 @@ import branchRoutes from './routes/branch.routes';
 import personRoutes from './routes/person.routes';
 import partnershipRoutes from './routes/partnership.routes';
 import adminRoutes from './routes/admin.routes';
+import geoRoutes from './routes/geo.routes';
+import businessAddressRoutes from './routes/business-address.routes';
 import { authenticateToken } from './middleware/auth.middleware';
 
 app.get('/api/v1', (_req, res) => {
@@ -52,6 +54,12 @@ app.use('/api/v1/branches/:branchId/partnerships', partnershipRoutes);
 
 // Admin routes
 app.use('/api/v1/admin', adminRoutes);
+
+// Geo lookup routes
+app.use('/api/v1/geo', geoRoutes);
+
+// Business address routes
+app.use('/api/v1/business-address', businessAddressRoutes);
 
 // Family tree route (separate from persons to avoid conflict)
 app.get('/api/v1/branches/:branchId/tree', authenticateToken, async (req, res) => {

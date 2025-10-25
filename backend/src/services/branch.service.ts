@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { JwtPayload } from '../utils/jwt';
 import prisma from '../utils/prisma';
+import { GEO_CITY_INCLUDE, mapGeoCity, type GeoCityRecord } from './geo.service';
 type ActingUser = Pick<JwtPayload, 'userId' | 'globalRole'>;
 
 type BranchRecord = {
@@ -11,6 +12,7 @@ type BranchRecord = {
   city_name: string;
   region: string | null;
   country: string;
+  geo_city_id: string | null;
   root_person_id: string | null;
   oldest_ancestor_year: number | null;
   total_people: number;
@@ -29,6 +31,7 @@ type BranchRecord = {
     full_name: string;
     email?: string | null;
   } | null;
+  geo_city?: GeoCityRecord | null;
   _count?: {
     branch_members?: number;
     persons?: number;
@@ -89,6 +92,8 @@ function mapBranch(record: BranchRecord) {
     cityName: record.city_name,
     region: record.region,
     country: record.country,
+    geoCityId: record.geo_city_id ?? undefined,
+    location: mapGeoCity(record.geo_city),
     rootPersonId: record.root_person_id,
     oldestAncestorYear: record.oldest_ancestor_year,
     totalPeople: record.total_people,
@@ -148,10 +153,7 @@ function mapBranchMember(record: BranchMemberRecord) {
 
 interface CreateBranchInput {
   surname: string;
-  cityCode: string;
-  cityName: string;
-  region?: string;
-  country?: string;
+  geoCityId: string;
   description?: string;
   visibility?: 'public' | 'family_only' | 'private';
   foundedById: string;
@@ -202,10 +204,18 @@ async function generateBranchId(cityCode: string, surname: string): Promise<stri
  * Create a new family branch
  */
 export async function createBranch(data: CreateBranchInput) {
-  const { surname, cityCode, cityName, region, country, description, visibility, foundedById } = data;
+  const { surname, geoCityId, description, visibility, foundedById } = data;
 
-  // Generate unique branch ID
-  const branchId = await generateBranchId(cityCode, surname);
+  const geoCity = await prisma.geoCity.findUnique({
+    where: { city_id: geoCityId },
+    include: GEO_CITY_INCLUDE,
+  });
+
+  if (!geoCity) {
+    throw new Error('Invalid city selection');
+  }
+
+  const branchId = await generateBranchId(geoCity.city_code, surname);
 
   // Normalize surname for searching
   const surnameNormalized = surname
@@ -213,16 +223,20 @@ export async function createBranch(data: CreateBranchInput) {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
+  const locationRegion = geoCity.region?.name ?? geoCity.entity_region?.name ?? null;
+  const countryName = geoCity.state?.name ?? 'Bosnia and Herzegovina';
+
   // Create branch
   const branch = await prisma.familyBranch.create({
     data: {
       branch_id: branchId,
       surname,
       surname_normalized: surnameNormalized,
-      city_code: cityCode.toUpperCase(),
-      city_name: cityName,
-      region: region || null,
-      country: country || 'Bosnia and Herzegovina',
+      city_code: geoCity.city_code.toUpperCase(),
+      city_name: geoCity.name,
+      region: locationRegion,
+      country: countryName,
+      geo_city_id: geoCity.city_id,
       description: description || null,
       visibility: visibility || 'public',
       founded_by: foundedById,
@@ -235,6 +249,9 @@ export async function createBranch(data: CreateBranchInput) {
           full_name: true,
           email: true,
         },
+      },
+      geo_city: {
+        include: GEO_CITY_INCLUDE,
       },
     },
   });
@@ -310,6 +327,9 @@ export async function getBranches(params: {
             full_name: true,
           },
         },
+        geo_city: {
+          include: GEO_CITY_INCLUDE,
+        },
         _count: {
           select: {
             branch_members: true,
@@ -347,6 +367,9 @@ export async function getBranchById(branchId: string) {
           full_name: true,
           email: true,
         },
+      },
+      geo_city: {
+        include: GEO_CITY_INCLUDE,
       },
       _count: {
         select: {

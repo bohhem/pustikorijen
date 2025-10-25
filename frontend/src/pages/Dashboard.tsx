@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
+import GuruBusinessAddressCard from '../components/business/GuruBusinessAddressCard';
 import type { Branch } from '../types/branch';
+import { formatBranchLocation } from '../utils/location';
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -77,6 +79,9 @@ export default function Dashboard() {
             </div>
           </div>
 
+          {/* Guru Business Address */}
+          <GuruBusinessAddressCard />
+
           {/* Profile Overview */}
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.yourProfile')}</h3>
@@ -141,7 +146,7 @@ export default function Dashboard() {
                       <div>
                         <h4 className="font-semibold text-gray-900">{branch.surname}</h4>
                         <p className="text-sm text-gray-600">
-                          {branch.cityName}, {branch.region || branch.country}
+                          {formatBranchLocation(branch)}
                         </p>
                       </div>
                       {branch.isVerified && (

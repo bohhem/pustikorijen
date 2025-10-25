@@ -1,3 +1,5 @@
+import type { GeoCity } from './geo';
+
 export interface Branch {
   id: string;
   surname: string;
@@ -6,6 +8,7 @@ export interface Branch {
   cityName: string;
   region: string | null;
   country: string;
+  geoCityId?: string | null;
   rootPersonId: string | null;
   oldestAncestorYear: number | null;
   totalPeople: number;
@@ -24,6 +27,7 @@ export interface Branch {
     fullName: string;
     email?: string;
   };
+  location?: GeoCity;
   _count?: {
     members: number;
     persons: number;
@@ -34,10 +38,7 @@ export interface Branch {
 
 export interface CreateBranchInput {
   surname: string;
-  cityCode: string;
-  cityName: string;
-  region?: string;
-  country?: string;
+  geoCityId: string;
   description?: string;
   visibility?: 'public' | 'family_only' | 'private';
 }

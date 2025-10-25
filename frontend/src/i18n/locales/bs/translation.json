@@ -174,17 +174,30 @@
     "title": "Kreiraj porodičnu granu",
     "surname": "Prezime",
     "surnameMinLength": "Prezime mora imati najmanje 2 karaktera",
-    "cityCode": "Kod grada",
-    "cityCodeMinLength": "Kod grada mora imati najmanje 2 karaktera",
-    "cityName": "Naziv grada",
-    "cityNameMinLength": "Naziv grada mora imati najmanje 2 karaktera",
-    "defaultCountry": "Bosna i Hercegovina",
+    "locationSectionTitle": "Lokacija grane",
+    "locationDescription": "Odaberite entitet/kanton i grad odakle grana potiče.",
+    "locationRequired": "Molimo odaberite grad",
     "descriptionPlaceholder": "Recite nam nešto o vašoj porodičnoj grani...",
     "visibility": "Vidljivost",
     "visibilityPublic": "Javno - Svi mogu vidjeti",
     "visibilityFamilyOnly": "Samo porodica - Samo članovi mogu vidjeti",
     "visibilityPrivate": "Privatno - Samo putem pozivnice",
     "creating": "Kreiranje..."
+  },
+  "geoSelector": {
+    "title": "Lokacija",
+    "state": "Država",
+    "entity": "Entitet / Distrikt",
+    "canton": "Kanton",
+    "city": "Grad / općina",
+    "select": "Odaberite opciju",
+    "selectEntity": "Odaberite entitet",
+    "selectCanton": "Odaberite kanton",
+    "selectCity": "Odaberite grad",
+    "noEntities": "Nema dostupnih entiteta",
+    "noCantons": "Prvo odaberite entitet",
+    "noCities": "Nema dostupnih gradova",
+    "loading": "Učitavanje..."
   },
   "pagination": {
     "previous": "Prethodna",
@@ -298,6 +311,47 @@
     "editPerson": "Uredi",
     "deletePerson": "Obriši",
     "confirmDelete": "Jeste li sigurni da želite obrisati ovu osobu? Ova radnja je nepovratna."
+  },
+  "businessAddresses": {
+    "guruTitle": "Poslovna prisutnost",
+    "guruSubtitle": "Podijelite javnu adresu kancelarije kako bi vas porodice mogle kontaktirati.",
+    "locationTitle": "Poslovna lokacija",
+    "locationDescription": "Odaberite državu, entitet/kanton i grad.",
+    "viewOnMaps": "Otvori u Google mapama",
+    "form": {
+      "label": "Oznaka",
+      "addressLine1": "Adresa - linija 1",
+      "addressLine2": "Adresa - linija 2",
+      "postalCode": "Poštanski broj",
+      "latitude": "Geografska širina",
+      "longitude": "Geografska dužina",
+      "mapsUrl": "Google Maps link",
+      "mapsId": "Google Maps place ID",
+      "isPublic": "Prikaži javno",
+      "isPublicHint": "Ako je uključeno, adresa će biti vidljiva na stranici grane.",
+      "share": "Dijeli",
+      "save": "Sačuvaj adresu"
+    },
+    "messages": {
+      "loadError": "Greška pri učitavanju adrese",
+      "saveError": "Greška pri čuvanju adrese",
+      "saveSuccess": "Adresa je sačuvana",
+      "locationRequired": "Molimo odaberite grad",
+      "deleteSuccess": "Adresa je obrisana",
+      "deleteConfirm": "Obrisati ovu adresu?"
+    },
+    "person": {
+      "title": "Poslovne adrese",
+      "subtitle": "Opcionalne kancelarije ili studiji povezani sa ovom osobom.",
+      "add": "Dodaj adresu",
+      "editTitle": "Uredi adresu",
+      "modalSubtitle": "Podaci za kontakt",
+      "defaultLabel": "Poslovna adresa",
+      "primaryBadge": "Primarna",
+      "markPrimary": "Postavi kao primarnu",
+      "notes": "Bilješke",
+      "empty": "Još nema poslovnih adresa."
+    }
   },
   "partnerships": {
     "title": "Partnerstva",

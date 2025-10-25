@@ -7,6 +7,76 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model geo_states {
+  state_id   String       @id @db.VarChar(20)
+  name       String       @db.VarChar(150)
+  iso2       String?      @db.VarChar(5)
+  iso3       String?      @db.VarChar(5)
+  wikidata_id String?     @db.VarChar(50)
+  latitude   Float?
+  longitude  Float?
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  geo_regions geo_regions[]
+  geo_cities  geo_cities[]
+}
+
+model geo_regions {
+  region_id        String        @id @db.VarChar(50)
+  state_id         String        @db.VarChar(20)
+  parent_region_id String?       @db.VarChar(50)
+  name             String        @db.VarChar(150)
+  name_native      String?       @db.VarChar(150)
+  code             String?       @db.VarChar(20)
+  type             String        @db.VarChar(50)
+  seat             String?       @db.VarChar(150)
+  wikidata_id      String?       @db.VarChar(50)
+  latitude         Float?
+  longitude        Float?
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+  state            geo_states    @relation(fields: [state_id], references: [state_id])
+  parent_region    geo_regions?  @relation("RegionChildren", fields: [parent_region_id], references: [region_id])
+  child_regions    geo_regions[] @relation("RegionChildren")
+  cities           geo_cities[]  @relation("CityRegion")
+  entity_cities    geo_cities[]  @relation("CityEntityRegion")
+
+  @@index([state_id])
+  @@index([parent_region_id])
+  @@index([code])
+}
+
+model geo_cities {
+  city_id         String                    @id @db.VarChar(60)
+  state_id        String                    @db.VarChar(20)
+  region_id       String?                   @db.VarChar(50)
+  entity_region_id String?                  @db.VarChar(50)
+  name            String                    @db.VarChar(150)
+  slug            String                    @db.VarChar(150)
+  city_code       String                    @db.VarChar(10)
+  wikidata_id     String?                   @db.VarChar(50)
+  is_official_city Boolean                  @default(false)
+  latitude        Float?
+  longitude       Float?
+  population_2013 Int?
+  num_settlements Int?
+  density_per_km2 Float?
+  area_km2        Float?
+  created_at      DateTime                  @default(now())
+  updated_at      DateTime                  @updatedAt
+  state           geo_states                @relation(fields: [state_id], references: [state_id])
+  region          geo_regions?              @relation("CityRegion", fields: [region_id], references: [region_id])
+  entity_region   geo_regions?              @relation("CityEntityRegion", fields: [entity_region_id], references: [region_id])
+  family_branches family_branches[]
+  guru_business_addresses guru_business_addresses[]
+  person_business_addresses person_business_addresses[]
+
+  @@index([state_id])
+  @@index([region_id])
+  @@index([slug])
+  @@index([city_code])
+}
+
 model admin_regions {
   region_id              String                   @id
   name                   String                   @db.VarChar(150)
@@ -192,6 +262,7 @@ model family_branches {
   city_name             String                  @db.VarChar(100)
   region                String?                 @db.VarChar(100)
   country               String                  @default("Bosnia and Herzegovina") @db.VarChar(100)
+  geo_city_id           String?                 @db.VarChar(60)
   root_person_id        String?
   oldest_ancestor_year  Int?
   total_people          Int                     @default(0)
@@ -217,8 +288,10 @@ model family_branches {
   persons               persons[]
   root_change_proposals root_change_proposals[]
   stories               stories[]
+  geo_city              geo_cities?             @relation(fields: [geo_city_id], references: [city_id])
 
   @@index([admin_region_id])
+  @@index([geo_city_id])
   @@index([city_code])
   @@index([surname_normalized])
   @@index([visibility])
@@ -243,6 +316,28 @@ model notifications {
 
   @@index([created_at(sort: Desc)])
   @@index([user_id, is_read])
+}
+
+model guru_business_addresses {
+  address_id           String     @id @db.VarChar(50)
+  user_id              String
+  geo_city_id          String     @db.VarChar(60)
+  label                String?    @db.VarChar(100)
+  address_line1        String?    @db.VarChar(255)
+  address_line2        String?    @db.VarChar(255)
+  postal_code          String?    @db.VarChar(20)
+  latitude             Float?
+  longitude            Float?
+  google_maps_place_id String?    @db.VarChar(255)
+  google_maps_url      String?    @db.VarChar(500)
+  is_public            Boolean    @default(true)
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+  user                 users      @relation(fields: [user_id], references: [user_id])
+  geo_city             geo_cities @relation(fields: [geo_city_id], references: [city_id])
+
+  @@unique([user_id])
+  @@index([geo_city_id])
 }
 
 model partnerships {
@@ -340,6 +435,7 @@ model persons {
   root_change_proposals_root_change_proposals_new_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_new_root_person_idTopersons")
   root_change_proposals_root_change_proposals_old_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_old_root_person_idTopersons")
   branch_person_links                                                        branch_person_links[]
+  person_business_addresses                                                 person_business_addresses[]
 
   @@index([birth_year])
   @@index([branch_id, generation_number])
@@ -371,6 +467,30 @@ model relationships {
   @@index([person1_id])
   @@index([person2_id])
   @@index([relationship_type])
+}
+
+model person_business_addresses {
+  address_id           String     @id @db.VarChar(50)
+  person_id            String
+  geo_city_id          String     @db.VarChar(60)
+  label                String?    @db.VarChar(100)
+  address_line1        String?    @db.VarChar(255)
+  address_line2        String?    @db.VarChar(255)
+  postal_code          String?    @db.VarChar(20)
+  latitude             Float?
+  longitude            Float?
+  google_maps_place_id String?    @db.VarChar(255)
+  google_maps_url      String?    @db.VarChar(500)
+  is_primary           Boolean    @default(false)
+  notes                String?
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+  person               persons    @relation(fields: [person_id], references: [person_id])
+  geo_city             geo_cities @relation(fields: [geo_city_id], references: [city_id])
+
+  @@index([person_id])
+  @@index([geo_city_id])
+  @@index([is_primary])
 }
 
 model root_change_proposals {
@@ -499,6 +619,7 @@ model users {
   branch_person_links_branch_person_links_requested_byTousers     branch_person_links[]    @relation("branch_person_links_requested_byTousers")
   branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
   branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
+  guru_business_addresses                                          guru_business_addresses?
 
   @@index([email])
   @@index([is_active])

@@ -5,10 +5,7 @@ import { z } from 'zod';
  */
 export const createBranchSchema = z.object({
   surname: z.string().min(2, 'Surname must be at least 2 characters').max(100),
-  cityCode: z.string().min(2, 'City code must be at least 2 characters').max(10),
-  cityName: z.string().min(2, 'City name must be at least 2 characters').max(100),
-  region: z.string().max(100).optional(),
-  country: z.string().max(100).optional(),
+  geoCityId: z.string().min(1, 'City selection is required'),
   description: z.string().max(5000).optional(),
   visibility: z.enum(['public', 'family_only', 'private']).optional(),
 });

@@ -1,0 +1,5535 @@
+{
+  "metadata": {
+    "generated_at": "2025-10-25T18:27:41.611618+00:00",
+    "source": "https://bs.wikipedia.org/wiki/Općine_Bosne_i_Hercegovine",
+    "records": 145
+  },
+  "state": {
+    "state_id": "bih",
+    "name": "Bosna i Hercegovina",
+    "iso2": "BA",
+    "wikidata_id": "Q225"
+  },
+  "regions": [
+    {
+      "region_id": "bih-fbih",
+      "state_id": "bih",
+      "name": "Federacija Bosne i Hercegovine",
+      "code": "FBiH",
+      "type": "entity",
+      "wikidata_id": "Q11198",
+      "parent_region_id": null,
+      "latitude": 43.858333333333334,
+      "longitude": 18.413888888888888
+    },
+    {
+      "region_id": "bih-rs",
+      "state_id": "bih",
+      "name": "Republika Srpska",
+      "code": "RS",
+      "type": "entity",
+      "wikidata_id": "Q11196",
+      "parent_region_id": null,
+      "latitude": 44.75,
+      "longitude": 17.316666666667
+    },
+    {
+      "region_id": "bih-bd",
+      "state_id": "bih",
+      "name": "Brčko distrikt",
+      "code": "BD",
+      "type": "district",
+      "wikidata_id": "Q194483",
+      "parent_region_id": null,
+      "latitude": 44.873611111111,
+      "longitude": 18.806944444444
+    },
+    {
+      "region_id": "bih-fbih-usk",
+      "state_id": "bih",
+      "name": "Unsko-sanski kanton",
+      "code": "USK",
+      "type": "canton",
+      "wikidata_id": "Q18248",
+      "parent_region_id": "bih-fbih",
+      "seat": "Bihać",
+      "latitude": 44.733333333333,
+      "longitude": 16.2
+    },
+    {
+      "region_id": "bih-fbih-pk",
+      "state_id": "bih",
+      "name": "Posavski kanton",
+      "code": "PK",
+      "type": "canton",
+      "wikidata_id": "Q18249",
+      "parent_region_id": "bih-fbih",
+      "seat": "Orašje",
+      "latitude": 45.033333333333,
+      "longitude": 18.483333333333
+    },
+    {
+      "region_id": "bih-fbih-tk",
+      "state_id": "bih",
+      "name": "Tuzlanski kanton",
+      "code": "TK",
+      "type": "canton",
+      "wikidata_id": "Q18250",
+      "parent_region_id": "bih-fbih",
+      "seat": "Tuzla",
+      "latitude": 44.55,
+      "longitude": 18.6
+    },
+    {
+      "region_id": "bih-fbih-zdk",
+      "state_id": "bih",
+      "name": "Zeničko-dobojski kanton",
+      "code": "ZDK",
+      "type": "canton",
+      "wikidata_id": "Q18253",
+      "parent_region_id": "bih-fbih",
+      "seat": "Zenica",
+      "latitude": 44.233333333333,
+      "longitude": 18.2
+    },
+    {
+      "region_id": "bih-fbih-bpk",
+      "state_id": "bih",
+      "name": "Bosansko-podrinjski kanton Goražde",
+      "code": "BPK",
+      "type": "canton",
+      "wikidata_id": "Q18256",
+      "parent_region_id": "bih-fbih",
+      "seat": "Goražde",
+      "latitude": 43.666666666667,
+      "longitude": 18.986111111111
+    },
+    {
+      "region_id": "bih-fbih-sbk",
+      "state_id": "bih",
+      "name": "Srednjobosanski kanton",
+      "code": "SBK",
+      "type": "canton",
+      "wikidata_id": "Q18262",
+      "parent_region_id": "bih-fbih",
+      "seat": "Travnik",
+      "latitude": 44.1,
+      "longitude": 17.65
+    },
+    {
+      "region_id": "bih-fbih-hnk",
+      "state_id": "bih",
+      "name": "Hercegovačko-neretvanski kanton",
+      "code": "HNK",
+      "type": "canton",
+      "wikidata_id": "Q18273",
+      "parent_region_id": "bih-fbih",
+      "seat": "Mostar",
+      "latitude": 43.45,
+      "longitude": 17.816666666667
+    },
+    {
+      "region_id": "bih-fbih-zhk",
+      "state_id": "bih",
+      "name": "Zapadnohercegovački kanton",
+      "code": "ZHK",
+      "type": "canton",
+      "wikidata_id": "Q18275",
+      "parent_region_id": "bih-fbih",
+      "seat": "Široki Brijeg",
+      "latitude": 43.4,
+      "longitude": 17.416666666667
+    },
+    {
+      "region_id": "bih-fbih-ks",
+      "state_id": "bih",
+      "name": "Kanton Sarajevo",
+      "code": "KS",
+      "type": "canton",
+      "wikidata_id": "Q18276",
+      "parent_region_id": "bih-fbih",
+      "seat": "Sarajevo",
+      "latitude": 43.85,
+      "longitude": 18.25
+    },
+    {
+      "region_id": "bih-fbih-k10",
+      "state_id": "bih",
+      "name": "Kanton 10",
+      "code": "K10",
+      "type": "canton",
+      "wikidata_id": "Q18277",
+      "parent_region_id": "bih-fbih",
+      "seat": "Livno",
+      "latitude": 43.795,
+      "longitude": 17.04
+    }
+  ],
+  "cities": [
+    {
+      "city_id": "FBiH-banovici",
+      "code": "BANO",
+      "name": "Banovići",
+      "slug": "banovici",
+      "wikidata_id": "Q806935",
+      "wikipedia_title": "Banovići",
+      "metrics": {
+        "num_settlements": 20,
+        "population_2013": 22773,
+        "density_per_km2": 123.1,
+        "area_km2": 185.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.40888888888889,
+        "longitude": 18.528666666666666
+      },
+      "municipality": {
+        "wikidata_id": "Q12756582",
+        "name": "Općina Banovići"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-banja-luka",
+      "code": "BANJ",
+      "name": "Banja Luka",
+      "slug": "banja-luka",
+      "wikidata_id": "Q131127",
+      "wikipedia_title": "Banja Luka",
+      "metrics": {
+        "num_settlements": 54,
+        "population_2013": 185042,
+        "density_per_km2": 149.36,
+        "area_km2": 1238.91
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.7725,
+        "longitude": 17.1925
+      },
+      "municipality": {
+        "wikidata_id": "Q131127",
+        "name": "Banja Luka"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-berkovici",
+      "code": "BERK",
+      "name": "Berkovići",
+      "slug": "berkovici",
+      "wikidata_id": "Q820944",
+      "wikipedia_title": "Berkovići",
+      "metrics": {
+        "num_settlements": 20,
+        "population_2013": 2114,
+        "density_per_km2": 8.47,
+        "area_km2": 249.69
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.094388888888886,
+        "longitude": 18.16963888888889
+      },
+      "municipality": {
+        "wikidata_id": "Q12273167",
+        "name": "Općina Berkovići"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-bihac",
+      "code": "BIHA",
+      "name": "Bihać",
+      "slug": "bihac",
+      "wikidata_id": "Q204434",
+      "wikipedia_title": "Bihać",
+      "metrics": {
+        "num_settlements": 59,
+        "population_2013": 56261,
+        "density_per_km2": 62.51,
+        "area_km2": 900.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.81472222222222,
+        "longitude": 15.869166666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q14103175",
+        "name": "Grad Bihać"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-bijeljina",
+      "code": "BIJE",
+      "name": "Bijeljina",
+      "slug": "bijeljina",
+      "wikidata_id": "Q207801",
+      "wikipedia_title": "Bijeljina",
+      "metrics": {
+        "num_settlements": 67,
+        "population_2013": 107715,
+        "density_per_km2": 146.78,
+        "area_km2": 733.85
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.75666666666667,
+        "longitude": 19.215555555555557
+      },
+      "municipality": {
+        "wikidata_id": "Q15622309",
+        "name": "Grad Bijeljina"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-bileca",
+      "code": "BILE",
+      "name": "Bileća",
+      "slug": "bileca",
+      "wikidata_id": "Q861772",
+      "wikipedia_title": "Bileća",
+      "metrics": {
+        "num_settlements": 61,
+        "population_2013": 10807,
+        "density_per_km2": 17.09,
+        "area_km2": 632.33
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 42.866666666667,
+        "longitude": 18.433333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q11238433",
+        "name": "Šablon:Bileća"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-bosanska-krupa",
+      "code": "BOSA",
+      "name": "Bosanska Krupa",
+      "slug": "bosanska-krupa",
+      "wikidata_id": "Q841411",
+      "wikipedia_title": "Bosanska Krupa",
+      "metrics": {
+        "num_settlements": 37,
+        "population_2013": 25545,
+        "density_per_km2": 45.53,
+        "area_km2": 561.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.883333333333,
+        "longitude": 16.15
+      },
+      "municipality": {
+        "wikidata_id": "Q12756583",
+        "name": "Grad Bosanska Krupa"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-bosanski-petrovac",
+      "code": "BOSA",
+      "name": "Bosanski Petrovac",
+      "slug": "bosanski-petrovac",
+      "wikidata_id": "Q894348",
+      "wikipedia_title": "Bosanski Petrovac",
+      "metrics": {
+        "num_settlements": 35,
+        "population_2013": 7328,
+        "density_per_km2": 10.34,
+        "area_km2": 709.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.55,
+        "longitude": 16.366666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756584",
+        "name": "Općina Bosanski Petrovac"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-bosansko-grahovo",
+      "code": "BOSA",
+      "name": "Bosansko Grahovo",
+      "slug": "bosansko-grahovo",
+      "wikidata_id": "Q894349",
+      "wikipedia_title": "Bosansko Grahovo",
+      "metrics": {
+        "num_settlements": 35,
+        "population_2013": 2449,
+        "density_per_km2": 3.14,
+        "area_km2": 780.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.196666666667,
+        "longitude": 16.376666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756585",
+        "name": "Općina Bosansko Grahovo"
+      },
+      "region": {
+        "region_id": "bih-fbih-k10",
+        "wikidata_id": "Q18277",
+        "code": "K10",
+        "type": "canton",
+        "name": "Kanton br. 10"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-bratunac",
+      "code": "BRAT",
+      "name": "Bratunac",
+      "slug": "bratunac",
+      "wikidata_id": "Q169001",
+      "wikipedia_title": "Bratunac",
+      "metrics": {
+        "num_settlements": 50,
+        "population_2013": 20340,
+        "density_per_km2": 69.3,
+        "area_km2": 293.49
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.183888888889,
+        "longitude": 19.330833333333
+      },
+      "municipality": {
+        "wikidata_id": "Q11127478",
+        "name": "Opština Bratunac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "BD-brcko",
+      "code": "BRCK",
+      "name": "Brčko",
+      "slug": "brcko",
+      "wikidata_id": "Q322828",
+      "wikipedia_title": "Brčko",
+      "metrics": {
+        "num_settlements": 59,
+        "population_2013": 83516,
+        "density_per_km2": 207.75,
+        "area_km2": 402.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.878333333333,
+        "longitude": 18.809166666667
+      },
+      "municipality": {
+        "wikidata_id": "Q322828",
+        "name": "Brčko"
+      },
+      "region": {
+        "region_id": "bih-bd",
+        "wikidata_id": "Q194483",
+        "code": "BD",
+        "type": "entity",
+        "name": "Brčko distrikt"
+      },
+      "entity": {
+        "region_id": "bih-bd",
+        "wikidata_id": "Q194483",
+        "code": "BD",
+        "name": "Brčko distrikt"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-breza",
+      "code": "BREZ",
+      "name": "Breza",
+      "slug": "breza",
+      "wikidata_id": "Q911568",
+      "wikipedia_title": "Breza (općina)",
+      "metrics": {
+        "num_settlements": 28,
+        "population_2013": 14168,
+        "density_per_km2": 194.35,
+        "area_km2": 72.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.021,
+        "longitude": 18.261
+      },
+      "municipality": {
+        "wikidata_id": "Q12756586",
+        "name": "Općina Breza"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-brod",
+      "code": "BROD",
+      "name": "Brod",
+      "slug": "brod",
+      "wikidata_id": "Q194482",
+      "wikipedia_title": "Brod (općina)",
+      "metrics": {
+        "num_settlements": 23,
+        "population_2013": 16619,
+        "density_per_km2": 72.48,
+        "area_km2": 229.3
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.133333333333,
+        "longitude": 17.983333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3625815",
+        "name": "Općina Brod"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-bugojno",
+      "code": "BUGO",
+      "name": "Bugojno",
+      "slug": "bugojno",
+      "wikidata_id": "Q934612",
+      "wikipedia_title": "Bugojno",
+      "metrics": {
+        "num_settlements": 78,
+        "population_2013": 31470,
+        "density_per_km2": 87.17,
+        "area_km2": 361.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.057222222222,
+        "longitude": 17.450833333333
+      },
+      "municipality": {
+        "wikidata_id": "Q2727530",
+        "name": "Općina Bugojno"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-busovaca",
+      "code": "BUSO",
+      "name": "Busovača",
+      "slug": "busovaca",
+      "wikidata_id": "Q612603",
+      "wikipedia_title": "Busovača",
+      "metrics": {
+        "num_settlements": 47,
+        "population_2013": 17910,
+        "density_per_km2": 113.35,
+        "area_km2": 158.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.097777777778,
+        "longitude": 17.878333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q13552896",
+        "name": "Općina Busovača"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-buzim",
+      "code": "BUZI",
+      "name": "Bužim",
+      "slug": "buzim",
+      "wikidata_id": "Q1017912",
+      "wikipedia_title": "Bužim",
+      "metrics": {
+        "num_settlements": 7,
+        "population_2013": 19340,
+        "density_per_km2": 149.92,
+        "area_km2": 129.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.060555555556,
+        "longitude": 16.016666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756588",
+        "name": "Općina Bužim"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-cazin",
+      "code": "CAZI",
+      "name": "Cazin",
+      "slug": "cazin",
+      "wikidata_id": "Q994203",
+      "wikipedia_title": "Cazin",
+      "metrics": {
+        "num_settlements": 54,
+        "population_2013": 66149,
+        "density_per_km2": 185.81,
+        "area_km2": 356.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.966944444444,
+        "longitude": 15.943055555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756695",
+        "name": "Grad Cazin"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-centar",
+      "code": "CENT",
+      "name": "Centar",
+      "slug": "centar",
+      "wikidata_id": "Q1270190",
+      "wikipedia_title": "Centar (Sarajevo)",
+      "metrics": {
+        "num_settlements": 6,
+        "population_2013": 55181,
+        "density_per_km2": 1672.15,
+        "area_km2": 33.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.868888888889,
+        "longitude": 18.408611111111
+      },
+      "municipality": {
+        "wikidata_id": "Q1270190",
+        "name": "Centar"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-cajnice",
+      "code": "CAJN",
+      "name": "Čajniče",
+      "slug": "cajnice",
+      "wikidata_id": "Q143601",
+      "wikipedia_title": "Čajniče",
+      "metrics": {
+        "num_settlements": 36,
+        "population_2013": 4895,
+        "density_per_km2": 17.83,
+        "area_km2": 274.6
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.55,
+        "longitude": 19.166666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12298986",
+        "name": "Opština Čajniče"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-capljina",
+      "code": "CAPL",
+      "name": "Čapljina",
+      "slug": "capljina",
+      "wikidata_id": "Q337683",
+      "wikipedia_title": "Čapljina",
+      "metrics": {
+        "num_settlements": 32,
+        "population_2013": 26157,
+        "density_per_km2": 102.18,
+        "area_km2": 256.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.11,
+        "longitude": 17.7
+      },
+      "municipality": {
+        "wikidata_id": "Q16716280",
+        "name": "Grad Čapljina"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-celic",
+      "code": "CELI",
+      "name": "Čelić",
+      "slug": "celic",
+      "wikidata_id": "Q338494",
+      "wikipedia_title": "Čelić",
+      "metrics": {
+        "num_settlements": 20,
+        "population_2013": 10502,
+        "density_per_km2": 75.01,
+        "area_km2": 140.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.72111111,
+        "longitude": 18.82027778
+      },
+      "municipality": {
+        "wikidata_id": "Q12756703",
+        "name": "Općina Čelić"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-celinac",
+      "code": "CELI",
+      "name": "Čelinac",
+      "slug": "celinac",
+      "wikidata_id": "Q338457",
+      "wikipedia_title": "Čelinac",
+      "metrics": {
+        "num_settlements": 30,
+        "population_2013": 15548,
+        "density_per_km2": 42.97,
+        "area_km2": 361.81
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.72453,
+        "longitude": 17.32431
+      },
+      "municipality": {
+        "wikidata_id": "Q3625722",
+        "name": "Općina Čelinac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-citluk",
+      "code": "CITL",
+      "name": "Čitluk",
+      "slug": "citluk",
+      "wikidata_id": "Q341585",
+      "wikipedia_title": "Čitluk",
+      "metrics": {
+        "num_settlements": 21,
+        "population_2013": 18140,
+        "density_per_km2": 100.22,
+        "area_km2": 181.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.23,
+        "longitude": 17.7
+      },
+      "municipality": {
+        "wikidata_id": "Q12756704",
+        "name": "Općina Čitluk"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-derventa",
+      "code": "DERV",
+      "name": "Derventa",
+      "slug": "derventa",
+      "wikidata_id": "Q768439",
+      "wikipedia_title": "Derventa",
+      "metrics": {
+        "num_settlements": 57,
+        "population_2013": 27404,
+        "density_per_km2": 53.02,
+        "area_km2": 516.84
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.98,
+        "longitude": 17.91
+      },
+      "municipality": {
+        "wikidata_id": "Q16087586",
+        "name": "Grad Derventa"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-doboj",
+      "code": "DOBO",
+      "name": "Doboj",
+      "slug": "doboj",
+      "wikidata_id": "Q169247",
+      "wikipedia_title": "Doboj",
+      "metrics": {
+        "num_settlements": 70,
+        "population_2013": 64112,
+        "density_per_km2": 98.94,
+        "area_km2": 648.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.733333333333,
+        "longitude": 18.133333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q169247",
+        "name": "Doboj"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-doboj-istok",
+      "code": "DOBO",
+      "name": "Doboj Istok",
+      "slug": "doboj-istok",
+      "wikidata_id": "Q1233337",
+      "wikipedia_title": "Doboj Istok",
+      "metrics": {
+        "num_settlements": 6,
+        "population_2013": 10248,
+        "density_per_km2": 249.95,
+        "area_km2": 41.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.7333,
+        "longitude": 18.1889
+      },
+      "municipality": {
+        "wikidata_id": "Q1233337",
+        "name": "Doboj Istok"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-doboj-jug",
+      "code": "DOBO",
+      "name": "Doboj Jug",
+      "slug": "doboj-jug",
+      "wikidata_id": "Q1272667",
+      "wikipedia_title": "Doboj Jug",
+      "metrics": {
+        "num_settlements": 2,
+        "population_2013": 4137,
+        "density_per_km2": 405.59,
+        "area_km2": 10.2
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.6878,
+        "longitude": 18.0517
+      },
+      "municipality": {
+        "wikidata_id": "Q1272667",
+        "name": "Doboj Jug"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-dobretici",
+      "code": "DOBR",
+      "name": "Dobretići",
+      "slug": "dobretici",
+      "wikidata_id": "Q1233396",
+      "wikipedia_title": "Dobretići",
+      "metrics": {
+        "num_settlements": 18,
+        "population_2013": 1629,
+        "density_per_km2": 27.61,
+        "area_km2": 59.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.375277777778,
+        "longitude": 17.416666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15486883",
+        "name": "Općina Dobretići"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-domaljevac-samac",
+      "code": "DOMA",
+      "name": "Domaljevac-Šamac",
+      "slug": "domaljevac-samac",
+      "wikidata_id": "Q1236810",
+      "wikipedia_title": "Domaljevac-Šamac",
+      "metrics": {
+        "num_settlements": 6,
+        "population_2013": 4771,
+        "density_per_km2": 107.45,
+        "area_km2": 44.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.0628,
+        "longitude": 18.5808
+      },
+      "municipality": {
+        "wikidata_id": "Q1236810",
+        "name": "Domaljevac-Šamac"
+      },
+      "region": {
+        "region_id": "bih-fbih-pk",
+        "wikidata_id": "Q18249",
+        "code": "PK",
+        "type": "canton",
+        "name": "Posavski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-donji-vakuf",
+      "code": "DONJ",
+      "name": "Donji Vakuf",
+      "slug": "donji-vakuf",
+      "wikidata_id": "Q1017938",
+      "wikipedia_title": "Donji Vakuf",
+      "metrics": {
+        "num_settlements": 68,
+        "population_2013": 13985,
+        "density_per_km2": 43.7,
+        "area_km2": 320.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.15,
+        "longitude": 17.4
+      },
+      "municipality": {
+        "wikidata_id": "Q12756612",
+        "name": "Općina Donji Vakuf"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-donji-zabar",
+      "code": "DONJ",
+      "name": "Donji Žabar",
+      "slug": "donji-zabar",
+      "wikidata_id": "Q2231568",
+      "wikipedia_title": "Donji Žabar",
+      "metrics": {
+        "num_settlements": 6,
+        "population_2013": 3809,
+        "density_per_km2": 86.46,
+        "area_km2": 81.46
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.9414,
+        "longitude": 18.6461
+      },
+      "municipality": {
+        "wikidata_id": "Q11145405",
+        "name": "Općina Donji Žabar"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-drvar",
+      "code": "DRVA",
+      "name": "Drvar",
+      "slug": "drvar",
+      "wikidata_id": "Q762884",
+      "wikipedia_title": "Drvar",
+      "metrics": {
+        "num_settlements": 25,
+        "population_2013": 7036,
+        "density_per_km2": 11.94,
+        "area_km2": 589.3
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.37416666666667,
+        "longitude": 16.384444444444444
+      },
+      "municipality": {
+        "wikidata_id": "Q12756613",
+        "name": "Općina Drvar"
+      },
+      "region": {
+        "region_id": "bih-fbih-k10",
+        "wikidata_id": "Q18277",
+        "code": "K10",
+        "type": "canton",
+        "name": "Kanton br. 10"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-foca-fbih",
+      "code": "FOCA",
+      "name": "Foča (FBiH)",
+      "slug": "foca-fbih",
+      "wikidata_id": "Q1267044",
+      "wikipedia_title": "Foča (Federacija Bosne i Hercegovine)",
+      "metrics": {
+        "num_settlements": 32,
+        "population_2013": 1933,
+        "density_per_km2": 11.41,
+        "area_km2": 169.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.584,
+        "longitude": 18.793
+      },
+      "municipality": {
+        "wikidata_id": "Q1267044",
+        "name": "Foča"
+      },
+      "region": {
+        "region_id": "bih-fbih-bpk",
+        "wikidata_id": "Q18256",
+        "code": "BPK",
+        "type": "canton",
+        "name": "Bosansko-podrinjski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-foca-rs",
+      "code": "FOCA",
+      "name": "Foča (RS)",
+      "slug": "foca-rs",
+      "wikidata_id": "Q180333",
+      "wikipedia_title": "Foča (Republika Srpska)",
+      "metrics": {
+        "num_settlements": 101,
+        "population_2013": 18288,
+        "density_per_km2": 16.12,
+        "area_km2": 1134.58
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.5,
+        "longitude": 18.783333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3624261",
+        "name": "Općina Foča (RS)"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-fojnica",
+      "code": "FOJN",
+      "name": "Fojnica",
+      "slug": "fojnica",
+      "wikidata_id": "Q1017950",
+      "wikipedia_title": "Fojnica",
+      "metrics": {
+        "num_settlements": 55,
+        "population_2013": 12356,
+        "density_per_km2": 40.38,
+        "area_km2": 306.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.966666666667,
+        "longitude": 17.9
+      },
+      "municipality": {
+        "wikidata_id": "Q12756691",
+        "name": "Općina Fojnica"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-gacko",
+      "code": "GACK",
+      "name": "Gacko",
+      "slug": "gacko",
+      "wikidata_id": "Q168991",
+      "wikipedia_title": "Gacko",
+      "metrics": {
+        "num_settlements": 71,
+        "population_2013": 8990,
+        "density_per_km2": 12.22,
+        "area_km2": 735.88
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.166666666667,
+        "longitude": 18.533333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3625767",
+        "name": "Opština Gacko"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-glamoc",
+      "code": "GLAM",
+      "name": "Glamoč",
+      "slug": "glamoc",
+      "wikidata_id": "Q1017615",
+      "wikipedia_title": "Glamoč",
+      "metrics": {
+        "num_settlements": 55,
+        "population_2013": 3860,
+        "density_per_km2": 3.73,
+        "area_km2": 1033.6
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.05,
+        "longitude": 16.85
+      },
+      "municipality": {
+        "wikidata_id": "Q12756603",
+        "name": "Općina Glamoč"
+      },
+      "region": {
+        "region_id": "bih-fbih-k10",
+        "wikidata_id": "Q18277",
+        "code": "K10",
+        "type": "canton",
+        "name": "Kanton br. 10"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-gorazde",
+      "code": "GORA",
+      "name": "Goražde",
+      "slug": "gorazde",
+      "wikidata_id": "Q504058",
+      "wikipedia_title": "Goražde",
+      "metrics": {
+        "num_settlements": 144,
+        "population_2013": 20897,
+        "density_per_km2": 83.99,
+        "area_km2": 248.8
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.666666666667,
+        "longitude": 18.977777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q12756604",
+        "name": "Grad Goražde"
+      },
+      "region": {
+        "region_id": "bih-fbih-bpk",
+        "wikidata_id": "Q18256",
+        "code": "BPK",
+        "type": "canton",
+        "name": "Bosansko-podrinjski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-gornji-vakuf-uskoplje",
+      "code": "GORN",
+      "name": "Gornji Vakuf-Uskoplje",
+      "slug": "gornji-vakuf-uskoplje",
+      "wikidata_id": "Q924098",
+      "wikipedia_title": "Gornji Vakuf-Uskoplje",
+      "metrics": {
+        "num_settlements": 52,
+        "population_2013": 20933,
+        "density_per_km2": 52.07,
+        "area_km2": 402.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.933333333333,
+        "longitude": 17.583333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12756606",
+        "name": "Općina Gornji Vakuf-Uskoplje"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-gracanica",
+      "code": "GRAC",
+      "name": "Gračanica",
+      "slug": "gracanica",
+      "wikidata_id": "Q1017952",
+      "wikipedia_title": "Gračanica",
+      "metrics": {
+        "num_settlements": 23,
+        "population_2013": 45220,
+        "density_per_km2": 209.35,
+        "area_km2": 216.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.703055555556,
+        "longitude": 18.31
+      },
+      "municipality": {
+        "wikidata_id": "Q12756610",
+        "name": "Grad Gračanica"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-gradacac",
+      "code": "GRAD",
+      "name": "Gradačac",
+      "slug": "gradacac",
+      "wikidata_id": "Q994196",
+      "wikipedia_title": "Gradačac",
+      "metrics": {
+        "num_settlements": 34,
+        "population_2013": 39340,
+        "density_per_km2": 180.46,
+        "area_km2": 218.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.8775,
+        "longitude": 18.428055555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756608",
+        "name": "Grad Gradačac"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-gradiska",
+      "code": "GRAD",
+      "name": "Gradiška",
+      "slug": "gradiska",
+      "wikidata_id": "Q180731",
+      "wikipedia_title": "Gradiška",
+      "metrics": {
+        "num_settlements": 68,
+        "population_2013": 51727,
+        "density_per_km2": 67.91,
+        "area_km2": 761.74
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 45.133333333333,
+        "longitude": 17.25
+      },
+      "municipality": {
+        "wikidata_id": "Q3624285",
+        "name": "Grad Gradiška"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-grude",
+      "code": "GRUD",
+      "name": "Grude",
+      "slug": "grude",
+      "wikidata_id": "Q1017931",
+      "wikipedia_title": "Grude",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 17308,
+        "density_per_km2": 78.39,
+        "area_km2": 220.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.3725,
+        "longitude": 17.414166666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15733357",
+        "name": "Općina Grude"
+      },
+      "region": {
+        "region_id": "bih-fbih-zhk",
+        "wikidata_id": "Q18275",
+        "code": "ZHK",
+        "type": "canton",
+        "name": "Zapadnohercegovački kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-hadzici",
+      "code": "HADZ",
+      "name": "Hadžići",
+      "slug": "hadzici",
+      "wikidata_id": "Q939528",
+      "wikipedia_title": "Hadžići",
+      "metrics": {
+        "num_settlements": 62,
+        "population_2013": 23891,
+        "density_per_km2": 87.42,
+        "area_km2": 273.3
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.823611111111,
+        "longitude": 18.221111111111
+      },
+      "municipality": {
+        "wikidata_id": "Q12756693",
+        "name": "Općina Hadžići"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-han-pijesak",
+      "code": "HANP",
+      "name": "Han-Pijesak",
+      "slug": "han-pijesak",
+      "wikidata_id": "Q1574159",
+      "wikipedia_title": "Han-Pijesak",
+      "metrics": {
+        "num_settlements": 26,
+        "population_2013": 3530,
+        "density_per_km2": 10.93,
+        "area_km2": 322.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.083333333333,
+        "longitude": 18.95
+      },
+      "municipality": {
+        "wikidata_id": "Q12756692",
+        "name": "Opština Han Pijesak"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-ilidza",
+      "code": "ILID",
+      "name": "Ilidža",
+      "slug": "ilidza",
+      "wikidata_id": "Q247962",
+      "wikipedia_title": "Ilidža",
+      "metrics": {
+        "num_settlements": 12,
+        "population_2013": 66730,
+        "density_per_km2": 465.34,
+        "area_km2": 143.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.833055555556,
+        "longitude": 18.303888888889
+      },
+      "municipality": {
+        "wikidata_id": "Q12756621",
+        "name": "Općina Ilidža"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-ilijas",
+      "code": "ILIJ",
+      "name": "Ilijaš",
+      "slug": "ilijas",
+      "wikidata_id": "Q583396",
+      "wikipedia_title": "Ilijaš",
+      "metrics": {
+        "num_settlements": 74,
+        "population_2013": 19603,
+        "density_per_km2": 63.52,
+        "area_km2": 308.6
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.958333333333,
+        "longitude": 18.266666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756620",
+        "name": "Općina Ilijaš"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-istocna-ilidza",
+      "code": "ISTO",
+      "name": "Istočna Ilidža",
+      "slug": "istocna-ilidza",
+      "wikidata_id": "Q613811",
+      "wikipedia_title": "Istočna Ilidža",
+      "metrics": {
+        "num_settlements": 5,
+        "population_2013": 14763,
+        "density_per_km2": 529.14,
+        "area_km2": 27.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.81582,
+        "longitude": 18.35504
+      },
+      "municipality": {
+        "wikidata_id": "Q613811",
+        "name": "Istočna Ilidža"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-istocni-drvar",
+      "code": "ISTO",
+      "name": "Istočni Drvar",
+      "slug": "istocni-drvar",
+      "wikidata_id": "Q1272660",
+      "wikipedia_title": "Istočni Drvar",
+      "metrics": {
+        "num_settlements": 3,
+        "population_2013": 79,
+        "density_per_km2": 1.05,
+        "area_km2": 75.3
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.389444444444,
+        "longitude": 16.623611111111
+      },
+      "municipality": {
+        "wikidata_id": "Q1272660",
+        "name": "Istočni Drvar"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-istocni-mostar",
+      "code": "ISTO",
+      "name": "Istočni Mostar",
+      "slug": "istocni-mostar",
+      "wikidata_id": "Q932546",
+      "wikipedia_title": "Istočni Mostar",
+      "metrics": {
+        "num_settlements": 3,
+        "population_2013": 257,
+        "density_per_km2": 3.02,
+        "area_km2": 85.24
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.468333333333,
+        "longitude": 17.982777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q932546",
+        "name": "Istočni Mostar"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-istocni-stari-grad",
+      "code": "ISTO",
+      "name": "Istočni Stari Grad",
+      "slug": "istocni-stari-grad",
+      "wikidata_id": "Q1272654",
+      "wikipedia_title": "Istočni Stari Grad",
+      "metrics": {
+        "num_settlements": 19,
+        "population_2013": 1131,
+        "density_per_km2": 16.19,
+        "area_km2": 69.84
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.856111111111,
+        "longitude": 18.483333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q1272654",
+        "name": "Istočni Stari Grad"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-istocno-novo-sarajevo",
+      "code": "ISTO",
+      "name": "Istočno Novo Sarajevo",
+      "slug": "istocno-novo-sarajevo",
+      "wikidata_id": "Q2276516",
+      "wikipedia_title": "Istočno Novo Sarajevo",
+      "metrics": {
+        "num_settlements": 8,
+        "population_2013": 10642,
+        "density_per_km2": 306.77,
+        "area_km2": 34.69
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.82,
+        "longitude": 18.359166666667
+      },
+      "municipality": {
+        "wikidata_id": "Q2276516",
+        "name": "Istočno Novo Sarajevo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "bih-istocno-sarajevo",
+      "code": "ISTO",
+      "name": "Istočno Sarajevo",
+      "slug": "istocno-sarajevo",
+      "wikidata_id": "Q147556",
+      "wikipedia_title": "Istočno Sarajevo",
+      "metrics": {
+        "num_settlements": 0,
+        "population_2013": 61516,
+        "density_per_km2": 42.87,
+        "area_km2": 1434.88
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.826111111111,
+        "longitude": 18.351666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q147556",
+        "name": "Istočno Sarajevo"
+      },
+      "region": {
+        "region_id": null,
+        "wikidata_id": null,
+        "code": null,
+        "type": null,
+        "name": null
+      },
+      "entity": {
+        "region_id": null,
+        "wikidata_id": null,
+        "code": null,
+        "name": null
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-jablanica",
+      "code": "JABL",
+      "name": "Jablanica",
+      "slug": "jablanica",
+      "wikidata_id": "Q994232",
+      "wikipedia_title": "Jablanica",
+      "metrics": {
+        "num_settlements": 33,
+        "population_2013": 10111,
+        "density_per_km2": 33.59,
+        "area_km2": 301.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.66204706295405,
+        "longitude": 17.761844634919317
+      },
+      "municipality": {
+        "wikidata_id": "Q15736275",
+        "name": "Općina Jablanica"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-jajce",
+      "code": "JAJC",
+      "name": "Jajce",
+      "slug": "jajce",
+      "wikidata_id": "Q258429",
+      "wikipedia_title": "Jajce",
+      "metrics": {
+        "num_settlements": 58,
+        "population_2013": 27258,
+        "density_per_km2": 80.41,
+        "area_km2": 339.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.340252777778,
+        "longitude": 17.257233333333
+      },
+      "municipality": {
+        "wikidata_id": "Q15522608",
+        "name": "Općina Jajce"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-jezero",
+      "code": "JEZE",
+      "name": "Jezero",
+      "slug": "jezero",
+      "wikidata_id": "Q15774656",
+      "wikipedia_title": "Jezero (općina)",
+      "metrics": {
+        "num_settlements": 11,
+        "population_2013": 1144,
+        "density_per_km2": 20.58,
+        "area_km2": 55.6
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.31666666666667,
+        "longitude": 17.166666666666668
+      },
+      "municipality": {
+        "wikidata_id": "Q15774656",
+        "name": "Općina Jezero"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kakanj",
+      "code": "KAKA",
+      "name": "Kakanj",
+      "slug": "kakanj",
+      "wikidata_id": "Q963038",
+      "wikipedia_title": "Kakanj",
+      "metrics": {
+        "num_settlements": 106,
+        "population_2013": 37441,
+        "density_per_km2": 99.31,
+        "area_km2": 377.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.131111111111,
+        "longitude": 18.097222222222
+      },
+      "municipality": {
+        "wikidata_id": "Q12756623",
+        "name": "Općina Kakanj"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kalesija",
+      "code": "KALE",
+      "name": "Kalesija",
+      "slug": "kalesija",
+      "wikidata_id": "Q1017926",
+      "wikipedia_title": "Kalesija",
+      "metrics": {
+        "num_settlements": 28,
+        "population_2013": 33053,
+        "density_per_km2": 164.44,
+        "area_km2": 201.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.441666666667,
+        "longitude": 18.875
+      },
+      "municipality": {
+        "wikidata_id": "Q12756625",
+        "name": "Općina Kalesija"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-kalinovik",
+      "code": "KALI",
+      "name": "Kalinovik",
+      "slug": "kalinovik",
+      "wikidata_id": "Q995136",
+      "wikipedia_title": "Kalinovik",
+      "metrics": {
+        "num_settlements": 71,
+        "population_2013": 2029,
+        "density_per_km2": 2.98,
+        "area_km2": 681.15
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.5,
+        "longitude": 18.45
+      },
+      "municipality": {
+        "wikidata_id": "Q3625773",
+        "name": "Opština Kalinovik"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kiseljak",
+      "code": "KISE",
+      "name": "Kiseljak",
+      "slug": "kiseljak",
+      "wikidata_id": "Q1018000",
+      "wikipedia_title": "Kiseljak",
+      "metrics": {
+        "num_settlements": 82,
+        "population_2013": 20722,
+        "density_per_km2": 125.59,
+        "area_km2": 165.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.95,
+        "longitude": 18.083333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12756626",
+        "name": "Općina Kiseljak"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kladanj",
+      "code": "KLAD",
+      "name": "Kladanj",
+      "slug": "kladanj",
+      "wikidata_id": "Q1018024",
+      "wikipedia_title": "Kladanj",
+      "metrics": {
+        "num_settlements": 48,
+        "population_2013": 12348,
+        "density_per_km2": 37.31,
+        "area_km2": 331.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.225,
+        "longitude": 18.694444444444
+      },
+      "municipality": {
+        "wikidata_id": "Q15779850",
+        "name": "Općina Kladanj"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kljuc",
+      "code": "KLJU",
+      "name": "Ključ",
+      "slug": "kljuc",
+      "wikidata_id": "Q279995",
+      "wikipedia_title": "Ključ (općina)",
+      "metrics": {
+        "num_settlements": 41,
+        "population_2013": 16744,
+        "density_per_km2": 46.77,
+        "area_km2": 358.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.533333333333,
+        "longitude": 16.766666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15474433",
+        "name": "Općina Ključ"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-knezevo",
+      "code": "KNEZ",
+      "name": "Kneževo",
+      "slug": "knezevo",
+      "wikidata_id": "Q431305",
+      "wikipedia_title": "Kneževo",
+      "metrics": {
+        "num_settlements": 20,
+        "population_2013": 9793,
+        "density_per_km2": 29.42,
+        "area_km2": 332.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.471111111111,
+        "longitude": 17.378888888889
+      },
+      "municipality": {
+        "wikidata_id": "Q3625810",
+        "name": "Opština Kneževo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-konjic",
+      "code": "KONJ",
+      "name": "Konjic",
+      "slug": "konjic",
+      "wikidata_id": "Q974745",
+      "wikipedia_title": "Konjic",
+      "metrics": {
+        "num_settlements": 168,
+        "population_2013": 25148,
+        "density_per_km2": 21.51,
+        "area_km2": 1169.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.651388888889,
+        "longitude": 17.960833333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12756633",
+        "name": "Grad Konjic"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-kostajnica",
+      "code": "KOST",
+      "name": "Kostajnica",
+      "slug": "kostajnica",
+      "wikidata_id": "Q1017897",
+      "wikipedia_title": "Kostajnica",
+      "metrics": {
+        "num_settlements": 12,
+        "population_2013": 5977,
+        "density_per_km2": 70.22,
+        "area_km2": 85.12
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.216666666667,
+        "longitude": 16.533333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12754110",
+        "name": "Općina Kostajnica"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-kotor-varos",
+      "code": "KOTO",
+      "name": "Kotor-Varoš",
+      "slug": "kotor-varos",
+      "wikidata_id": "Q180758",
+      "wikipedia_title": "Kotor-Varoš",
+      "metrics": {
+        "num_settlements": 43,
+        "population_2013": 19710,
+        "density_per_km2": 34.93,
+        "area_km2": 564.26
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.622222222222,
+        "longitude": 17.370277777778
+      },
+      "municipality": {
+        "wikidata_id": "Q11131211",
+        "name": "Opština Kotor Varoš"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-kozarska-dubica",
+      "code": "KOZA",
+      "name": "Kozarska Dubica",
+      "slug": "kozarska-dubica",
+      "wikidata_id": "Q180290",
+      "wikipedia_title": "Kozarska Dubica",
+      "metrics": {
+        "num_settlements": 61,
+        "population_2013": 21524,
+        "density_per_km2": 43.13,
+        "area_km2": 499.01
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.183333333333,
+        "longitude": 16.8
+      },
+      "municipality": {
+        "wikidata_id": "Q15774707",
+        "name": "Općina Kozarska Dubica"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kresevo",
+      "code": "KRES",
+      "name": "Kreševo",
+      "slug": "kresevo",
+      "wikidata_id": "Q972698",
+      "wikipedia_title": "Kreševo",
+      "metrics": {
+        "num_settlements": 27,
+        "population_2013": 5273,
+        "density_per_km2": 35.39,
+        "area_km2": 149.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.866666666667,
+        "longitude": 18.05
+      },
+      "municipality": {
+        "wikidata_id": "Q12756635",
+        "name": "Općina Kreševo"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-krupa-na-uni",
+      "code": "KRUP",
+      "name": "Krupa na Uni",
+      "slug": "krupa-na-uni",
+      "wikidata_id": "Q1273185",
+      "wikipedia_title": "Krupa na Uni",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 1597,
+        "density_per_km2": 18.94,
+        "area_km2": 84.33
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.8953,
+        "longitude": 16.33972
+      },
+      "municipality": {
+        "wikidata_id": "Q1273185",
+        "name": "Krupa na Uni"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-kupres-fbih",
+      "code": "KUPR",
+      "name": "Kupres (FBiH)",
+      "slug": "kupres-fbih",
+      "wikidata_id": "Q583953",
+      "wikipedia_title": "Kupres (Federacija Bosne i Hercegovine)",
+      "metrics": {
+        "num_settlements": 36,
+        "population_2013": 5057,
+        "density_per_km2": 8.88,
+        "area_km2": 569.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.990555555556,
+        "longitude": 17.279444444444
+      },
+      "municipality": {
+        "wikidata_id": "Q12756637",
+        "name": "Općina Kupres"
+      },
+      "region": {
+        "region_id": "bih-fbih-k10",
+        "wikidata_id": "Q18277",
+        "code": "K10",
+        "type": "canton",
+        "name": "Kanton br. 10"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-kupres-rs",
+      "code": "KUPR",
+      "name": "Kupres (RS)",
+      "slug": "kupres-rs",
+      "wikidata_id": "Q1272716",
+      "wikipedia_title": "Kupres (Republika Srpska)",
+      "metrics": {
+        "num_settlements": 4,
+        "population_2013": 300,
+        "density_per_km2": 6.28,
+        "area_km2": 47.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.0833,
+        "longitude": 17.2167
+      },
+      "municipality": {
+        "wikidata_id": "Q1272716",
+        "name": "Kupres"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "bih-laktasi",
+      "code": "LAKT",
+      "name": "Laktaši",
+      "slug": "laktasi",
+      "wikidata_id": "Q635944",
+      "wikipedia_title": "Laktaši",
+      "metrics": {
+        "num_settlements": 37,
+        "population_2013": 34966,
+        "density_per_km2": 90.03,
+        "area_km2": 388.37
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.9,
+        "longitude": 17.3
+      },
+      "municipality": {
+        "wikidata_id": "Q635944",
+        "name": "Laktaši"
+      },
+      "region": {
+        "region_id": null,
+        "wikidata_id": null,
+        "code": null,
+        "type": null,
+        "name": null
+      },
+      "entity": {
+        "region_id": null,
+        "wikidata_id": null,
+        "code": null,
+        "name": null
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-livno",
+      "code": "LIVN",
+      "name": "Livno",
+      "slug": "livno",
+      "wikidata_id": "Q746073",
+      "wikipedia_title": "Livno",
+      "metrics": {
+        "num_settlements": 59,
+        "population_2013": 34133,
+        "density_per_km2": 34.34,
+        "area_km2": 994.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.826944444444,
+        "longitude": 17.008055555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756640",
+        "name": "Grad Livno"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-lopare",
+      "code": "LOPA",
+      "name": "Lopare",
+      "slug": "lopare",
+      "wikidata_id": "Q1529232",
+      "wikipedia_title": "Lopare",
+      "metrics": {
+        "num_settlements": 35,
+        "population_2013": 15357,
+        "density_per_km2": 52.49,
+        "area_km2": 292.55
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.633333333333,
+        "longitude": 18.85
+      },
+      "municipality": {
+        "wikidata_id": "Q12285049",
+        "name": "Općina Lopare"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-lukavac",
+      "code": "LUKA",
+      "name": "Lukavac",
+      "slug": "lukavac",
+      "wikidata_id": "Q1017976",
+      "wikipedia_title": "Lukavac",
+      "metrics": {
+        "num_settlements": 44,
+        "population_2013": 44520,
+        "density_per_km2": 132.11,
+        "area_km2": 337.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.533333333333,
+        "longitude": 18.533333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12756642",
+        "name": "Grad Lukavac"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-ljubinje",
+      "code": "LJUB",
+      "name": "Ljubinje",
+      "slug": "ljubinje",
+      "wikidata_id": "Q936404",
+      "wikipedia_title": "Ljubinje",
+      "metrics": {
+        "num_settlements": 21,
+        "population_2013": 3511,
+        "density_per_km2": 11.0,
+        "area_km2": 319.07
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 42.95,
+        "longitude": 18.083333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q11131234",
+        "name": "Opština Ljubinje"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-ljubuski",
+      "code": "LJUB",
+      "name": "Ljubuški",
+      "slug": "ljubuski",
+      "wikidata_id": "Q1018016",
+      "wikipedia_title": "Ljubuški",
+      "metrics": {
+        "num_settlements": 35,
+        "population_2013": 28184,
+        "density_per_km2": 96.29,
+        "area_km2": 292.7
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.198055555556,
+        "longitude": 17.546666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756581",
+        "name": "Grad Ljubuški"
+      },
+      "region": {
+        "region_id": "bih-fbih-zhk",
+        "wikidata_id": "Q18275",
+        "code": "ZHK",
+        "type": "canton",
+        "name": "Zapadnohercegovački kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-maglaj",
+      "code": "MAGL",
+      "name": "Maglaj",
+      "slug": "maglaj",
+      "wikidata_id": "Q967813",
+      "wikipedia_title": "Maglaj",
+      "metrics": {
+        "num_settlements": 40,
+        "population_2013": 23146,
+        "density_per_km2": 79.81,
+        "area_km2": 290.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.547777777778,
+        "longitude": 18.1
+      },
+      "municipality": {
+        "wikidata_id": "Q12756643",
+        "name": "Općina Maglaj"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-milici",
+      "code": "MILI",
+      "name": "Milići",
+      "slug": "milici",
+      "wikidata_id": "Q719230",
+      "wikipedia_title": "Milići",
+      "metrics": {
+        "num_settlements": 54,
+        "population_2013": 11441,
+        "density_per_km2": 40.99,
+        "area_km2": 279.13
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.15,
+        "longitude": 19.083333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q6876073",
+        "name": "Općina Milići"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-modrica",
+      "code": "MODR",
+      "name": "Modriča",
+      "slug": "modrica",
+      "wikidata_id": "Q180743",
+      "wikipedia_title": "Modriča",
+      "metrics": {
+        "num_settlements": 24,
+        "population_2013": 25720,
+        "density_per_km2": 80.43,
+        "area_km2": 319.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.956666666667,
+        "longitude": 18.315
+      },
+      "municipality": {
+        "wikidata_id": "Q3625787",
+        "name": "Općina Modriča"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-mostar",
+      "code": "MOST",
+      "name": "Mostar",
+      "slug": "mostar",
+      "wikidata_id": "Q93347",
+      "wikipedia_title": "Mostar",
+      "metrics": {
+        "num_settlements": 60,
+        "population_2013": 105797,
+        "density_per_km2": 90.04,
+        "area_km2": 1175.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.34361111111111,
+        "longitude": 17.8075
+      },
+      "municipality": {
+        "wikidata_id": "Q15508167",
+        "name": "Grad Mostar"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-mrkonjic-grad",
+      "code": "MRKO",
+      "name": "Mrkonjić Grad",
+      "slug": "mrkonjic-grad",
+      "wikidata_id": "Q1000971",
+      "wikipedia_title": "Mrkonjić Grad",
+      "metrics": {
+        "num_settlements": 38,
+        "population_2013": 16671,
+        "density_per_km2": 24.61,
+        "area_km2": 677.43
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.416666666667,
+        "longitude": 17.083333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3625717",
+        "name": "Općina Mrkonjić Grad"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-neum",
+      "code": "NEUM",
+      "name": "Neum",
+      "slug": "neum",
+      "wikidata_id": "Q320623",
+      "wikipedia_title": "Neum",
+      "metrics": {
+        "num_settlements": 27,
+        "population_2013": 4653,
+        "density_per_km2": 20.68,
+        "area_km2": 225.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 42.926111111111,
+        "longitude": 17.616666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q10960670",
+        "name": "Općina Neum"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-nevesinje",
+      "code": "NEVE",
+      "name": "Nevesinje",
+      "slug": "nevesinje",
+      "wikidata_id": "Q194503",
+      "wikipedia_title": "Nevesinje",
+      "metrics": {
+        "num_settlements": 57,
+        "population_2013": 12961,
+        "density_per_km2": 14.78,
+        "area_km2": 877.08
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.259444444444,
+        "longitude": 18.120833333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3625741",
+        "name": "Opština Nevesinje"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-novi-grad",
+      "code": "NOVI",
+      "name": "Novi Grad",
+      "slug": "novi-grad",
+      "wikidata_id": "Q194948",
+      "wikipedia_title": "Novi Grad",
+      "metrics": {
+        "num_settlements": 48,
+        "population_2013": 27115,
+        "density_per_km2": 57.36,
+        "area_km2": 472.72
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.046388888889,
+        "longitude": 16.377777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q209035",
+        "name": "Općina Novi Grad"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-novi-grad-sarajevo",
+      "code": "NOVI",
+      "name": "Novi Grad (Sarajevo)",
+      "slug": "novi-grad-sarajevo",
+      "wikidata_id": "Q1267035",
+      "wikipedia_title": "Novi Grad (Sarajevo)",
+      "metrics": {
+        "num_settlements": 3,
+        "population_2013": 118553,
+        "density_per_km2": 2511.72,
+        "area_km2": 47.2
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.848888888889,
+        "longitude": 18.371111111111
+      },
+      "municipality": {
+        "wikidata_id": "Q11194",
+        "name": "Sarajevo"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-novi-travnik",
+      "code": "NOVI",
+      "name": "Novi Travnik",
+      "slug": "novi-travnik",
+      "wikidata_id": "Q1017907",
+      "wikipedia_title": "Novi Travnik",
+      "metrics": {
+        "num_settlements": 52,
+        "population_2013": 23832,
+        "density_per_km2": 98.48,
+        "area_km2": 242.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.171388888889,
+        "longitude": 17.658055555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756651",
+        "name": "Grad Novi Travnik"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-novo-gorazde",
+      "code": "NOVO",
+      "name": "Novo Goražde",
+      "slug": "novo-gorazde",
+      "wikidata_id": "Q12288904",
+      "wikipedia_title": "Novo Goražde",
+      "metrics": {
+        "num_settlements": 68,
+        "population_2013": 3117,
+        "density_per_km2": 26.19,
+        "area_km2": 119.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.6925,
+        "longitude": 19.0925
+      },
+      "municipality": {
+        "wikidata_id": "Q12288904",
+        "name": "Novo Goražde"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-novo-sarajevo",
+      "code": "NOVO",
+      "name": "Novo Sarajevo",
+      "slug": "novo-sarajevo",
+      "wikidata_id": "Q1017960",
+      "wikipedia_title": "Novo Sarajevo",
+      "metrics": {
+        "num_settlements": 3,
+        "population_2013": 64814,
+        "density_per_km2": 6546.87,
+        "area_km2": 9.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.868888888889,
+        "longitude": 18.408611111111
+      },
+      "municipality": {
+        "wikidata_id": "Q1017960",
+        "name": "Novo Sarajevo"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-odzak",
+      "code": "ODZA",
+      "name": "Odžak",
+      "slug": "odzak",
+      "wikidata_id": "Q994167",
+      "wikipedia_title": "Odžak",
+      "metrics": {
+        "num_settlements": 14,
+        "population_2013": 18821,
+        "density_per_km2": 118.82,
+        "area_km2": 158.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.010555555556,
+        "longitude": 18.326388888889
+      },
+      "municipality": {
+        "wikidata_id": "Q12756657",
+        "name": "Općina Odžak"
+      },
+      "region": {
+        "region_id": "bih-fbih-pk",
+        "wikidata_id": "Q18249",
+        "code": "PK",
+        "type": "canton",
+        "name": "Posavski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-olovo",
+      "code": "OLOV",
+      "name": "Olovo",
+      "slug": "olovo",
+      "wikidata_id": "Q584665",
+      "wikipedia_title": "Olovo (općina)",
+      "metrics": {
+        "num_settlements": 45,
+        "population_2013": 10175,
+        "density_per_km2": 24.95,
+        "area_km2": 407.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.127777777778,
+        "longitude": 18.580555555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756654",
+        "name": "Općina Olovo"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-orasje",
+      "code": "ORAS",
+      "name": "Orašje",
+      "slug": "orasje",
+      "wikidata_id": "Q994255",
+      "wikipedia_title": "Orašje",
+      "metrics": {
+        "num_settlements": 14,
+        "population_2013": 19861,
+        "density_per_km2": 163.06,
+        "area_km2": 121.8
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 45.034722222222,
+        "longitude": 18.693055555556
+      },
+      "municipality": {
+        "wikidata_id": "Q994255",
+        "name": "Orašje"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-osmaci",
+      "code": "OSMA",
+      "name": "Osmaci",
+      "slug": "osmaci",
+      "wikidata_id": "Q518500",
+      "wikipedia_title": "Osmaci",
+      "metrics": {
+        "num_settlements": 16,
+        "population_2013": 6016,
+        "density_per_km2": 77.03,
+        "area_km2": 78.1
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.4020488,
+        "longitude": 18.9180569
+      },
+      "municipality": {
+        "wikidata_id": "Q15615119",
+        "name": "Općina Osmaci"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-ostra-luka",
+      "code": "OSTR",
+      "name": "Oštra Luka",
+      "slug": "ostra-luka",
+      "wikidata_id": "Q303044",
+      "wikipedia_title": "Oštra Luka",
+      "metrics": {
+        "num_settlements": 24,
+        "population_2013": 2786,
+        "density_per_km2": 13.6,
+        "area_km2": 204.91
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.8578,
+        "longitude": 16.6606
+      },
+      "municipality": {
+        "wikidata_id": "Q303044",
+        "name": "Općina Oštra Luka"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-pale-fbih",
+      "code": "PALE",
+      "name": "Pale (FBiH)",
+      "slug": "pale-fbih",
+      "wikidata_id": "Q744033",
+      "wikipedia_title": "Pale (Federacija Bosne i Hercegovine)",
+      "metrics": {
+        "num_settlements": 15,
+        "population_2013": 904,
+        "density_per_km2": 10.46,
+        "area_km2": 86.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.764,
+        "longitude": 18.764
+      },
+      "municipality": {
+        "wikidata_id": "Q744033",
+        "name": "Pale"
+      },
+      "region": {
+        "region_id": "bih-fbih-bpk",
+        "wikidata_id": "Q18256",
+        "code": "BPK",
+        "type": "canton",
+        "name": "Bosansko-podrinjski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-pale-rs",
+      "code": "PALE",
+      "name": "Pale (RS)",
+      "slug": "pale-rs",
+      "wikidata_id": "Q222084",
+      "wikipedia_title": "Pale (Republika Srpska)",
+      "metrics": {
+        "num_settlements": 63,
+        "population_2013": 20909,
+        "density_per_km2": 42.43,
+        "area_km2": 492.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.816666666667,
+        "longitude": 18.566666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q21741908",
+        "name": "Općina Pale"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-pelagicevo",
+      "code": "PELA",
+      "name": "Pelagićevo",
+      "slug": "pelagicevo",
+      "wikidata_id": "Q1272645",
+      "wikipedia_title": "Pelagićevo",
+      "metrics": {
+        "num_settlements": 11,
+        "population_2013": 5220,
+        "density_per_km2": 42.62,
+        "area_km2": 122.49
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.9,
+        "longitude": 18.61
+      },
+      "municipality": {
+        "wikidata_id": "Q11158017",
+        "name": "Općina Pelagićevo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-petrovac",
+      "code": "PETR",
+      "name": "Petrovac",
+      "slug": "petrovac",
+      "wikidata_id": "Q739901",
+      "wikipedia_title": "Petrovac",
+      "metrics": {
+        "num_settlements": 6,
+        "population_2013": 361,
+        "density_per_km2": 2.33,
+        "area_km2": 154.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.47838,
+        "longitude": 16.52541
+      },
+      "municipality": {
+        "wikidata_id": "Q739901",
+        "name": "Petrovac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-petrovo",
+      "code": "PETR",
+      "name": "Petrovo",
+      "slug": "petrovo",
+      "wikidata_id": "Q373068",
+      "wikipedia_title": "Petrovo",
+      "metrics": {
+        "num_settlements": 7,
+        "population_2013": 6474,
+        "density_per_km2": 44.99,
+        "area_km2": 143.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.633333333333,
+        "longitude": 18.366666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15638445",
+        "name": "Općina Petrovo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-posusje",
+      "code": "POSU",
+      "name": "Posušje",
+      "slug": "posusje",
+      "wikidata_id": "Q932478",
+      "wikipedia_title": "Posušje",
+      "metrics": {
+        "num_settlements": 20,
+        "population_2013": 20477,
+        "density_per_km2": 44.41,
+        "area_km2": 461.1
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.472222222222,
+        "longitude": 17.326666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15813083",
+        "name": "Općina Posušje"
+      },
+      "region": {
+        "region_id": "bih-fbih-zhk",
+        "wikidata_id": "Q18275",
+        "code": "ZHK",
+        "type": "canton",
+        "name": "Zapadnohercegovački kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-prijedor",
+      "code": "PRIJ",
+      "name": "Prijedor",
+      "slug": "prijedor",
+      "wikidata_id": "Q323986",
+      "wikipedia_title": "Prijedor",
+      "metrics": {
+        "num_settlements": 71,
+        "population_2013": 89397,
+        "density_per_km2": 107.18,
+        "area_km2": 834.06
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.966666666667,
+        "longitude": 16.7
+      },
+      "municipality": {
+        "wikidata_id": "Q12291415",
+        "name": "Grad Prijedor"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-prnjavor",
+      "code": "PRNJ",
+      "name": "Prnjavor",
+      "slug": "prnjavor",
+      "wikidata_id": "Q735815",
+      "wikipedia_title": "Prnjavor",
+      "metrics": {
+        "num_settlements": 63,
+        "population_2013": 35956,
+        "density_per_km2": 57.08,
+        "area_km2": 629.95
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.866666666667,
+        "longitude": 17.65
+      },
+      "municipality": {
+        "wikidata_id": "Q735815",
+        "name": "Prnjavor"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-prozor-rama",
+      "code": "PROZ",
+      "name": "Prozor-Rama",
+      "slug": "prozor-rama",
+      "wikidata_id": "Q506875",
+      "wikipedia_title": "Prozor-Rama",
+      "metrics": {
+        "num_settlements": 56,
+        "population_2013": 14280,
+        "density_per_km2": 29.94,
+        "area_km2": 477.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.82,
+        "longitude": 17.61
+      },
+      "municipality": {
+        "wikidata_id": "Q506875",
+        "name": "Prozor-Rama"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-ravno",
+      "code": "RAVN",
+      "name": "Ravno",
+      "slug": "ravno",
+      "wikidata_id": "Q19904421",
+      "wikipedia_title": "Ravno",
+      "metrics": {
+        "num_settlements": 54,
+        "population_2013": 3219,
+        "density_per_km2": 11.26,
+        "area_km2": 286.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 42.88333333,
+        "longitude": 17.96666667
+      },
+      "municipality": {
+        "wikidata_id": "Q1267025",
+        "name": "Općina Ravno"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-ribnik",
+      "code": "RIBN",
+      "name": "Ribnik",
+      "slug": "ribnik",
+      "wikidata_id": "Q427286",
+      "wikipedia_title": "Ribnik",
+      "metrics": {
+        "num_settlements": 29,
+        "population_2013": 6048,
+        "density_per_km2": 11.83,
+        "area_km2": 511.1
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.45,
+        "longitude": 16.816666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q427286",
+        "name": "Ribnik"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-rogatica",
+      "code": "ROGA",
+      "name": "Rogatica",
+      "slug": "rogatica",
+      "wikidata_id": "Q180791",
+      "wikipedia_title": "Rogatica",
+      "metrics": {
+        "num_settlements": 118,
+        "population_2013": 10723,
+        "density_per_km2": 16.62,
+        "area_km2": 645.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.798888888889,
+        "longitude": 19.003611111111
+      },
+      "municipality": {
+        "wikidata_id": "Q11158208",
+        "name": "Opština Rogatica"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-rudo",
+      "code": "RUDO",
+      "name": "Rudo",
+      "slug": "rudo",
+      "wikidata_id": "Q1018824",
+      "wikipedia_title": "Rudo",
+      "metrics": {
+        "num_settlements": 89,
+        "population_2013": 7963,
+        "density_per_km2": 22.91,
+        "area_km2": 347.63
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.616666666667,
+        "longitude": 19.366666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q3625714",
+        "name": "Općina Rudo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-sanski-most",
+      "code": "SANS",
+      "name": "Sanski Most",
+      "slug": "sanski-most",
+      "wikidata_id": "Q2189505",
+      "wikipedia_title": "Sanski Most",
+      "metrics": {
+        "num_settlements": 67,
+        "population_2013": 41475,
+        "density_per_km2": 53.1,
+        "area_km2": 781.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.766666666667,
+        "longitude": 16.666666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12756667",
+        "name": "Općina Sanski Most"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-sapna",
+      "code": "SAPN",
+      "name": "Sapna",
+      "slug": "sapna",
+      "wikidata_id": "Q1754436",
+      "wikipedia_title": "Sapna",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 11178,
+        "density_per_km2": 94.73,
+        "area_km2": 118.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.491666666667,
+        "longitude": 19.002777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q12756669",
+        "name": "Općina Sapna"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-sarajevo",
+      "code": "SARA",
+      "name": "Sarajevo",
+      "slug": "sarajevo",
+      "wikidata_id": "Q11194",
+      "wikipedia_title": "Sarajevo",
+      "metrics": {
+        "num_settlements": 0,
+        "population_2013": 275524,
+        "density_per_km2": 1947.17,
+        "area_km2": 141.5
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.85638888888889,
+        "longitude": 18.413055555555555
+      },
+      "municipality": {
+        "wikidata_id": "Q11194",
+        "name": "Sarajevo"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-sokolac",
+      "code": "SOKO",
+      "name": "Sokolac",
+      "slug": "sokolac",
+      "wikidata_id": "Q180755",
+      "wikipedia_title": "Sokolac",
+      "metrics": {
+        "num_settlements": 96,
+        "population_2013": 12021,
+        "density_per_km2": 17.34,
+        "area_km2": 693.45
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.937222222222,
+        "longitude": 18.798333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q3625821",
+        "name": "Općina Sokolac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-srbac",
+      "code": "SRBA",
+      "name": "Srbac",
+      "slug": "srbac",
+      "wikidata_id": "Q995071",
+      "wikipedia_title": "Srbac",
+      "metrics": {
+        "num_settlements": 39,
+        "population_2013": 17587,
+        "density_per_km2": 38.87,
+        "area_km2": 452.51
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.1,
+        "longitude": 17.516666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q6594679",
+        "name": "Općina Srbac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-srebrenica",
+      "code": "SREB",
+      "name": "Srebrenica",
+      "slug": "srebrenica",
+      "wikidata_id": "Q156053",
+      "wikipedia_title": "Srebrenica",
+      "metrics": {
+        "num_settlements": 81,
+        "population_2013": 13409,
+        "density_per_km2": 25.45,
+        "area_km2": 526.83
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.1,
+        "longitude": 19.3
+      },
+      "municipality": {
+        "wikidata_id": "Q18361499",
+        "name": "Općina Srebrenica"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-srebrenik",
+      "code": "SREB",
+      "name": "Srebrenik",
+      "slug": "srebrenik",
+      "wikidata_id": "Q999004",
+      "wikipedia_title": "Srebrenik",
+      "metrics": {
+        "num_settlements": 49,
+        "population_2013": 39678,
+        "density_per_km2": 159.99,
+        "area_km2": 248.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.703055555556,
+        "longitude": 18.492777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q999004",
+        "name": "Srebrenik"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-stanari",
+      "code": "STAN",
+      "name": "Stanari",
+      "slug": "stanari",
+      "wikidata_id": "Q1280363",
+      "wikipedia_title": "Stanari",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 7329,
+        "density_per_km2": 45.52,
+        "area_km2": 161.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.7472,
+        "longitude": 17.8294
+      },
+      "municipality": {
+        "wikidata_id": "Q20434680",
+        "name": "Općina Stanari"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-stari-grad",
+      "code": "STAR",
+      "name": "Stari Grad",
+      "slug": "stari-grad",
+      "wikidata_id": "Q1258239",
+      "wikipedia_title": "Stari Grad (Sarajevo)",
+      "metrics": {
+        "num_settlements": 8,
+        "population_2013": 36976,
+        "density_per_km2": 719.38,
+        "area_km2": 51.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.866666666667,
+        "longitude": 18.433333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q1258239",
+        "name": "Stari Grad"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-stolac",
+      "code": "STOL",
+      "name": "Stolac",
+      "slug": "stolac",
+      "wikidata_id": "Q1026587",
+      "wikipedia_title": "Stolac",
+      "metrics": {
+        "num_settlements": 26,
+        "population_2013": 14502,
+        "density_per_km2": 43.81,
+        "area_km2": 331.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.083888888889,
+        "longitude": 17.959166666667
+      },
+      "municipality": {
+        "wikidata_id": "Q1026587",
+        "name": "Stolac"
+      },
+      "region": {
+        "region_id": "bih-fbih-hnk",
+        "wikidata_id": "Q18273",
+        "code": "HNK",
+        "type": "canton",
+        "name": "Hercegovačko-neretvanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-samac",
+      "code": "SAMA",
+      "name": "Šamac",
+      "slug": "samac",
+      "wikidata_id": "Q391033",
+      "wikipedia_title": "Šamac",
+      "metrics": {
+        "num_settlements": 21,
+        "population_2013": 17273,
+        "density_per_km2": 97.29,
+        "area_km2": 177.54
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.066666666667,
+        "longitude": 18.466666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q12299291",
+        "name": "Općina Šamac"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-sekovici",
+      "code": "SEKO",
+      "name": "Šekovići",
+      "slug": "sekovici",
+      "wikidata_id": "Q260496",
+      "wikipedia_title": "Šekovići",
+      "metrics": {
+        "num_settlements": 38,
+        "population_2013": 6761,
+        "density_per_km2": 28.5,
+        "area_km2": 237.2
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.3,
+        "longitude": 18.85
+      },
+      "municipality": {
+        "wikidata_id": "Q3625759",
+        "name": "Općina Šekovići"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-sipovo",
+      "code": "SIPO",
+      "name": "Šipovo",
+      "slug": "sipovo",
+      "wikidata_id": "Q185660",
+      "wikipedia_title": "Šipovo",
+      "metrics": {
+        "num_settlements": 46,
+        "population_2013": 10293,
+        "density_per_km2": 18.6,
+        "area_km2": 553.41
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.2825,
+        "longitude": 17.085555555556
+      },
+      "municipality": {
+        "wikidata_id": "Q3625729",
+        "name": "Demografija Šipova"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-siroki-brijeg",
+      "code": "SIRO",
+      "name": "Široki Brijeg",
+      "slug": "siroki-brijeg",
+      "wikidata_id": "Q391729",
+      "wikipedia_title": "Široki Brijeg",
+      "metrics": {
+        "num_settlements": 34,
+        "population_2013": 28929,
+        "density_per_km2": 74.64,
+        "area_km2": 387.6
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.366666666667,
+        "longitude": 17.583333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q15736756",
+        "name": "Grad Široki Brijeg"
+      },
+      "region": {
+        "region_id": "bih-fbih-zhk",
+        "wikidata_id": "Q18275",
+        "code": "ZHK",
+        "type": "canton",
+        "name": "Zapadnohercegovački kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-teocak",
+      "code": "TEOC",
+      "name": "Teočak",
+      "slug": "teocak",
+      "wikidata_id": "Q12756682",
+      "wikipedia_title": "Teočak",
+      "metrics": {
+        "num_settlements": 10,
+        "population_2013": 7424,
+        "density_per_km2": 256.0,
+        "area_km2": 29.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.60277777777778,
+        "longitude": 18.984722222222224
+      },
+      "municipality": {
+        "wikidata_id": "Q12756682",
+        "name": "Općina Teočak"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-teslic",
+      "code": "TESL",
+      "name": "Teslić",
+      "slug": "teslic",
+      "wikidata_id": "Q180753",
+      "wikipedia_title": "Teslić",
+      "metrics": {
+        "num_settlements": 57,
+        "population_2013": 38536,
+        "density_per_km2": 45.99,
+        "area_km2": 837.97
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.606666666667,
+        "longitude": 17.86
+      },
+      "municipality": {
+        "wikidata_id": "Q3625698",
+        "name": "Općina Teslić"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-tesanj",
+      "code": "TESA",
+      "name": "Tešanj",
+      "slug": "tesanj",
+      "wikidata_id": "Q994179",
+      "wikipedia_title": "Tešanj",
+      "metrics": {
+        "num_settlements": 41,
+        "population_2013": 43063,
+        "density_per_km2": 276.22,
+        "area_km2": 155.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.61345980441922,
+        "longitude": 17.98939625450022
+      },
+      "municipality": {
+        "wikidata_id": "Q12756683",
+        "name": "Općina Tešanj"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-tomislavgrad",
+      "code": "TOMI",
+      "name": "Tomislavgrad",
+      "slug": "tomislavgrad",
+      "wikidata_id": "Q998961",
+      "wikipedia_title": "Tomislavgrad",
+      "metrics": {
+        "num_settlements": 61,
+        "population_2013": 31592,
+        "density_per_km2": 32.66,
+        "area_km2": 967.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.71355,
+        "longitude": 17.226563888889
+      },
+      "municipality": {
+        "wikidata_id": "Q12756684",
+        "name": "Općina Tomislavgrad"
+      },
+      "region": {
+        "region_id": "bih-fbih-k10",
+        "wikidata_id": "Q18277",
+        "code": "K10",
+        "type": "canton",
+        "name": "Kanton br. 10"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-travnik",
+      "code": "TRAV",
+      "name": "Travnik",
+      "slug": "travnik",
+      "wikidata_id": "Q159818",
+      "wikipedia_title": "Travnik",
+      "metrics": {
+        "num_settlements": 90,
+        "population_2013": 53482,
+        "density_per_km2": 101.1,
+        "area_km2": 529.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.22542187944831,
+        "longitude": 17.666868517575132
+      },
+      "municipality": {
+        "wikidata_id": "Q12756686",
+        "name": "Općina Travnik"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-trebinje",
+      "code": "TREB",
+      "name": "Trebinje",
+      "slug": "trebinje",
+      "wikidata_id": "Q690052",
+      "wikipedia_title": "Trebinje",
+      "metrics": {
+        "num_settlements": 141,
+        "population_2013": 29198,
+        "density_per_km2": 34.17,
+        "area_km2": 854.5
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 42.708888888889,
+        "longitude": 18.321666666667
+      },
+      "municipality": {
+        "wikidata_id": "Q15640065",
+        "name": "Grad Trebinje"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-trnovo-fbih",
+      "code": "TRNO",
+      "name": "Trnovo (FBiH)",
+      "slug": "trnovo-fbih",
+      "wikidata_id": "Q1266980",
+      "wikipedia_title": "Trnovo (Federacija Bosne i Hercegovine)",
+      "metrics": {
+        "num_settlements": 55,
+        "population_2013": 1502,
+        "density_per_km2": 4.44,
+        "area_km2": 338.4
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.6886,
+        "longitude": 18.3397
+      },
+      "municipality": {
+        "wikidata_id": "Q1266980",
+        "name": "Trnovo"
+      },
+      "region": {
+        "region_id": "bih-fbih-ks",
+        "wikidata_id": "Q18276",
+        "code": "KS",
+        "type": "canton",
+        "name": "Kanton Sarajevo"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-trnovo-rs",
+      "code": "TRNO",
+      "name": "Trnovo (RS)",
+      "slug": "trnovo-rs",
+      "wikidata_id": "Q749606",
+      "wikipedia_title": "Trnovo (Republika Srpska)",
+      "metrics": {
+        "num_settlements": 25,
+        "population_2013": 2050,
+        "density_per_km2": 17.64,
+        "area_km2": 116.2
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.666666666667,
+        "longitude": 18.45
+      },
+      "municipality": {
+        "wikidata_id": "Q7844771",
+        "name": "Trnovo"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-tuzla",
+      "code": "TUZL",
+      "name": "Tuzla",
+      "slug": "tuzla",
+      "wikidata_id": "Q174684",
+      "wikipedia_title": "Tuzla",
+      "metrics": {
+        "num_settlements": 66,
+        "population_2013": 110979,
+        "density_per_km2": 377.48,
+        "area_km2": 294.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.5391105,
+        "longitude": 18.675193
+      },
+      "municipality": {
+        "wikidata_id": "Q19904705",
+        "name": "Grad Tuzla"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-ugljevik",
+      "code": "UGLJ",
+      "name": "Ugljevik",
+      "slug": "ugljevik",
+      "wikidata_id": "Q1027516",
+      "wikipedia_title": "Ugljevik",
+      "metrics": {
+        "num_settlements": 25,
+        "population_2013": 15710,
+        "density_per_km2": 95.11,
+        "area_km2": 165.17
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.691666666667,
+        "longitude": 18.994444444444
+      },
+      "municipality": {
+        "wikidata_id": "Q6956449",
+        "name": "Općina Ugljevik"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-usora",
+      "code": "USOR",
+      "name": "Usora",
+      "slug": "usora",
+      "wikidata_id": "Q738451",
+      "wikipedia_title": "Usora (općina)",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 6603,
+        "density_per_km2": 132.59,
+        "area_km2": 49.8
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.699722222222,
+        "longitude": 18.047777777778
+      },
+      "municipality": {
+        "wikidata_id": "Q738451",
+        "name": "Usora"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-vares",
+      "code": "VARE",
+      "name": "Vareš",
+      "slug": "vares",
+      "wikidata_id": "Q1017965",
+      "wikipedia_title": "Vareš",
+      "metrics": {
+        "num_settlements": 85,
+        "population_2013": 8892,
+        "density_per_km2": 22.79,
+        "area_km2": 390.1
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.164444444444,
+        "longitude": 18.328333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q13552917",
+        "name": "Općina Vareš"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-velika-kladusa",
+      "code": "VELI",
+      "name": "Velika Kladuša",
+      "slug": "velika-kladusa",
+      "wikidata_id": "Q994287",
+      "wikipedia_title": "Velika Kladuša",
+      "metrics": {
+        "num_settlements": 49,
+        "population_2013": 40419,
+        "density_per_km2": 122.11,
+        "area_km2": 331.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 45.166666666667,
+        "longitude": 15.8
+      },
+      "municipality": {
+        "wikidata_id": "Q12756590",
+        "name": "Općina Velika Kladuša"
+      },
+      "region": {
+        "region_id": "bih-fbih-usk",
+        "wikidata_id": "Q18248",
+        "code": "USK",
+        "type": "canton",
+        "name": "Unsko-sanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-visoko",
+      "code": "VISO",
+      "name": "Visoko",
+      "slug": "visoko",
+      "wikidata_id": "Q193229",
+      "wikipedia_title": "Visoko",
+      "metrics": {
+        "num_settlements": 88,
+        "population_2013": 39938,
+        "density_per_km2": 173.04,
+        "area_km2": 230.8
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 43.989444444444,
+        "longitude": 18.180555555556
+      },
+      "municipality": {
+        "wikidata_id": "Q12756592",
+        "name": "Grad Visoko"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-visegrad",
+      "code": "VISE",
+      "name": "Višegrad",
+      "slug": "visegrad",
+      "wikidata_id": "Q239266",
+      "wikipedia_title": "Višegrad",
+      "metrics": {
+        "num_settlements": 163,
+        "population_2013": 10668,
+        "density_per_km2": 23.81,
+        "area_km2": 448.14
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.7825,
+        "longitude": 19.2925
+      },
+      "municipality": {
+        "wikidata_id": "Q15615134",
+        "name": "Opština Višegrad"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-vitez",
+      "code": "VITE",
+      "name": "Vitez",
+      "slug": "vitez",
+      "wikidata_id": "Q1018006",
+      "wikipedia_title": "Vitez (općina)",
+      "metrics": {
+        "num_settlements": 34,
+        "population_2013": 25836,
+        "density_per_km2": 162.49,
+        "area_km2": 159.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.1585,
+        "longitude": 17.7885
+      },
+      "municipality": {
+        "wikidata_id": "Q12756594",
+        "name": "Općina Vitez"
+      },
+      "region": {
+        "region_id": "bih-fbih-sbk",
+        "wikidata_id": "Q18262",
+        "code": "SBK",
+        "type": "canton",
+        "name": "Srednjobosanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-vlasenica",
+      "code": "VLAS",
+      "name": "Vlasenica",
+      "slug": "vlasenica",
+      "wikidata_id": "Q1017988",
+      "wikipedia_title": "Vlasenica",
+      "metrics": {
+        "num_settlements": 38,
+        "population_2013": 11467,
+        "density_per_km2": 50.89,
+        "area_km2": 225.32
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.183333333333,
+        "longitude": 18.933333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q1017988",
+        "name": "Vlasenica"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-vogosca",
+      "code": "VOGO",
+      "name": "Vogošća",
+      "slug": "vogosca",
+      "wikidata_id": "Q1017946",
+      "wikipedia_title": "Vogošća",
+      "metrics": {
+        "num_settlements": 21,
+        "population_2013": 26343,
+        "density_per_km2": 367.41,
+        "area_km2": 71.7
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 43.9,
+        "longitude": 18.35
+      },
+      "municipality": {
+        "wikidata_id": "Q12756596",
+        "name": "Općina Vogošća"
+      },
+      "region": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "type": "entity",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-vukosavlje",
+      "code": "VUKO",
+      "name": "Vukosavlje",
+      "slug": "vukosavlje",
+      "wikidata_id": "Q606786",
+      "wikipedia_title": "Vukosavlje",
+      "metrics": {
+        "num_settlements": 13,
+        "population_2013": 4667,
+        "density_per_km2": 49.18,
+        "area_km2": 94.9
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.977913888889,
+        "longitude": 18.288330555556
+      },
+      "municipality": {
+        "wikidata_id": "Q15631788",
+        "name": "Općina Vukosavlje"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-zavidovici",
+      "code": "ZAVI",
+      "name": "Zavidovići",
+      "slug": "zavidovici",
+      "wikidata_id": "Q994239",
+      "wikipedia_title": "Zavidovići",
+      "metrics": {
+        "num_settlements": 47,
+        "population_2013": 35988,
+        "density_per_km2": 60.97,
+        "area_km2": 590.3
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.45,
+        "longitude": 18.15
+      },
+      "municipality": {
+        "wikidata_id": "Q12756618",
+        "name": "Grad Zavidovići"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-zenica",
+      "code": "ZENI",
+      "name": "Zenica",
+      "slug": "zenica",
+      "wikidata_id": "Q184046",
+      "wikipedia_title": "Zenica",
+      "metrics": {
+        "num_settlements": 83,
+        "population_2013": 110663,
+        "density_per_km2": 198.14,
+        "area_km2": 558.5
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.201666666667,
+        "longitude": 17.903888888889
+      },
+      "municipality": {
+        "wikidata_id": "Q12756619",
+        "name": "Grad Zenica"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "RS-zvornik",
+      "code": "ZVOR",
+      "name": "Zvornik",
+      "slug": "zvornik",
+      "wikidata_id": "Q231517",
+      "wikipedia_title": "Zvornik",
+      "metrics": {
+        "num_settlements": 69,
+        "population_2013": 58856,
+        "density_per_km2": 156.47,
+        "area_km2": 376.14
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.383333333333,
+        "longitude": 19.1
+      },
+      "municipality": {
+        "wikidata_id": "Q1676217",
+        "name": "Grad Zvornik"
+      },
+      "region": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "type": "entity",
+        "name": "Republika Srpska"
+      },
+      "entity": {
+        "region_id": "bih-rs",
+        "wikidata_id": "Q11196",
+        "code": "RS",
+        "name": "Republika Srpska"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-zepce",
+      "code": "ZEPC",
+      "name": "Žepče",
+      "slug": "zepce",
+      "wikidata_id": "Q393860",
+      "wikipedia_title": "Žepče",
+      "metrics": {
+        "num_settlements": 41,
+        "population_2013": 30219,
+        "density_per_km2": 107.16,
+        "area_km2": 282.0
+      },
+      "is_official_city": false,
+      "coordinates": {
+        "latitude": 44.433333333333,
+        "longitude": 18.033333333333
+      },
+      "municipality": {
+        "wikidata_id": "Q12756617",
+        "name": "Općina Žepče"
+      },
+      "region": {
+        "region_id": "bih-fbih-zdk",
+        "wikidata_id": "Q18253",
+        "code": "ZDK",
+        "type": "canton",
+        "name": "Zeničko-dobojski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    },
+    {
+      "city_id": "FBiH-zivinice",
+      "code": "ZIVI",
+      "name": "Živinice",
+      "slug": "zivinice",
+      "wikidata_id": "Q394166",
+      "wikipedia_title": "Živinice",
+      "metrics": {
+        "num_settlements": 29,
+        "population_2013": 57765,
+        "density_per_km2": 198.51,
+        "area_km2": 291.0
+      },
+      "is_official_city": true,
+      "coordinates": {
+        "latitude": 44.45,
+        "longitude": 18.65
+      },
+      "municipality": {
+        "wikidata_id": "Q12756615",
+        "name": "Grad Živinice"
+      },
+      "region": {
+        "region_id": "bih-fbih-tk",
+        "wikidata_id": "Q18250",
+        "code": "TK",
+        "type": "canton",
+        "name": "Tuzlanski kanton"
+      },
+      "entity": {
+        "region_id": "bih-fbih",
+        "wikidata_id": "Q11198",
+        "code": "FBiH",
+        "name": "Federacija Bosne i Hercegovine"
+      },
+      "state_id": "bih"
+    }
+  ]
+}

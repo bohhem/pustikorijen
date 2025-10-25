@@ -174,17 +174,30 @@
     "title": "Create Family Branch",
     "surname": "Surname",
     "surnameMinLength": "Surname must be at least 2 characters",
-    "cityCode": "City Code",
-    "cityCodeMinLength": "City code must be at least 2 characters",
-    "cityName": "City Name",
-    "cityNameMinLength": "City name must be at least 2 characters",
-    "defaultCountry": "Bosnia and Herzegovina",
+    "locationSectionTitle": "Branch location",
+    "locationDescription": "Select the exact entity, canton and city for this branch.",
+    "locationRequired": "Please select a city",
     "descriptionPlaceholder": "Tell us about your family branch...",
     "visibility": "Visibility",
     "visibilityPublic": "Public - Anyone can view",
     "visibilityFamilyOnly": "Family Only - Only members can view",
     "visibilityPrivate": "Private - Invite only",
     "creating": "Creating..."
+  },
+  "geoSelector": {
+    "title": "Location",
+    "state": "State",
+    "entity": "Entity / District",
+    "canton": "Canton",
+    "city": "City / Municipality",
+    "select": "Select an option",
+    "selectEntity": "Select an entity",
+    "selectCanton": "Select a canton",
+    "selectCity": "Select a city",
+    "noEntities": "No entities available",
+    "noCantons": "Select an entity first",
+    "noCities": "No cities available",
+    "loading": "Loading..."
   },
   "pagination": {
     "previous": "Previous",
@@ -298,6 +311,47 @@
     "editPerson": "Edit",
     "deletePerson": "Delete",
     "confirmDelete": "Are you sure you want to delete this person? This action cannot be undone."
+  },
+  "businessAddresses": {
+    "guruTitle": "Business presence",
+    "guruSubtitle": "Share a public-facing office so relatives can reach your branch.",
+    "locationTitle": "Business location",
+    "locationDescription": "Select the country, entity, and city for this address.",
+    "viewOnMaps": "View on Google Maps",
+    "form": {
+      "label": "Label",
+      "addressLine1": "Address line 1",
+      "addressLine2": "Address line 2",
+      "postalCode": "Postal code",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "mapsUrl": "Google Maps URL",
+      "mapsId": "Google Maps place ID",
+      "isPublic": "Show publicly",
+      "isPublicHint": "When enabled, families can see this address on branch pages.",
+      "share": "Share",
+      "save": "Save address"
+    },
+    "messages": {
+      "loadError": "Failed to load business address",
+      "saveError": "Failed to save business address",
+      "saveSuccess": "Business address saved",
+      "locationRequired": "Please select a city",
+      "deleteSuccess": "Business address removed",
+      "deleteConfirm": "Delete this business address?"
+    },
+    "person": {
+      "title": "Business addresses",
+      "subtitle": "Optional offices or studios connected to this person.",
+      "add": "Add address",
+      "editTitle": "Edit address",
+      "modalSubtitle": "Maps & contact information",
+      "defaultLabel": "Business address",
+      "primaryBadge": "Primary",
+      "markPrimary": "Mark as primary",
+      "notes": "Notes",
+      "empty": "No business addresses recorded yet."
+    }
   },
   "partnerships": {
     "title": "Partnerships",

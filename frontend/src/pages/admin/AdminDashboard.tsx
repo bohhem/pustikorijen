@@ -505,8 +505,8 @@ export default function AdminDashboard() {
                                 <p className="text-base font-semibold text-slate-900">{branch.surname}</p>
                                 <p className="text-sm text-slate-500">
                                   {branch.cityName}
-                                  {branch.region ? `, ${branch.region}` : ''}
-                                  {branch.country ? `, ${branch.country}` : ''}
+                                  {branch.region && `, ${branch.region}`}
+                                  {!branch.region && branch.country && `, ${branch.country}`}
                                 </p>
                               </div>
                               <span className="text-xs uppercase tracking-wide text-slate-400">

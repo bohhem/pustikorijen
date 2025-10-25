@@ -6,6 +6,12 @@ import {
   updatePerson,
   deletePerson,
 } from '../controllers/person.controller';
+import {
+  listPersonBusinessAddresses,
+  createPersonBusinessAddress,
+  updatePersonBusinessAddress,
+  deletePersonBusinessAddress,
+} from '../controllers/business-address.controller';
 import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router({ mergeParams: true });
@@ -16,5 +22,9 @@ router.get('/', authenticateToken, getPersonsByBranch);
 router.get('/:personId', authenticateToken, getPersonById);
 router.patch('/:personId', authenticateToken, updatePerson);
 router.delete('/:personId', authenticateToken, deletePerson);
+router.get('/:personId/business-addresses', authenticateToken, listPersonBusinessAddresses);
+router.post('/:personId/business-addresses', authenticateToken, createPersonBusinessAddress);
+router.patch('/:personId/business-addresses/:addressId', authenticateToken, updatePersonBusinessAddress);
+router.delete('/:personId/business-addresses/:addressId', authenticateToken, deletePersonBusinessAddress);
 
 export default router;

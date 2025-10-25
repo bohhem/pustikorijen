@@ -1,26 +1,42 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { createBranch } from '../api/branch';
 import Layout from '../components/layout/Layout';
+import GeoLocationSelector from '../components/geo/GeoLocationSelector';
 import type { CreateBranchInput } from '../types/branch';
 
 export default function CreateBranch() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCityId, setSelectedCityId] = useState('');
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm<CreateBranchInput>();
+  } = useForm<CreateBranchInput>({
+    defaultValues: {
+      visibility: 'public',
+    },
+  });
+
+  const handleCityChange = useCallback(
+    (cityId: string | null) => {
+      const id = cityId ?? '';
+      setSelectedCityId(id);
+      setValue('geoCityId', id, { shouldValidate: true });
+    },
+    [setValue]
+  );
 
   const onSubmit = async (data: CreateBranchInput) => {
     setError('');
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     try {
       const result = await createBranch(data);
@@ -28,7 +44,7 @@ export default function CreateBranch() {
     } catch (err: any) {
       setError(err.response?.data?.error || t('branches.createError'));
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -62,63 +78,20 @@ export default function CreateBranch() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="cityCode" className="block text-sm font-medium text-gray-700">
-                  {t('createBranch.cityCode')} *
-                </label>
-                <input
-                  {...register('cityCode', {
-                    required: t('validation.required'),
-                    minLength: { value: 2, message: t('createBranch.cityCodeMinLength') },
-                  })}
-                  type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border uppercase"
-                  maxLength={10}
-                />
-                {errors.cityCode && (
-                  <p className="mt-1 text-sm text-red-600">{errors.cityCode.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="cityName" className="block text-sm font-medium text-gray-700">
-                  {t('createBranch.cityName')} *
-                </label>
-                <input
-                  {...register('cityName', {
-                    required: t('validation.required'),
-                    minLength: { value: 2, message: t('createBranch.cityNameMinLength') },
-                  })}
-                  type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
-                />
-                {errors.cityName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.cityName.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="region" className="block text-sm font-medium text-gray-700">
-                {t('branches.region')}
-              </label>
+            <div className="space-y-2">
               <input
-                {...register('region')}
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+                type="hidden"
+                value={selectedCityId}
+                readOnly
+                {...register('geoCityId', { required: t('createBranch.locationRequired') })}
               />
-            </div>
-
-            <div>
-              <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                {t('branches.country')}
-              </label>
-              <input
-                {...register('country')}
-                type="text"
-                defaultValue={t('createBranch.defaultCountry')}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+              <GeoLocationSelector
+                value={selectedCityId}
+                onChange={handleCityChange}
+                error={errors.geoCityId?.message}
+                required
+                title={t('createBranch.locationSectionTitle')}
+                description={t('createBranch.locationDescription')}
               />
             </div>
 
@@ -151,10 +124,10 @@ export default function CreateBranch() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isSubmitting}
                 className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                {isLoading ? t('createBranch.creating') : t('branches.create')}
+                {isSubmitting ? t('createBranch.creating') : t('branches.create')}
               </button>
               <button
                 type="button"

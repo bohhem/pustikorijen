@@ -16,6 +16,7 @@ import Layout from '../components/layout/Layout';
 import MemberManagementSection from '../components/branch/MemberManagementSection';
 import PendingPersonLinks from '../components/branch/PendingPersonLinks';
 import type { Branch, BranchMember, PersonLinkRecord } from '../types/branch';
+import { formatBranchLocation } from '../utils/location';
 
 export default function BranchDetail() {
   const { t } = useTranslation();
@@ -187,7 +188,7 @@ export default function BranchDetail() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{branch.surname} {t('branchDetail.family')}</h1>
-              <p className="text-gray-600">{branch.cityName}, {branch.region || branch.country}</p>
+              <p className="text-gray-600">{formatBranchLocation(branch)}</p>
               <p className="text-sm text-gray-500 font-mono mt-2">{branch.id}</p>
             </div>
             {!isMember && !isSuperGuru && user && (

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
 import type { Branch } from '../types/branch';
+import { formatBranchLocation } from '../utils/location';
 
 export default function Branches() {
   const { t } = useTranslation();
@@ -95,9 +96,7 @@ export default function Branches() {
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-bold text-gray-900">{branch.surname}</h3>
-                      <p className="text-sm text-gray-600">
-                        {branch.cityName}, {branch.region || branch.country}
-                      </p>
+                      <p className="text-sm text-gray-600">{formatBranchLocation(branch)}</p>
                     </div>
                     {branch.isVerified && (
                       <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">

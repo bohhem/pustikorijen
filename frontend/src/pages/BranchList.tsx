@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getBranches } from '../api/branch';
 import type { Branch } from '../types/branch';
+import { formatBranchLocation } from '../utils/location';
 
 export default function BranchList() {
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -113,9 +114,7 @@ export default function BranchList() {
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">
-                        {branch.cityName}, {branch.region || branch.country}
-                      </p>
+                      <p className="mt-1 text-sm text-gray-500">{formatBranchLocation(branch)}</p>
                       <p className="mt-2 text-xs text-gray-400">Branch ID: {branch.id}</p>
                       <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
                         <div className="flex items-center space-x-4">
