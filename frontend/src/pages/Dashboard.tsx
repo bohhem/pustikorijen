@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
-import GuruBusinessAddressCard from '../components/business/GuruBusinessAddressCard';
+import PendingRequestsCard from '../components/dashboard/PendingRequestsCard';
 import type { Branch } from '../types/branch';
 import { formatBranchLocation } from '../utils/location';
 
@@ -43,6 +43,9 @@ export default function Dashboard() {
             </p>
           </div>
 
+          {/* Pending Requests */}
+          <PendingRequestsCard />
+
           {/* Quick Actions */}
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.quickActions')}</h3>
@@ -69,53 +72,16 @@ export default function Dashboard() {
                 </div>
               </Link>
 
-              <div className="flex items-start p-4 bg-purple-50 border border-purple-200 rounded-lg opacity-60 cursor-not-allowed">
-                <div className="flex-shrink-0 text-3xl mr-4">📖</div>
+              <Link
+                to="/profile"
+                className="flex items-start p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 hover:shadow-md transition"
+              >
+                <div className="flex-shrink-0 text-3xl mr-4">👤</div>
                 <div>
-                  <h4 className="text-sm font-semibold text-purple-900">{t('branches.stories')}</h4>
-                  <p className="text-xs text-purple-700 mt-1">{t('dashboard.comingSoon')}</p>
+                  <h4 className="text-sm font-semibold text-purple-900">{t('navigation.profile')}</h4>
+                  <p className="text-xs text-purple-700 mt-1">{t('dashboard.manageProfile')}</p>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Guru Business Address */}
-          <GuruBusinessAddressCard />
-
-          {/* Profile Overview */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.yourProfile')}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('auth.email')}</dt>
-                <dd className="text-sm text-gray-900 mt-1 font-medium">{user?.email}</dd>
-              </div>
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.language')}</dt>
-                <dd className="text-sm text-gray-900 mt-1 font-medium">
-                  {user?.preferredLanguage === 'bs' ? 'Bosanski' : user?.preferredLanguage === 'de' ? 'Deutsch' : 'English'}
-                </dd>
-              </div>
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.location')}</dt>
-                <dd className="text-sm text-gray-900 mt-1 font-medium">
-                  {user?.currentLocation || t('dashboard.notSpecified')}
-                </dd>
-              </div>
-              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-lg p-4">
-                <dt className="text-xs font-medium text-indigo-700 uppercase tracking-wide">{t('dashboard.emailStatus')}</dt>
-                <dd className="text-sm mt-1 font-medium flex items-center">
-                  {user?.emailVerified ? (
-                    <span className="text-green-700 flex items-center">
-                      <span className="mr-1">✓</span> {t('dashboard.verified')}
-                    </span>
-                  ) : (
-                    <span className="text-orange-700 flex items-center">
-                      <span className="mr-1">⚠</span> {t('dashboard.notVerified')}
-                    </span>
-                  )}
-                </dd>
-              </div>
+              </Link>
             </div>
           </div>
 

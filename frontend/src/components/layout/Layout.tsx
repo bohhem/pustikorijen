@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import UserMenu from './UserMenu';
 
 interface LayoutProps {
   children: ReactNode;
@@ -78,20 +79,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* User menu and Language Switcher */}
             <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
               <LanguageSwitcher />
-
-              {user && (
-                <>
-                  <div className="hidden lg:block text-sm text-gray-700">
-                    {user.fullName}
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="inline-flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                  >
-                    {t('auth.logout')}
-                  </button>
-                </>
-              )}
+              {user && <UserMenu onLogout={handleLogout} />}
             </div>
           </div>
         </div>

@@ -71,7 +71,19 @@
     "gen": "gen.",
     "myBranches": "My Branches",
     "recentActivity": "Recent Activity",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "manageProfile": "Manage your profile and addresses",
+    "pendingRequests": {
+      "title": "Pending Requests",
+      "noPending": "No pending requests",
+      "joinRequest": "Join Request",
+      "linkRequest": "Link Request",
+      "yourRequest": "Your Request",
+      "branch": "Branch",
+      "from": "From",
+      "person": "Person",
+      "andMore": "+{{count}} more"
+    }
   },
   "branches": {
     "title": "Family Branches",
@@ -511,5 +523,51 @@
       "cannotRemoveLast": "At least one SuperGuru must remain assigned"
     },
     "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon."
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your account information and preferences",
+    "notLoggedIn": "Please log in to view your profile",
+    "tabs": {
+      "about": "About",
+      "addresses": "Addresses",
+      "myBranches": "My Branches"
+    },
+    "accountInfo": "Account Information",
+    "email": "Email",
+    "memberSince": "Member Since",
+    "globalRole": "Role",
+    "emailStatus": "Email Status",
+    "verified": "Verified",
+    "personalInfo": "Personal Information",
+    "fullName": "Full Name",
+    "birthYear": "Birth Year",
+    "birthYearMin": "Birth year must be after 1900",
+    "birthYearMax": "Birth year cannot be in the future",
+    "currentLocation": "Current Location",
+    "locationPlaceholder": "e.g., Sarajevo, Bosnia and Herzegovina",
+    "preferredLanguage": "Preferred Language",
+    "messages": {
+      "saveSuccess": "Profile updated successfully",
+      "saveError": "Failed to update profile"
+    },
+    "addresses": {
+      "title": "Business Addresses",
+      "description": "Manage your business presence and contact information"
+    },
+    "branches": {
+      "title": "My Branches",
+      "count": "You are a member of {{count}} branches",
+      "noBranches": "No branches yet",
+      "noBranchesDesc": "You are not a member of any family branches yet. Create one to get started!",
+      "createBranch": "Create Branch",
+      "createNew": "Create New",
+      "founder": "Founder",
+      "branchId": "Branch ID",
+      "members": "members",
+      "people": "people",
+      "created": "Created",
+      "loadError": "Failed to load branches"
+    }
   }
 }

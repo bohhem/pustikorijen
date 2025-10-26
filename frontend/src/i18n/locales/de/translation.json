@@ -71,7 +71,19 @@
     "gen": "Gen.",
     "myBranches": "Meine Zweige",
     "recentActivity": "Letzte Aktivität",
-    "statistics": "Statistiken"
+    "statistics": "Statistiken",
+    "manageProfile": "Verwalten Sie Ihr Profil und Ihre Adressen",
+    "pendingRequests": {
+      "title": "Ausstehende Anfragen",
+      "noPending": "Keine ausstehenden Anfragen",
+      "joinRequest": "Beitrittsanfrage",
+      "linkRequest": "Verknüpfungsanfrage",
+      "yourRequest": "Ihre Anfrage",
+      "branch": "Zweig",
+      "from": "Von",
+      "person": "Person",
+      "andMore": "+{{count}} weitere"
+    }
   },
   "branches": {
     "title": "Familienzweige",
@@ -365,6 +377,62 @@
     "peopleAcross": "Personen über",
     "selectedPersonTitle": "Ausgewählte Person"
   },
+  "geoSelector": {
+    "title": "Standort",
+    "state": "Staat",
+    "entity": "Entität / Bezirk",
+    "canton": "Kanton",
+    "city": "Stadt / Gemeinde",
+    "select": "Option wählen",
+    "selectEntity": "Entität wählen",
+    "selectCanton": "Kanton wählen",
+    "selectCity": "Stadt wählen",
+    "noEntities": "Keine Entitäten verfügbar",
+    "noCantons": "Wählen Sie zuerst eine Entität",
+    "noCities": "Keine Städte verfügbar",
+    "loading": "Lädt..."
+  },
+  "businessAddresses": {
+    "guruTitle": "Geschäftspräsenz",
+    "guruSubtitle": "Teilen Sie eine öffentliche Büroadresse, damit Familien Ihren Zweig erreichen können.",
+    "locationTitle": "Geschäftsstandort",
+    "locationDescription": "Wählen Sie Land, Entität und Stadt für diese Adresse.",
+    "viewOnMaps": "In Google Maps anzeigen",
+    "form": {
+      "label": "Bezeichnung",
+      "addressLine1": "Adresszeile 1",
+      "addressLine2": "Adresszeile 2",
+      "postalCode": "Postleitzahl",
+      "latitude": "Breitengrad",
+      "longitude": "Längengrad",
+      "mapsUrl": "Google Maps URL",
+      "mapsId": "Google Maps Orts-ID",
+      "isPublic": "Öffentlich anzeigen",
+      "isPublicHint": "Wenn aktiviert, können Familien diese Adresse auf Zweigseiten sehen.",
+      "share": "Teilen",
+      "save": "Adresse speichern"
+    },
+    "messages": {
+      "loadError": "Geschäftsadresse konnte nicht geladen werden",
+      "saveError": "Geschäftsadresse konnte nicht gespeichert werden",
+      "saveSuccess": "Geschäftsadresse gespeichert",
+      "locationRequired": "Bitte wählen Sie eine Stadt",
+      "deleteSuccess": "Geschäftsadresse entfernt",
+      "deleteConfirm": "Diese Geschäftsadresse löschen?"
+    },
+    "person": {
+      "title": "Geschäftsadressen",
+      "subtitle": "Optionale Büros oder Studios, die mit dieser Person verbunden sind.",
+      "add": "Adresse hinzufügen",
+      "editTitle": "Adresse bearbeiten",
+      "modalSubtitle": "Karten & Kontaktinformationen",
+      "defaultLabel": "Geschäftsadresse",
+      "primaryBadge": "Primär",
+      "markPrimary": "Als primär markieren",
+      "notes": "Notizen",
+      "empty": "Noch keine Geschäftsadressen erfasst."
+    }
+  },
   "validation": {
     "required": "Dieses Feld ist erforderlich",
     "invalidEmail": "Ungültige E-Mail-Adresse",
@@ -455,5 +523,51 @@
       "cannotRemoveLast": "Mindestens ein SuperGuru muss zugewiesen bleiben"
     },
     "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze."
+  },
+  "profile": {
+    "title": "Mein Profil",
+    "subtitle": "Verwalten Sie Ihre Kontoinformationen und Einstellungen",
+    "notLoggedIn": "Bitte melden Sie sich an, um Ihr Profil zu sehen",
+    "tabs": {
+      "about": "Über mich",
+      "addresses": "Adressen",
+      "myBranches": "Meine Zweige"
+    },
+    "accountInfo": "Kontoinformationen",
+    "email": "E-Mail",
+    "memberSince": "Mitglied seit",
+    "globalRole": "Rolle",
+    "emailStatus": "E-Mail-Status",
+    "verified": "Verifiziert",
+    "personalInfo": "Persönliche Informationen",
+    "fullName": "Vollständiger Name",
+    "birthYear": "Geburtsjahr",
+    "birthYearMin": "Geburtsjahr muss nach 1900 sein",
+    "birthYearMax": "Geburtsjahr darf nicht in der Zukunft liegen",
+    "currentLocation": "Aktueller Standort",
+    "locationPlaceholder": "z.B. Sarajevo, Bosnien und Herzegowina",
+    "preferredLanguage": "Bevorzugte Sprache",
+    "messages": {
+      "saveSuccess": "Profil erfolgreich aktualisiert",
+      "saveError": "Fehler beim Aktualisieren des Profils"
+    },
+    "addresses": {
+      "title": "Geschäftsadressen",
+      "description": "Verwalten Sie Ihre geschäftliche Präsenz und Kontaktinformationen"
+    },
+    "branches": {
+      "title": "Meine Zweige",
+      "count": "Sie sind Mitglied von {{count}} Zweigen",
+      "noBranches": "Noch keine Zweige",
+      "noBranchesDesc": "Sie sind noch kein Mitglied eines Familienzweigs. Erstellen Sie einen, um zu beginnen!",
+      "createBranch": "Zweig erstellen",
+      "createNew": "Neu erstellen",
+      "founder": "Gründer",
+      "branchId": "Zweig-ID",
+      "members": "Mitglieder",
+      "people": "Personen",
+      "created": "Erstellt",
+      "loadError": "Fehler beim Laden der Zweige"
+    }
   }
 }

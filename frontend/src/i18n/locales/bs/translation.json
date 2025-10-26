@@ -71,7 +71,19 @@
     "gen": "gen.",
     "myBranches": "Moje grane",
     "recentActivity": "Nedavna aktivnost",
-    "statistics": "Statistika"
+    "statistics": "Statistika",
+    "manageProfile": "Upravljajte svojim profilom i adresama",
+    "pendingRequests": {
+      "title": "Zahtjevi na čekanju",
+      "noPending": "Nema zahtjeva na čekanju",
+      "joinRequest": "Zahtjev za pridruživanje",
+      "linkRequest": "Zahtjev za povezivanje",
+      "yourRequest": "Vaš zahtjev",
+      "branch": "grana",
+      "from": "Od",
+      "person": "Osoba",
+      "andMore": "+{{count}} više"
+    }
   },
   "branches": {
     "title": "Porodične grane",
@@ -511,5 +523,51 @@
       "cannotRemoveLast": "Najmanje jedan SuperGuru mora ostati dodijeljen"
     },
     "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže."
+  },
+  "profile": {
+    "title": "Moj profil",
+    "subtitle": "Upravljajte informacijama o računu i postavkama",
+    "notLoggedIn": "Prijavite se da vidite svoj profil",
+    "tabs": {
+      "about": "O meni",
+      "addresses": "Adrese",
+      "myBranches": "Moje grane"
+    },
+    "accountInfo": "Informacije o računu",
+    "email": "Email",
+    "memberSince": "Član od",
+    "globalRole": "Uloga",
+    "emailStatus": "Status emaila",
+    "verified": "Potvrđen",
+    "personalInfo": "Lične informacije",
+    "fullName": "Puno ime",
+    "birthYear": "Godina rođenja",
+    "birthYearMin": "Godina rođenja mora biti nakon 1900",
+    "birthYearMax": "Godina rođenja ne može biti u budućnosti",
+    "currentLocation": "Trenutna lokacija",
+    "locationPlaceholder": "npr., Sarajevo, Bosna i Hercegovina",
+    "preferredLanguage": "Preferirani jezik",
+    "messages": {
+      "saveSuccess": "Profil uspješno ažuriran",
+      "saveError": "Greška pri ažuriranju profila"
+    },
+    "addresses": {
+      "title": "Poslovne adrese",
+      "description": "Upravljajte svojom poslovnom prisutnošću i kontakt informacijama"
+    },
+    "branches": {
+      "title": "Moje grane",
+      "count": "Član ste {{count}} grana",
+      "noBranches": "Još nemate grana",
+      "noBranchesDesc": "Još uvijek niste član nijedne porodične grane. Kreirajte jednu da započnete!",
+      "createBranch": "Kreiraj granu",
+      "createNew": "Kreiraj novu",
+      "founder": "Osnivač",
+      "branchId": "ID grane",
+      "members": "članova",
+      "people": "osoba",
+      "created": "Kreirano",
+      "loadError": "Greška pri učitavanju grana"
+    }
   }
 }

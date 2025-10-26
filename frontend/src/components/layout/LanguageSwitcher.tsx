@@ -14,25 +14,24 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="relative inline-block text-left">
-      <div className="flex items-center gap-1 sm:gap-2">
+    <div className="relative inline-block">
+      <select
+        value={i18n.language}
+        onChange={(e) => changeLanguage(e.target.value)}
+        className="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-8 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+          backgroundPosition: 'right 0.5rem center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '1.5em 1.5em',
+        }}
+      >
         {languages.map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => changeLanguage(lang.code)}
-            className={`px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${
-              i18n.language === lang.code
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={lang.name}
-          >
-            <span className="hidden sm:inline mr-1">{lang.flag}</span>
-            <span className="sm:hidden text-base">{lang.flag}</span>
-            <span className="hidden sm:inline">{lang.code.toUpperCase()}</span>
-          </button>
+          <option key={lang.code} value={lang.code}>
+            {lang.flag} {lang.code.toUpperCase()}
+          </option>
         ))}
-      </div>
+      </select>
     </div>
   );
 }
