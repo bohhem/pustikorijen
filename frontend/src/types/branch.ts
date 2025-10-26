@@ -26,6 +26,7 @@ export interface Branch {
     id: string;
     fullName: string;
     email?: string;
+    lastLogin?: string;
   };
   location?: GeoCity;
   _count?: {

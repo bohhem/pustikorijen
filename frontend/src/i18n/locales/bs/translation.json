@@ -105,7 +105,10 @@
     "createSuccess": "Grana uspješno kreirana",
     "createError": "Greška pri kreiranju grane",
     "loadError": "Greška pri učitavanju grana",
-    "searchPlaceholder": "Pretraži grane..."
+    "searchPlaceholder": "Pretraži grane...",
+    "foundedBy": "Osnivač",
+    "lastActive": "Zadnja aktivnost",
+    "neverLoggedIn": "Nikad nije bio/la aktivan/na"
   },
   "branchDetail": {
     "family": "Porodica",

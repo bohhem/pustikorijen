@@ -5,15 +5,38 @@ import { getBranches } from '../api/branch';
 import Layout from '../components/layout/Layout';
 import type { Branch } from '../types/branch';
 import { formatBranchLocation } from '../utils/location';
+import { formatDistanceToNow } from 'date-fns';
+import { enUS, de, bs } from 'date-fns/locale';
 
 export default function Branches() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const getDateLocale = () => {
+    switch (i18n.language) {
+      case 'de':
+        return de;
+      case 'bs':
+        return bs;
+      default:
+        return enUS;
+    }
+  };
+
+  const formatLastActive = (lastLogin: string | null | undefined) => {
+    if (!lastLogin) {
+      return t('branches.neverLoggedIn');
+    }
+    return formatDistanceToNow(new Date(lastLogin), {
+      addSuffix: true,
+      locale: getDateLocale(),
+    });
+  };
 
   useEffect(() => {
     loadBranches();
@@ -111,6 +134,25 @@ export default function Branches() {
                       <p className="line-clamp-2">{branch.description}</p>
                     )}
                   </div>
+
+                  {branch.foundedBy && (
+                    <div className="text-xs text-gray-600 mb-3 pb-3 border-b border-gray-100">
+                      <div className="flex items-center gap-1 mb-1">
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span className="font-medium">{t('branches.foundedBy')}:</span>
+                        <span>{branch.foundedBy.fullName}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-medium">{t('branches.lastActive')}:</span>
+                        <span>{formatLastActive(branch.foundedBy.lastLogin)}</span>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="flex gap-4 text-sm text-gray-600 border-t pt-4">
                     <div>

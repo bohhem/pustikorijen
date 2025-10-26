@@ -105,7 +105,10 @@
     "createSuccess": "Zweig erfolgreich erstellt",
     "createError": "Fehler beim Erstellen des Zweigs",
     "loadError": "Fehler beim Laden der Zweige",
-    "searchPlaceholder": "Zweige durchsuchen..."
+    "searchPlaceholder": "Zweige durchsuchen...",
+    "foundedBy": "Gegründet von",
+    "lastActive": "Zuletzt aktiv",
+    "neverLoggedIn": "Nie angemeldet"
   },
   "branchDetail": {
     "family": "Familie",

@@ -30,6 +30,7 @@ type BranchRecord = {
     user_id: string;
     full_name: string;
     email?: string | null;
+    last_login?: Date | null;
   } | null;
   geo_city?: GeoCityRecord | null;
   _count?: {
@@ -112,6 +113,7 @@ function mapBranch(record: BranchRecord) {
           id: record.users.user_id,
           fullName: record.users.full_name,
           email: record.users.email ?? undefined,
+          lastLogin: record.users.last_login ?? undefined,
         }
       : undefined,
     _count: record._count
@@ -248,6 +250,7 @@ export async function createBranch(data: CreateBranchInput) {
           user_id: true,
           full_name: true,
           email: true,
+          last_login: true,
         },
       },
       geo_city: {
@@ -325,6 +328,7 @@ export async function getBranches(params: {
           select: {
             user_id: true,
             full_name: true,
+            last_login: true,
           },
         },
         geo_city: {
@@ -366,6 +370,7 @@ export async function getBranchById(branchId: string) {
           user_id: true,
           full_name: true,
           email: true,
+          last_login: true,
         },
       },
       geo_city: {

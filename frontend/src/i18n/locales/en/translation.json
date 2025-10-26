@@ -105,7 +105,10 @@
     "createSuccess": "Branch created successfully",
     "createError": "Failed to create branch",
     "loadError": "Failed to load branches",
-    "searchPlaceholder": "Search branches..."
+    "searchPlaceholder": "Search branches...",
+    "foundedBy": "Founded by",
+    "lastActive": "Last active",
+    "neverLoggedIn": "Never logged in"
   },
   "branchDetail": {
     "family": "Family",
