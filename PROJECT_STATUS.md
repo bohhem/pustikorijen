@@ -3,7 +3,7 @@
 > **Current Status:** Phase 3+ - Advanced User Experience & Profile Management
 
 **Last Updated:** 2025-10-26
-**Phase:** 3+ - Enhanced UX Features (95% Complete)
+**Phase:** 3+ - Enhanced UX Features (96% Complete)
 **Next Action:** Phase 4 - Stories & Documents
 
 ---
@@ -16,7 +16,7 @@ Phase 0 (Setup):    ████████████████████
 Phase 1 (Auth):     ████████████████████ 100% ✅
 Phase 2 (Branches): ████████████████████ 100% ✅
 Phase 3 (Persons):  ████████████████████ 100% ✅
-Phase 3+ (UX/UI):   ███████████████████░  95% ✅
+Phase 3+ (UX/UI):   ███████████████████░  96% ✅
 Phase 4 (Stories):  ░░░░░░░░░░░░░░░░░░░░   0%
 MVP Target:         ██████████████░░░░░░  70%
 ```
@@ -90,7 +90,7 @@ MVP Target:         ██████████████░░░░░░
 
 **Milestone:** `v0.4.5-ux-enhancements`
 
-**Completion Date:** 2025-10-26 (95% Complete)
+**Completion Date:** 2025-10-26 (96% Complete)
 
 ### Latest Features Implemented (October 26, 2025)
 
@@ -124,6 +124,13 @@ MVP Target:         ██████████████░░░░░░
 - ✅ GPS coordinates and demographic data for all locations
 - ✅ Business address support with Google Maps integration
 - ✅ Person business addresses (multiple per person)
+
+**Branch Card Enhancements:**
+- ✅ Display branch founder name on each branch card
+- ✅ Show founder's last login with relative time formatting (e.g., "2 hours ago")
+- ✅ Locale-aware date formatting (EN/BS/DE using date-fns)
+- ✅ Visual improvements with user and clock icons
+- ✅ "Never logged in" status for inactive founders
 
 ---
 
