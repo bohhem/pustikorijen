@@ -1,9 +1,9 @@
 # Pustikorijen - Project Status
 
-> **Current Status:** Phase 3 Complete - Person Management & Family Tree Operational
+> **Current Status:** Phase 3+ - Advanced User Experience & Profile Management
 
-**Last Updated:** 2025-10-18
-**Phase:** 3 - Family Tree & Persons (100% Complete)
+**Last Updated:** 2025-10-26
+**Phase:** 3+ - Enhanced UX Features (95% Complete)
 **Next Action:** Phase 4 - Stories & Documents
 
 ---
@@ -16,8 +16,9 @@ Phase 0 (Setup):    ████████████████████
 Phase 1 (Auth):     ████████████████████ 100% ✅
 Phase 2 (Branches): ████████████████████ 100% ✅
 Phase 3 (Persons):  ████████████████████ 100% ✅
+Phase 3+ (UX/UI):   ███████████████████░  95% ✅
 Phase 4 (Stories):  ░░░░░░░░░░░░░░░░░░░░   0%
-MVP Target:         ████████████░░░░░░░░  60%
+MVP Target:         ██████████████░░░░░░  70%
 ```
 
 ---
@@ -82,6 +83,47 @@ MVP Target:         ████████████░░░░░░░░
 - ✅ Dependencies mapped
 - ✅ Continuity checklist created
 - 📄 `docs/08-implementation-roadmap.md`
+
+---
+
+## ✅ Phase 3+: Enhanced User Experience (NEAR COMPLETE)
+
+**Milestone:** `v0.4.5-ux-enhancements`
+
+**Completion Date:** 2025-10-26 (95% Complete)
+
+### Latest Features Implemented (October 26, 2025)
+
+**User Profile System:**
+- ✅ Multi-tab profile page (/profile) with About, Addresses, My Branches tabs
+- ✅ Editable personal information (name, birth year, location, language)
+- ✅ Business address management (moved from Dashboard)
+- ✅ Branch membership overview with statistics
+- ✅ Complete i18n support (EN/BS/DE) - 90+ new translation keys
+
+**Dashboard Enhancements:**
+- ✅ Pending Requests card showing all user activities
+  - Join requests to review (for Gurus)
+  - Person link requests to review (for Gurus)
+  - User's own pending join requests
+  - Color-coded badges and date sorting
+- ✅ Cleaner layout with focused quick actions
+- ✅ Removed business address form (moved to Profile)
+
+**Navigation Improvements:**
+- ✅ User menu dropdown (replaces separate Profile link + Logout button)
+  - Responsive display (full name → first name → initials)
+  - Profile link and Logout in dropdown
+  - Click outside/Escape to close
+- ✅ Language switcher dropdown (replaces 3 separate buttons)
+- ✅ Reduced header clutter and improved mobile UX
+
+**Geography & Location System:**
+- ✅ Complete Bosnia & Herzegovina location database (145 municipalities)
+- ✅ Hierarchical location selector (State → Entity → Canton → City)
+- ✅ GPS coordinates and demographic data for all locations
+- ✅ Business address support with Google Maps integration
+- ✅ Person business addresses (multiple per person)
 
 ---
 
@@ -386,12 +428,20 @@ git checkout -b feature/issue-XX-description
 - Auto-restart configured
 
 **Current Features in Production:**
-- User authentication and registration
-- Branch creation and management
-- Person management with CRUD
-- Family tree visualization
-- Join request workflows
-- Responsive UI across all pages
+- User authentication and registration (email/social login)
+- User profile system with multi-tab interface
+- Pending requests dashboard for Gurus and members
+- Branch creation and management with geo-location
+- Person management with full CRUD operations
+- Business address management (Guru + Person addresses)
+- Family tree visualization with interactive nodes
+- Partnership/marriage management
+- Join request and person link workflows
+- Member management with role promotion
+- Bosnia & Herzegovina location database (145 municipalities)
+- Multilingual support (English, Bosnian, German)
+- Responsive UI with mobile-optimized navigation
+- User menu dropdown with profile access
 
 ---
 
