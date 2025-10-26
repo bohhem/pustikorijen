@@ -161,6 +161,12 @@ interface CreateBranchInput {
   foundedById: string;
 }
 
+interface UpdateBranchInput {
+  description?: string | null;
+  visibility?: 'public' | 'family_only' | 'private';
+  geoCityId?: string;
+}
+
 /**
  * Generate unique branch ID in format: FB-CITY-SURNAME-001
  */
@@ -275,6 +281,104 @@ export async function createBranch(data: CreateBranchInput) {
   });
 
   return mapBranch(branch as BranchRecord);
+}
+
+/**
+ * Update branch details (Guru or elevated role)
+ */
+export async function updateBranch(branchId: string, input: UpdateBranchInput, actor: ActingUser) {
+  const branch = await prisma.familyBranch.findUnique({
+    where: { branch_id: branchId },
+  });
+
+  if (!branch) {
+    throw new Error('Branch not found');
+  }
+
+  const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
+
+  if (!isElevated) {
+    const membership = await prisma.branchMember.findUnique({
+      where: {
+        branch_id_user_id: {
+          branch_id: branchId,
+          user_id: actor.userId,
+        },
+      },
+    });
+
+    if (!membership || membership.role !== 'guru' || membership.status !== 'active') {
+      throw new Error('Only branch Gurus or platform admins can update branch details');
+    }
+  }
+
+  const { description, visibility, geoCityId } = input;
+
+  if (
+    description === undefined &&
+    visibility === undefined &&
+    geoCityId === undefined
+  ) {
+    throw new Error('No updates provided');
+  }
+
+  const updateData: Record<string, unknown> = {
+    updated_at: new Date(),
+  };
+
+  if (description !== undefined) {
+    updateData.description = description ?? null;
+  }
+
+  if (visibility !== undefined) {
+    updateData.visibility = visibility;
+  }
+
+  let geoCity: GeoCityRecord | null = null;
+  if (geoCityId !== undefined) {
+    geoCity = await prisma.geoCity.findUnique({
+      where: { city_id: geoCityId },
+      include: GEO_CITY_INCLUDE,
+    });
+
+    if (!geoCity) {
+      throw new Error('Invalid city selection');
+    }
+
+    updateData.geo_city_id = geoCity.city_id;
+    updateData.city_code = geoCity.city_code.toUpperCase();
+    updateData.city_name = geoCity.name;
+    updateData.region = geoCity.region?.name ?? geoCity.entity_region?.name ?? null;
+    updateData.country = geoCity.state?.name ?? 'Bosnia and Herzegovina';
+  }
+
+  const updatedBranch = await prisma.familyBranch.update({
+    where: { branch_id: branchId },
+    data: updateData,
+    include: {
+      users: {
+        select: {
+          user_id: true,
+          full_name: true,
+          email: true,
+          last_login: true,
+        },
+      },
+      geo_city: {
+        include: GEO_CITY_INCLUDE,
+      },
+      _count: {
+        select: {
+          branch_members: true,
+          persons: true,
+          stories: true,
+          documents: true,
+        },
+      },
+    },
+  });
+
+  return mapBranch(updatedBranch as BranchRecord);
 }
 
 /**
@@ -776,4 +880,494 @@ export async function updateMemberRole(
   });
 
   return mapBranchMember(updatedMember as BranchMemberRecord);
+}
+
+interface ConnectedFamilyStats {
+  approvedLinks: number;
+  pendingLinks: number;
+  firstLinkAt: Date | null;
+  lastLinkAt: Date | null;
+}
+
+interface ConnectedFamilyBridge {
+  id: string;
+  status: string;
+  role: 'source' | 'target';
+  displayName?: string | null;
+  notes?: string | null;
+  approvedAt?: Date | null;
+  createdAt: Date;
+  person: {
+    id: string;
+    fullName: string;
+    givenName?: string | null;
+    surname?: string | null;
+    maidenName?: string | null;
+    homeBranch?: {
+      id: string;
+      surname: string;
+      cityName?: string | null;
+    } | null;
+  };
+}
+
+export interface ConnectedFamily {
+  branch: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+    region?: string | null;
+    country?: string | null;
+    visibility: string;
+    isVerified: boolean;
+  };
+  stats: ConnectedFamilyStats;
+  bridges: ConnectedFamilyBridge[];
+}
+
+type BranchPersonLinkRecord = {
+  link_id: string;
+  branch_id: string;
+  source_branch_id: string;
+  status: string;
+  display_name: string | null;
+  notes: string | null;
+  person_id: string;
+  created_at: Date;
+  updated_at: Date;
+  source_approved_at: Date | null;
+  target_approved_at: Date | null;
+  persons: {
+    person_id: string;
+    full_name: string;
+    given_name: string | null;
+    surname: string | null;
+    maiden_name: string | null;
+    family_branches: {
+      branch_id: string;
+      surname: string;
+      city_name: string | null;
+    } | null;
+  };
+};
+
+type BranchMetaRecord = {
+  branch_id: string;
+  surname: string;
+  city_name: string | null;
+  region: string | null;
+  country: string | null;
+  visibility: string;
+  is_verified: boolean;
+};
+
+/**
+ * Connected families (linked branches overview)
+ */
+export async function getConnectedFamilies(
+  branchId: string,
+  actor: ActingUser
+): Promise<ConnectedFamily[]> {
+  const branch = await prisma.familyBranch.findUnique({
+    where: { branch_id: branchId },
+    select: { branch_id: true },
+  });
+
+  if (!branch) {
+    throw new Error('Branch not found');
+  }
+
+  const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
+  if (!isElevated) {
+    const membership = await prisma.branchMember.findUnique({
+      where: {
+        branch_id_user_id: {
+          branch_id: branchId,
+          user_id: actor.userId,
+        },
+      },
+      select: { role: true, status: true },
+    });
+
+    if (!membership || membership.role !== 'guru' || membership.status !== 'active') {
+      throw new Error('Only branch Gurus or platform admins can view connected families');
+    }
+  }
+
+  const links = (await prisma.branchPersonLink.findMany({
+    where: {
+      status: {
+        in: ['pending', 'approved'],
+      },
+      OR: [{ branch_id: branchId }, { source_branch_id: branchId }],
+    },
+    include: {
+      persons: {
+        select: {
+          person_id: true,
+          full_name: true,
+          given_name: true,
+          surname: true,
+          maiden_name: true,
+          family_branches: {
+            select: {
+              branch_id: true,
+              surname: true,
+              city_name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      updated_at: 'desc',
+    },
+  })) as BranchPersonLinkRecord[];
+
+  if (links.length === 0) {
+    return [];
+  }
+
+  const otherBranchIds = Array.from(
+    new Set(
+      links.map((link) => (link.branch_id === branchId ? link.source_branch_id : link.branch_id))
+    )
+  );
+
+  const branchMetas = (await prisma.familyBranch.findMany({
+    where: {
+      branch_id: {
+        in: otherBranchIds,
+      },
+    },
+    select: {
+      branch_id: true,
+      surname: true,
+      city_name: true,
+      region: true,
+      country: true,
+      visibility: true,
+      is_verified: true,
+    },
+  })) as BranchMetaRecord[];
+
+  const branchMetaMap = new Map(branchMetas.map((meta) => [meta.branch_id, meta]));
+
+  const grouped = new Map<
+    string,
+    {
+      branch: ConnectedFamily['branch'];
+      stats: ConnectedFamilyStats;
+      bridges: ConnectedFamilyBridge[];
+    }
+  >();
+
+  for (const link of links) {
+    const isTarget = link.branch_id === branchId;
+    const otherId = isTarget ? link.source_branch_id : link.branch_id;
+    const meta = branchMetaMap.get(otherId);
+
+    if (!meta) {
+      continue;
+    }
+
+    if (!grouped.has(otherId)) {
+      grouped.set(otherId, {
+        branch: {
+          id: meta.branch_id,
+          surname: meta.surname,
+          cityName: meta.city_name,
+          region: meta.region,
+          country: meta.country,
+          visibility: meta.visibility,
+          isVerified: meta.is_verified,
+        },
+        stats: {
+          approvedLinks: 0,
+          pendingLinks: 0,
+          firstLinkAt: null,
+          lastLinkAt: null,
+        },
+        bridges: [],
+      });
+    }
+
+    const entry = grouped.get(otherId)!;
+
+    if (link.status === 'approved') {
+      entry.stats.approvedLinks += 1;
+    } else {
+      entry.stats.pendingLinks += 1;
+    }
+
+    const createdAt = link.created_at;
+    const updatedAt = link.updated_at;
+    if (!entry.stats.firstLinkAt || createdAt < entry.stats.firstLinkAt) {
+      entry.stats.firstLinkAt = createdAt;
+    }
+    if (!entry.stats.lastLinkAt || updatedAt > entry.stats.lastLinkAt) {
+      entry.stats.lastLinkAt = updatedAt;
+    }
+
+    // Add bridge, but avoid duplicates per person (prioritize approved over pending)
+    const existingBridgeIndex = entry.bridges.findIndex(b => b.person.id === link.person_id);
+
+    const newBridge: ConnectedFamilyBridge = {
+      id: link.link_id,
+      status: link.status,
+      role: (isTarget ? 'target' : 'source') as 'source' | 'target',
+      displayName: link.display_name,
+      notes: link.notes ?? undefined,
+      approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
+      createdAt,
+      person: {
+        id: link.person_id,
+        fullName: link.persons.full_name,
+        givenName: link.persons.given_name,
+        surname: link.persons.surname,
+        maidenName: link.persons.maiden_name,
+        homeBranch: link.persons.family_branches
+          ? {
+              id: link.persons.family_branches.branch_id,
+              surname: link.persons.family_branches.surname,
+              cityName: link.persons.family_branches.city_name,
+            }
+          : null,
+      },
+    };
+
+    if (existingBridgeIndex >= 0) {
+      // Person already exists - keep approved over pending
+      const existing = entry.bridges[existingBridgeIndex];
+      if (link.status === 'approved' && existing.status === 'pending') {
+        entry.bridges[existingBridgeIndex] = newBridge;
+      }
+      // Otherwise keep the existing one (approved or same status - first one wins)
+    } else if (entry.bridges.length < 5) {
+      // New person, add if under limit
+      entry.bridges.push(newBridge);
+    }
+  }
+
+  return Array.from(grouped.values()).map((item) => ({
+    branch: item.branch,
+    stats: item.stats,
+    bridges: item.bridges,
+  }));
+}
+
+/**
+ * Get multi-branch family tree data for visualization
+ * Returns main branch tree + connected branches with bridge metadata
+ */
+export async function getMultiBranchTree(branchId: string) {
+  // Import services to avoid circular dependency
+  const personService = (await import('./person.service')).default;
+
+  // Get main branch data
+  const mainBranch = await getBranchById(branchId);
+  const mainPersons = await personService.getFamilyTree(branchId);
+
+  // Get partnerships for main branch
+  const mainPartnerships = await prisma.partnership.findMany({
+    where: { branch_id: branchId },
+    select: {
+      partnership_id: true,
+      branch_id: true,
+      person1_id: true,
+      person2_id: true,
+      partnership_type: true,
+      start_date: true,
+      end_date: true,
+      status: true,
+      is_current: true,
+    },
+  });
+
+  // Get all approved person links to find connected branches
+  const approvedLinks = await prisma.branchPersonLink.findMany({
+    where: {
+      OR: [
+        { branch_id: branchId, status: 'approved' },
+        { source_branch_id: branchId, status: 'approved' },
+      ],
+    },
+    select: {
+      link_id: true,
+      person_id: true,
+      branch_id: true,
+      source_branch_id: true,
+      status: true,
+      display_name: true,
+      target_approved_at: true,
+      source_approved_at: true,
+    },
+  });
+
+  // Build map of connected branch IDs
+  const connectedBranchIds = new Set<string>();
+  const bridgeLinks: Array<{
+    linkId: string;
+    personId: string;
+    sourceBranchId: string;
+    targetBranchId: string;
+    displayName: string | null;
+    approvedAt: Date | null;
+  }> = [];
+
+  for (const link of approvedLinks) {
+    const isTarget = link.branch_id === branchId;
+    const otherBranchId = isTarget ? link.source_branch_id : link.branch_id;
+
+    connectedBranchIds.add(otherBranchId);
+    bridgeLinks.push({
+      linkId: link.link_id,
+      personId: link.person_id,
+      sourceBranchId: link.source_branch_id,
+      targetBranchId: link.branch_id,
+      displayName: link.display_name,
+      approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
+    });
+  }
+
+  // Fetch data for each connected branch
+  const connectedBranches = await Promise.all(
+    Array.from(connectedBranchIds).map(async (connectedBranchId) => {
+      const branch = await getBranchById(connectedBranchId);
+      const persons = await personService.getFamilyTree(connectedBranchId);
+
+      const partnerships = await prisma.partnership.findMany({
+        where: { branch_id: connectedBranchId },
+        select: {
+          partnership_id: true,
+          branch_id: true,
+          person1_id: true,
+          person2_id: true,
+          partnership_type: true,
+          start_date: true,
+          end_date: true,
+          status: true,
+          is_current: true,
+        },
+      });
+
+      // Find bridge links for this specific connection
+      const bridgesForThisBranch = bridgeLinks.filter(
+        (bl) =>
+          (bl.sourceBranchId === branchId && bl.targetBranchId === connectedBranchId) ||
+          (bl.sourceBranchId === connectedBranchId && bl.targetBranchId === branchId)
+      );
+
+      return {
+        branch: {
+          id: branch.id,
+          surname: branch.surname,
+          cityName: branch.cityName,
+          region: branch.region,
+          country: branch.country,
+          totalPeople: branch.totalPeople,
+          totalGenerations: branch.totalGenerations,
+        },
+        persons: persons.map((p) => ({
+          id: p.id,
+          fullName: p.fullName,
+          givenName: p.givenName,
+          surname: p.surname,
+          maidenName: p.maidenName,
+          generation: p.generation,
+          generationNumber: p.generationNumber,
+          fatherId: p.fatherId,
+          motherId: p.motherId,
+          birthDate: p.birthDate,
+          deathDate: p.deathDate,
+          profilePhotoUrl: p.profilePhotoUrl,
+        })),
+        partnerships: partnerships.map((p: {
+          partnership_id: string;
+          branch_id: string;
+          person1_id: string;
+          person2_id: string;
+          partnership_type: string;
+          start_date: Date | null;
+          end_date: Date | null;
+          status: string;
+          is_current: boolean;
+        }) => ({
+          id: p.partnership_id,
+          branchId: p.branch_id,
+          person1Id: p.person1_id,
+          person2Id: p.person2_id,
+          partnershipType: p.partnership_type,
+          startDate: p.start_date?.toISOString(),
+          endDate: p.end_date?.toISOString(),
+          status: p.status,
+          isCurrent: p.is_current,
+        })),
+        bridgeLinks: bridgesForThisBranch.map((bl) => ({
+          linkId: bl.linkId,
+          personId: bl.personId,
+          direction: bl.sourceBranchId === branchId ? 'outgoing' : 'incoming',
+          displayName: bl.displayName,
+          approvedAt: bl.approvedAt?.toISOString(),
+        })),
+      };
+    })
+  );
+
+  return {
+    mainBranch: {
+      branch: {
+        id: mainBranch.id,
+        surname: mainBranch.surname,
+        cityName: mainBranch.cityName,
+        region: mainBranch.region,
+        country: mainBranch.country,
+        totalPeople: mainBranch.totalPeople,
+        totalGenerations: mainBranch.totalGenerations,
+      },
+      persons: mainPersons.map((p) => ({
+        id: p.id,
+        fullName: p.fullName,
+        givenName: p.givenName,
+        surname: p.surname,
+        maidenName: p.maidenName,
+        generation: p.generation,
+        generationNumber: p.generationNumber,
+        fatherId: p.fatherId,
+        motherId: p.motherId,
+        birthDate: p.birthDate,
+        deathDate: p.deathDate,
+        profilePhotoUrl: p.profilePhotoUrl,
+      })),
+      partnerships: mainPartnerships.map((p: {
+        partnership_id: string;
+        branch_id: string;
+        person1_id: string;
+        person2_id: string;
+        partnership_type: string;
+        start_date: Date | null;
+        end_date: Date | null;
+        status: string;
+        is_current: boolean;
+      }) => ({
+        id: p.partnership_id,
+        branchId: p.branch_id,
+        person1Id: p.person1_id,
+        person2Id: p.person2_id,
+        partnershipType: p.partnership_type,
+        startDate: p.start_date?.toISOString(),
+        endDate: p.end_date?.toISOString(),
+        status: p.status,
+        isCurrent: p.is_current,
+      })),
+      bridgeLinks: bridgeLinks.map((bl) => ({
+        linkId: bl.linkId,
+        personId: bl.personId,
+        toBranchId: bl.sourceBranchId === branchId ? bl.targetBranchId : bl.sourceBranchId,
+        displayName: bl.displayName,
+        approvedAt: bl.approvedAt?.toISOString(),
+      })),
+    },
+    connectedBranches,
+  };
 }

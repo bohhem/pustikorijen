@@ -2,11 +2,18 @@ import api from '../lib/axios';
 import type {
   Branch,
   CreateBranchInput,
+  UpdateBranchInput,
   BranchesResponse,
   BranchMember,
   JoinRequest,
   PersonLinkCandidate,
   PersonLinkRecord,
+  BranchPlaceholder,
+  CreatePlaceholderPayload,
+  ClaimPlaceholderPayload,
+  BranchPlaceholderClaim,
+  ConnectedFamiliesResponse,
+  MultiBranchTreeResponse,
 } from '../types/branch';
 
 /**
@@ -14,6 +21,11 @@ import type {
  */
 export async function createBranch(data: CreateBranchInput): Promise<{ message: string; branch: Branch }> {
   const response = await api.post('/branches', data);
+  return response.data;
+}
+
+export async function updateBranch(branchId: string, data: UpdateBranchInput): Promise<{ message: string; branch: Branch }> {
+  const response = await api.patch(`/branches/${branchId}`, data);
   return response.data;
 }
 
@@ -116,5 +128,55 @@ export async function approvePersonLinkRequest(branchId: string, linkId: string)
 
 export async function rejectPersonLinkRequest(branchId: string, linkId: string, notes?: string): Promise<{ message: string; link: PersonLinkRecord }> {
   const response = await api.post(`/branches/${branchId}/person-links/${linkId}/reject`, notes ? { notes } : {});
+  return response.data;
+}
+
+export async function getBranchPlaceholders(branchId: string): Promise<BranchPlaceholder[]> {
+  const response = await api.get(`/branches/${branchId}/placeholders`);
+  return response.data.placeholders ?? [];
+}
+
+export async function createBranchPlaceholder(branchId: string, data: CreatePlaceholderPayload): Promise<{ message: string; placeholderId: string }> {
+  const response = await api.post(`/branches/${branchId}/placeholders`, data);
+  return response.data;
+}
+
+export async function claimBranchPlaceholder(
+  branchId: string,
+  placeholderId: string,
+  data?: ClaimPlaceholderPayload
+): Promise<{ message: string }> {
+  const response = await api.post(`/branches/${branchId}/placeholders/${placeholderId}/claim`, data ?? {});
+  return response.data;
+}
+
+export async function getBranchPlaceholderClaims(branchId: string): Promise<BranchPlaceholderClaim[]> {
+  const response = await api.get(`/branches/${branchId}/placeholders/claims`);
+  return response.data.claims ?? [];
+}
+
+export async function resolveBranchPlaceholderClaim(
+  branchId: string,
+  claimId: string,
+  status: 'approved' | 'rejected',
+  message?: string
+): Promise<{ message: string }> {
+  const response = await api.post(`/branches/${branchId}/placeholders/${claimId}/resolve`, {
+    status,
+    message,
+  });
+  return response.data;
+}
+
+export async function getConnectedFamilies(branchId: string): Promise<ConnectedFamiliesResponse> {
+  const response = await api.get(`/branches/${branchId}/connected-families`);
+  return response.data;
+}
+
+/**
+ * Get multi-branch tree data
+ */
+export async function getMultiBranchTree(branchId: string): Promise<MultiBranchTreeResponse> {
+  const response = await api.get(`/branches/${branchId}/tree/connected`);
   return response.data;
 }

@@ -44,6 +44,61 @@ export interface CreateBranchInput {
   visibility?: 'public' | 'family_only' | 'private';
 }
 
+export interface UpdateBranchInput {
+  description?: string | null;
+  visibility?: 'public' | 'family_only' | 'private';
+  geoCityId?: string;
+}
+
+export interface BranchPlaceholder {
+  id: string;
+  displayName: string;
+  relationHint?: string | null;
+  approxBirthYear?: number | null;
+  notes?: string | null;
+  status: string;
+  isPublic: boolean;
+  cityName?: string;
+  createdAt: string;
+  createdBy?: {
+    id: string;
+    name: string;
+  };
+  claimCount: number;
+}
+
+export interface CreatePlaceholderPayload {
+  displayName: string;
+  relationHint?: string | null;
+  approxBirthYear?: number | null;
+  notes?: string | null;
+  isPublic?: boolean;
+}
+
+export interface ClaimPlaceholderPayload {
+  message?: string | null;
+}
+
+export interface MovePersonPayload {
+  targetBranchId: string;
+  notes?: string | null;
+}
+
+export interface BranchPlaceholderClaim {
+  id: string;
+  placeholderId: string;
+  placeholderName: string;
+  relationHint?: string;
+  user?: {
+    id: string;
+    name: string;
+    email?: string;
+  };
+  message?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+}
+
 export interface BranchMember {
   id: string;
   branchId: string;
@@ -83,6 +138,54 @@ export interface BranchesResponse {
     total: number;
     totalPages: number;
   };
+}
+
+export interface ConnectedFamilyBridge {
+  id: string;
+  status: 'pending' | 'approved';
+  role: 'source' | 'target';
+  displayName?: string | null;
+  notes?: string | null;
+  approvedAt?: string | null;
+  createdAt: string;
+  person: {
+    id: string;
+    fullName: string;
+    givenName?: string | null;
+    surname?: string | null;
+    maidenName?: string | null;
+    homeBranch?: {
+      id: string;
+      surname: string;
+      cityName?: string | null;
+    } | null;
+  };
+}
+
+export interface ConnectedFamilyStats {
+  approvedLinks: number;
+  pendingLinks: number;
+  firstLinkAt?: string | null;
+  lastLinkAt?: string | null;
+}
+
+export interface ConnectedFamily {
+  branch: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+    region?: string | null;
+    country?: string | null;
+    visibility: string;
+    isVerified: boolean;
+  };
+  stats: ConnectedFamilyStats;
+  bridges: ConnectedFamilyBridge[];
+}
+
+export interface ConnectedFamiliesResponse {
+  branchId: string;
+  connectedFamilies: ConnectedFamily[];
 }
 
 export interface PersonLinkCandidate {
@@ -132,4 +235,63 @@ export interface PersonLinkRecord {
       cityName?: string | null;
     } | null;
   };
+}
+
+// Multi-branch tree types
+export interface MultiBranchTreePerson {
+  id: string;
+  fullName: string;
+  givenName?: string;
+  surname?: string;
+  maidenName?: string;
+  generation?: string;
+  generationNumber?: number;
+  fatherId?: string;
+  motherId?: string;
+  birthDate?: string;
+  deathDate?: string;
+  profilePhotoUrl?: string;
+}
+
+export interface MultiBranchTreePartnership {
+  id: string;
+  branchId: string;
+  person1Id: string;
+  person2Id: string;
+  partnershipType: string;
+  startDate?: string;
+  endDate?: string;
+  status: string;
+  isCurrent: boolean;
+}
+
+export interface MultiBranchTreeBridgeLink {
+  linkId: string;
+  personId: string;
+  toBranchId?: string; // For main branch
+  direction?: 'outgoing' | 'incoming'; // For connected branches
+  displayName?: string | null;
+  approvedAt?: string;
+}
+
+export interface MultiBranchTreeBranchInfo {
+  id: string;
+  surname: string;
+  cityName: string;
+  region?: string | null;
+  country: string;
+  totalPeople: number;
+  totalGenerations: number;
+}
+
+export interface MultiBranchTreeBranch {
+  branch: MultiBranchTreeBranchInfo;
+  persons: MultiBranchTreePerson[];
+  partnerships: MultiBranchTreePartnership[];
+  bridgeLinks: MultiBranchTreeBridgeLink[];
+}
+
+export interface MultiBranchTreeResponse {
+  mainBranch: MultiBranchTreeBranch;
+  connectedBranches: MultiBranchTreeBranch[];
 }

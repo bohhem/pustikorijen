@@ -8,6 +8,7 @@ import {
   personLinkListQuerySchema,
   personLinkDecisionSchema,
   personLinkSearchQuerySchema,
+  updateBranchSchema,
 } from '../schemas/branch.schema';
 import {
   createBranch,
@@ -19,6 +20,9 @@ import {
   rejectJoinRequest,
   getPendingJoinRequests,
   updateMemberRole,
+  updateBranch,
+  getConnectedFamilies,
+  getMultiBranchTree,
 } from '../services/branch.service';
 import {
   searchPersonsForLink,
@@ -61,6 +65,54 @@ export async function create(req: Request, res: Response): Promise<void> {
 
     console.error('Create branch error:', error);
     res.status(500).json({ error: 'Failed to create branch' });
+  }
+}
+
+/**
+ * Update branch details (Guru/Admin)
+ * PATCH /api/v1/branches/:id
+ */
+export async function updateBranchController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { id } = req.params;
+    const payload = updateBranchSchema.parse(req.body);
+
+    const branch = await updateBranch(id, payload, req.user);
+
+    res.status(200).json({
+      message: 'Branch updated successfully',
+      branch,
+    });
+  } catch (error: unknown) {
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation error', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error);
+
+    if (message === 'Branch not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message === 'Invalid city selection' || message === 'No updates provided') {
+      res.status(400).json({ error: message });
+      return;
+    }
+
+    if (message?.includes('Only branch Gurus')) {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Update branch error:', error);
+    res.status(500).json({ error: 'Failed to update branch' });
   }
 }
 
@@ -133,6 +185,42 @@ export async function getMembers(req: Request, res: Response): Promise<void> {
 
     console.error('Get members error:', error);
     res.status(500).json({ error: 'Failed to fetch members' });
+  }
+}
+
+/**
+ * Connected families overview
+ * GET /api/v1/branches/:id/connected-families
+ */
+export async function getConnectedFamiliesController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { id } = req.params;
+    const result = await getConnectedFamilies(id, req.user);
+
+    res.status(200).json({
+      branchId: id,
+      connectedFamilies: result,
+    });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    if (message === 'Branch not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message?.includes('Only branch Gurus')) {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Get connected families error:', error);
+    res.status(500).json({ error: 'Failed to load connected families' });
   }
 }
 
@@ -516,5 +604,27 @@ export async function rejectPersonLinkRequest(req: Request, res: Response): Prom
 
     console.error('Reject person link error:', error);
     res.status(500).json({ error: 'Failed to reject person link' });
+  }
+}
+
+/**
+ * Get multi-branch tree data
+ * GET /api/v1/branches/:id/tree/connected
+ */
+export async function getMultiBranchTreeController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { id } = req.params;
+    const treeData = await getMultiBranchTree(id);
+
+    res.json(treeData);
+  } catch (error: unknown) {
+    console.error('Get multi-branch tree error:', error);
+    const message = getErrorMessage(error);
+    res.status(500).json({ error: message || 'Failed to fetch multi-branch tree' });
   }
 }

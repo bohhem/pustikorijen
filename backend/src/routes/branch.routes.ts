@@ -3,6 +3,8 @@ import {
   create,
   list,
   getById,
+  getConnectedFamiliesController,
+  updateBranchController,
   getMembers,
   joinRequest,
   getPendingRequests,
@@ -14,8 +16,16 @@ import {
   listPersonLinksController,
   approvePersonLinkRequest,
   rejectPersonLinkRequest,
+  getMultiBranchTreeController,
 } from '../controllers/branch.controller';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { authenticateToken, optionalAuth } from '../middleware/auth.middleware';
+import {
+  listBranchPlaceholders,
+  createBranchPlaceholder,
+  claimBranchPlaceholder,
+  listBranchPlaceholderClaims,
+  resolveBranchPlaceholderClaim,
+} from '../controllers/placeholder.controller';
 
 const router = Router();
 
@@ -23,10 +33,18 @@ const router = Router();
 router.get('/', list); // List all public branches
 router.get('/:id', getById); // Get branch details
 router.get('/:id/members', getMembers); // Get branch members
+router.get('/:id/connected-families', authenticateToken, getConnectedFamiliesController);
+router.get('/:id/tree/connected', authenticateToken, getMultiBranchTreeController); // Get multi-branch tree
+router.get('/:id/placeholders', optionalAuth, listBranchPlaceholders);
+router.get('/:id/placeholders/claims', authenticateToken, listBranchPlaceholderClaims);
 
 // Protected routes (require authentication)
 router.post('/', authenticateToken, create); // Create branch
+router.patch('/:id', authenticateToken, updateBranchController); // Update branch details
 router.post('/:id/join', authenticateToken, joinRequest); // Request to join
+router.post('/:id/placeholders', authenticateToken, createBranchPlaceholder);
+router.post('/:id/placeholders/:placeholderId/claim', authenticateToken, claimBranchPlaceholder);
+router.post('/:id/placeholders/:claimId/resolve', authenticateToken, resolveBranchPlaceholderClaim);
 
 // Guru-only routes
 router.get('/:id/join-requests', authenticateToken, getPendingRequests); // Get pending requests

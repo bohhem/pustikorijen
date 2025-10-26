@@ -2,13 +2,14 @@ import { useState, useEffect, useMemo, type MouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPersonsByBranch } from '../api/person';
-import { getBranchById } from '../api/branch';
+import { getBranchById, getMultiBranchTree } from '../api/branch';
 import { getBranchPartnerships } from '../api/partnership';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import FamilyTreeView from '../components/tree/FamilyTreeView';
+import MultiBranchTreeView from '../components/tree/MultiBranchTreeView';
 import type { Person } from '../types/person';
-import type { Branch } from '../types/branch';
+import type { Branch, MultiBranchTreeResponse } from '../types/branch';
 import type { Partnership } from '../types/partnership';
 import { orderPersonsByPartnerPairing } from '../utils/personOrdering';
 
@@ -21,6 +22,9 @@ export default function FamilyTree() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [multiBranchView, setMultiBranchView] = useState(false);
+  const [multiBranchData, setMultiBranchData] = useState<MultiBranchTreeResponse | null>(null);
+  const [loadingMultiBranch, setLoadingMultiBranch] = useState(false);
 
   const orderedPartnerData = useMemo(
     () => orderPersonsByPartnerPairing(persons, partnerships),
@@ -52,8 +56,27 @@ export default function FamilyTree() {
     }
   };
 
-  const handlePersonSelect = (person: Person) => {
-    setSelectedPerson(person);
+  const loadMultiBranchData = async () => {
+    setLoadingMultiBranch(true);
+    try {
+      const data = await getMultiBranchTree(branchId!);
+      setMultiBranchData(data);
+    } catch (err: any) {
+      toast.error(err.response?.data?.error || 'Failed to load multi-branch tree');
+    } finally {
+      setLoadingMultiBranch(false);
+    }
+  };
+
+  const handleToggleMultiBranch = async () => {
+    if (!multiBranchView && !multiBranchData) {
+      await loadMultiBranchData();
+    }
+    setMultiBranchView(!multiBranchView);
+  };
+
+  const handlePersonSelect = (person: Person | any) => {
+    setSelectedPerson(person as Person);
   };
 
   const closeSelectedPanel = () => setSelectedPerson(null);
@@ -274,6 +297,22 @@ export default function FamilyTree() {
               </p>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={handleToggleMultiBranch}
+                disabled={loadingMultiBranch}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+              >
+                {loadingMultiBranch ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    {multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}
+                  </>
+                )}
+              </button>
               <Link
                 to={`/branches/${branchId}/persons`}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -309,11 +348,18 @@ export default function FamilyTree() {
           </div>
         ) : (
           <div className="space-y-6">
-            <FamilyTreeView
-              persons={orderedPartnerData.orderedPersons}
-              partnerships={partnerships}
-              onPersonSelect={handlePersonSelect}
-            />
+            {multiBranchView && multiBranchData ? (
+              <MultiBranchTreeView
+                treeData={multiBranchData}
+                onPersonSelect={handlePersonSelect}
+              />
+            ) : (
+              <FamilyTreeView
+                persons={orderedPartnerData.orderedPersons}
+                partnerships={partnerships}
+                onPersonSelect={handlePersonSelect}
+              />
+            )}
           </div>
         )}
       </div>
