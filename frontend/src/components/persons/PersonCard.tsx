@@ -13,6 +13,8 @@ interface PersonCardProps {
   person: Person;
   branchId: string;
   partners?: PartnerBadge[];
+  onClaim?: (person: Person) => void;
+  claiming?: boolean;
 }
 
 const statusStyles: Record<Partnership['status'], string> = {
@@ -40,7 +42,7 @@ const typeIcon = (type: Partnership['partnershipType']) => {
   }
 };
 
-export default function PersonCard({ person, branchId, partners }: PersonCardProps) {
+export default function PersonCard({ person, branchId, partners, onClaim, claiming }: PersonCardProps) {
   const { t } = useTranslation();
   const firstName = person.givenName || person.firstName || '';
   const lastName = person.surname || person.lastName || '';
@@ -58,11 +60,11 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
     : null;
 
   return (
-    <Link
-      to={`/branches/${branchId}/persons/${person.id}`}
-      className="bg-white border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition"
-    >
-      <div className="flex items-start space-x-4">
+    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition">
+      <Link
+        to={`/branches/${branchId}/persons/${person.id}`}
+        className="flex items-start space-x-4"
+      >
         {/* Avatar */}
         <div className="flex-shrink-0">
           {person.profilePhotoUrl ? (
@@ -103,9 +105,26 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
                 </p>
               )}
             </div>
-            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
-              {person.generation || `Gen ${person.generationNumber || 1}`}
-            </span>
+            <div className="flex items-center gap-2">
+              {person.canBeClaimed && onClaim && (
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onClaim(person);
+                  }}
+                  disabled={claiming}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-200 disabled:opacity-60"
+                >
+                  <span>{claiming ? '⏳' : '⭐'}</span>
+                  <span>{claiming ? t('common.loading') : t('personDetail.claimButton')}</span>
+                </button>
+              )}
+              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                {person.generation || `Gen ${person.generationNumber || 1}`}
+              </span>
+            </div>
           </div>
 
           {person.biography && (
@@ -164,7 +183,12 @@ export default function PersonCard({ person, branchId, partners }: PersonCardPro
             </div>
           )}
         </div>
-      </div>
-    </Link>
+      </Link>
+      {person.claimStatus && (
+        <p className="mt-3 text-xs text-indigo-700">
+          {t(`personDetail.claimStatus.${person.claimStatus}`)}
+        </p>
+      )}
+    </div>
   );
 }

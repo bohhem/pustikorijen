@@ -1,6 +1,8 @@
 import { randomUUID } from 'crypto';
 import prisma from '../utils/prisma';
 import type { CreatePersonInput, UpdatePersonInput } from '../validators/person.validator';
+import type { JwtPayload } from '../utils/jwt';
+import type { PersonClaimStatus } from './person-claim.service';
 
 type PersonRecord = {
   person_id: string;
@@ -26,6 +28,8 @@ type PersonRecord = {
   father_id: string | null;
   mother_id: string | null;
   is_living: boolean | null;
+  share_in_ledger: boolean;
+  estimated_birth_year: number | null;
   visibility: string;
   created_at: Date;
   updated_at: Date;
@@ -61,6 +65,8 @@ type PersonDto = {
   motherId?: string;
   profilePhotoUrl?: string;
   isAlive?: boolean;
+  shareInLedger?: boolean;
+  estimatedBirthYear?: number | null;
   privacyLevel?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -81,6 +87,8 @@ type PersonDto = {
   } | null;
   linkStatus?: string;
   linkDisplayName?: string | null;
+  canBeClaimed?: boolean;
+  claimStatus?: PersonClaimStatus;
 };
 
 const toIso = (value?: Date | null): string | undefined => {
@@ -98,6 +106,8 @@ function mapPerson(
     linkedFromBranch?: { id: string; surname: string; cityName?: string | null } | null;
     linkStatus?: string;
     linkDisplayName?: string | null;
+    canBeClaimed?: boolean;
+    claimStatus?: PersonClaimStatus;
   } = {}
 ): PersonDto {
   return {
@@ -124,6 +134,8 @@ function mapPerson(
     motherId: record.mother_id ?? undefined,
     profilePhotoUrl: record.profile_photo_url ?? undefined,
     isAlive: record.is_living ?? undefined,
+    shareInLedger: record.share_in_ledger ?? false,
+    estimatedBirthYear: record.estimated_birth_year ?? undefined,
     privacyLevel: record.visibility ?? undefined,
     createdAt: toIso(record.created_at),
     updatedAt: toIso(record.updated_at),
@@ -142,23 +154,33 @@ function mapPerson(
     linkedFromBranch: options.linkedFromBranch ?? null,
     linkStatus: options.linkStatus,
     linkDisplayName: options.linkDisplayName ?? null,
+    canBeClaimed: options.canBeClaimed,
+    claimStatus: options.claimStatus,
   };
 }
 
 export class PersonService {
   // Create a new person
-  async createPerson(branchId: string, userId: string, data: CreatePersonInput) {
-    // Verify user is a member of the branch
-    const membership = await prisma.branchMember.findFirst({
-      where: {
-        branch_id: branchId,
-        user_id: userId,
-        status: 'active',
-      },
-    });
+  async createPerson(branchId: string, actor: JwtPayload, data: CreatePersonInput) {
+    const userId = actor.userId;
+    const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
 
-    if (!membership) {
-      throw new Error('You must be a member of this branch to add people');
+    let membership: { role: string } | null = null;
+    if (!isElevated) {
+      membership = await prisma.branchMember.findFirst({
+        where: {
+          branch_id: branchId,
+          user_id: userId,
+          status: 'active',
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (!membership) {
+        throw new Error('You must be a member of this branch to add people');
+      }
     }
 
     // Calculate generation based on parents
@@ -190,6 +212,11 @@ export class PersonService {
       generationNumber = (parent.generation_number || 1) + 1;
     }
 
+    const canShareInLedger = isElevated || membership?.role === 'guru';
+    const shareInLedger = canShareInLedger && Boolean(data.shareInLedger);
+    const estimatedBirthYear =
+      typeof data.estimatedBirthYear === 'number' ? data.estimatedBirthYear : null;
+
     // Create the person
     const person = await prisma.person.create({
       data: {
@@ -209,6 +236,8 @@ export class PersonService {
         biography: data.biography ?? null,
         is_living: data.isAlive,
         visibility: data.privacyLevel ?? 'family_only',
+        share_in_ledger: shareInLedger,
+        estimated_birth_year: estimatedBirthYear,
         father_id: data.fatherId ?? null,
         mother_id: data.motherId ?? null,
         created_by: userId,
@@ -233,7 +262,7 @@ export class PersonService {
   }
 
   // Get all persons in a branch
-  async getPersonsByBranch(branchId: string) {
+  async getPersonsByBranch(branchId: string, actor?: JwtPayload | null) {
     const [canonicalPersons, linkedPersons] = await Promise.all([
       prisma.person.findMany({
         where: {
@@ -285,7 +314,20 @@ export class PersonService {
       persons: PersonRecord;
     }>;
 
-    const canonicalDtos = canonicalRecords.map((record) => mapPerson(record));
+    const canonicalDtos = await Promise.all(
+      canonicalRecords.map(async (record) => {
+        let claimStatus: PersonClaimStatus | undefined;
+        let canBeClaimed = false;
+        if (actor) {
+          [claimStatus, canBeClaimed] = await this.computeClaimInfo(branchId, record.person_id, actor);
+        }
+
+        return mapPerson(record, {
+          canBeClaimed,
+          claimStatus,
+        });
+      })
+    );
 
     const linkedDtos = linkRecords.map((link) =>
       mapPerson(link.persons as PersonRecord, {
@@ -300,6 +342,8 @@ export class PersonService {
           : null,
         linkStatus: link.status,
         linkDisplayName: link.display_name,
+        canBeClaimed: false,
+        claimStatus: undefined,
       })
     );
 
@@ -307,7 +351,7 @@ export class PersonService {
   }
 
   // Get a single person by ID
-  async getPersonById(branchId: string, personId: string) {
+  async getPersonById(branchId: string, personId: string, actor?: JwtPayload | null) {
     const canonical = await prisma.person.findFirst({
       where: {
         person_id: personId,
@@ -325,7 +369,12 @@ export class PersonService {
     });
 
     if (canonical) {
-      return mapPerson(canonical as PersonRecord);
+      const [claimStatus, canBeClaimed] = await this.computeClaimInfo(branchId, personId, actor);
+
+      return mapPerson(canonical as PersonRecord, {
+        canBeClaimed,
+        claimStatus,
+      });
     }
 
     const link = await prisma.branchPersonLink.findFirst({
@@ -365,22 +414,36 @@ export class PersonService {
         : null,
       linkStatus: link.status,
       linkDisplayName: link.display_name,
+      canBeClaimed: false,
+      claimStatus: undefined,
     });
   }
 
   // Update a person
-  async updatePerson(branchId: string, personId: string, userId: string, data: UpdatePersonInput) {
-    // Verify user is a member of the branch
-    const membership = await prisma.branchMember.findFirst({
-      where: {
-        branch_id: branchId,
-        user_id: userId,
-        status: 'active',
-      },
-    });
+  async updatePerson(
+    branchId: string,
+    personId: string,
+    actor: JwtPayload,
+    data: UpdatePersonInput
+  ) {
+    const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
 
-    if (!membership) {
-      throw new Error('You must be a member of this branch to edit people');
+    let membership: { role: string } | null = null;
+    if (!isElevated) {
+      membership = await prisma.branchMember.findFirst({
+        where: {
+          branch_id: branchId,
+          user_id: actor.userId,
+          status: 'active',
+        },
+        select: {
+          role: true,
+        },
+      });
+
+      if (!membership) {
+        throw new Error('You must be a member of this branch to edit people');
+      }
     }
 
     // Verify person exists and belongs to branch
@@ -396,6 +459,8 @@ export class PersonService {
     }
 
     // Build update data
+    const canShareInLedger = isElevated || membership?.role === 'guru';
+
     const updateData: {
       full_name?: string;
       given_name?: string | null;
@@ -411,6 +476,8 @@ export class PersonService {
       visibility?: string;
       father_id?: string | null;
       mother_id?: string | null;
+      share_in_ledger?: boolean;
+      estimated_birth_year?: number | null;
     } = {};
 
     if (data.firstName || data.lastName) {
@@ -445,6 +512,13 @@ export class PersonService {
     if (data.privacyLevel) updateData.visibility = data.privacyLevel;
     if (data.fatherId !== undefined) updateData.father_id = data.fatherId;
     if (data.motherId !== undefined) updateData.mother_id = data.motherId;
+    if (data.shareInLedger !== undefined) {
+      updateData.share_in_ledger = canShareInLedger && data.shareInLedger;
+    }
+    if (data.estimatedBirthYear !== undefined) {
+      updateData.estimated_birth_year =
+        typeof data.estimatedBirthYear === 'number' ? data.estimatedBirthYear : null;
+    }
 
     // Update the person
     const person = await prisma.person.update({
@@ -459,19 +533,21 @@ export class PersonService {
   }
 
   // Delete a person
-  async deletePerson(branchId: string, personId: string, userId: string) {
-    // Verify user is a Guru of the branch
-    const membership = await prisma.branchMember.findFirst({
-      where: {
-        branch_id: branchId,
-        user_id: userId,
-        status: 'active',
-        role: 'guru',
-      },
-    });
+  async deletePerson(branchId: string, personId: string, actor: JwtPayload) {
+    const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
+    if (!isElevated) {
+      const membership = await prisma.branchMember.findFirst({
+        where: {
+          branch_id: branchId,
+          user_id: actor.userId,
+          status: 'active',
+          role: 'guru',
+        },
+      });
 
-    if (!membership) {
-      throw new Error('Only Gurus can delete people');
+      if (!membership) {
+        throw new Error('Only branch Gurus can delete people');
+      }
     }
 
     // Check if person has children
@@ -520,6 +596,63 @@ export class PersonService {
     await this.updateBranchStatistics(branchId);
 
     return { success: true };
+  }
+
+  private async computeClaimInfo(
+    _branchId: string,
+    personId: string,
+    actor?: JwtPayload | null
+  ): Promise<[PersonClaimStatus | undefined, boolean]> {
+    if (!actor) {
+      return [undefined, false];
+    }
+
+    const [actorClaim, pendingClaim, hasCrossBranchLink] = await Promise.all([
+      prisma.personClaim.findFirst({
+        where: {
+          person_id: personId,
+          user_id: actor.userId,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      }),
+      prisma.personClaim.findFirst({
+        where: {
+          person_id: personId,
+          status: 'pending',
+        },
+      }),
+      this.hasActiveCrossBranchLink(personId),
+    ]);
+
+    const claimStatus = actorClaim ? (actorClaim.status as PersonClaimStatus) : undefined;
+
+    if (hasCrossBranchLink) {
+      return [claimStatus, false];
+    }
+
+    if (pendingClaim && pendingClaim.user_id !== actor.userId) {
+      return [claimStatus, false];
+    }
+
+    if (actorClaim && actorClaim.status === 'pending') {
+      return [claimStatus, false];
+    }
+
+    const canClaim = !actorClaim || actorClaim.status === 'rejected';
+    return [claimStatus, canClaim];
+  }
+
+  private async hasActiveCrossBranchLink(personId: string): Promise<boolean> {
+    const linkCount = await prisma.branchPersonLink.count({
+      where: {
+        person_id: personId,
+        status: 'approved',
+      },
+    });
+
+    return linkCount > 0;
   }
 
   // Get family tree for a branch

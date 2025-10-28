@@ -511,6 +511,62 @@ export async function getBranchMembers(branchId: string, _userId?: string) {
     throw new Error('Branch not found');
   }
 
+  if (branch.founded_by) {
+    const founderMembership = await prisma.branchMember.findUnique({
+      where: {
+        branch_id_user_id: {
+          branch_id: branchId,
+          user_id: branch.founded_by,
+        },
+      },
+      select: {
+        role: true,
+        status: true,
+      },
+    });
+
+    if (founderMembership) {
+      const adjustments: Record<string, unknown> = {};
+
+      if (founderMembership.role !== 'guru') {
+        adjustments.role = 'guru';
+      }
+
+      if (founderMembership.status !== 'active') {
+        adjustments.status = 'active';
+      }
+
+      if (Object.keys(adjustments).length > 0) {
+        await prisma.branchMember.update({
+          where: {
+            branch_id_user_id: {
+              branch_id: branchId,
+              user_id: branch.founded_by,
+            },
+          },
+          data: {
+            ...adjustments,
+            updated_at: new Date(),
+          },
+        });
+      }
+    } else {
+      await prisma.branchMember.create({
+        data: {
+          member_id: randomUUID(),
+          branch_id: branchId,
+          user_id: branch.founded_by,
+          role: 'guru',
+          status: 'active',
+          joined_at: new Date(),
+          updated_at: new Date(),
+          approved_by: branch.founded_by,
+          approved_at: new Date(),
+        },
+      });
+    }
+  }
+
   // Get members
   const members = await prisma.branchMember.findMany({
     where: {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getPersonsByBranch } from '../api/person';
+import { getPersonsByBranch, claimPerson } from '../api/person';
 import { getBranchById } from '../api/branch';
 import { getBranchPartnerships } from '../api/partnership';
 import { useToast } from '../contexts/ToastContext';
@@ -22,6 +22,7 @@ export default function PersonList() {
   const [filter, setFilter] = useState<'all' | 'alive' | 'deceased'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (branchId) {
@@ -124,6 +125,21 @@ export default function PersonList() {
   const generations = Object.keys(groupedByGeneration)
     .map(Number)
     .sort((a, b) => a - b);
+
+  const handleClaimPerson = async (person: Person) => {
+    if (!branchId) return;
+    const message = window.prompt(t('personDetail.claimPrompt') || '', '');
+    setClaimingId(person.id);
+    try {
+      await claimPerson(branchId, person.id, message || undefined);
+      toast.success(t('personDetail.claimSuccess'));
+      await loadData();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || t('personDetail.claimError'));
+    } finally {
+      setClaimingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -233,6 +249,8 @@ export default function PersonList() {
                       person={person}
                       branchId={branchId!}
                       partners={partnerBadgeMap.get(person.id)}
+                      onClaim={person.canBeClaimed ? handleClaimPerson : undefined}
+                      claiming={claimingId === person.id}
                     />
                   ))}
                 </div>
