@@ -348,7 +348,8 @@
     "firstNameRequired": "Vorname ist erforderlich",
     "lastNameRequired": "Nachname ist erforderlich",
     "genderRequired": "Geschlecht ist erforderlich",
-    "placeholderCityCountry": "Stadt, Land"
+    "placeholderCityCountry": "Stadt, Land",
+    "generationNumberLabel": "Generationsnummer"
   },
   "createPerson": {
     "title": "Familienmitglied hinzufügen",
@@ -357,6 +358,11 @@
     "basicInfo": "Grundinformationen",
     "lifeInfo": "Lebensinformationen",
     "parents": "Eltern",
+    "generationSection": "Generation",
+    "generationHint": "Leer lassen für automatische Berechnung",
+    "generationHelp": "Gurus können die Generation bei Bedarf manuell anpassen.",
+    "generationMinError": "Generation muss mindestens 1 sein.",
+    "generationMaxError": "Generation darf höchstens 30 sein.",
     "privacy": "Privatsphäre",
     "breadcrumbPeople": "Personen",
     "breadcrumbAddPerson": "Person hinzufügen",

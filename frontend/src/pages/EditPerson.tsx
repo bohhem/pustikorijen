@@ -22,6 +22,7 @@ export default function EditPerson() {
   const [branch, setBranch] = useState<Branch | null>(null);
   const [persons, setPersons] = useState<Person[]>([]);
   const [canShareLedger, setCanShareLedger] = useState(false);
+  const [canSetGeneration, setCanSetGeneration] = useState(false);
 
   const {
     register,
@@ -34,6 +35,7 @@ export default function EditPerson() {
       isAlive: true,
       privacyLevel: 'family_only',
       shareInLedger: false,
+      generationNumber: undefined,
     },
   });
 
@@ -70,7 +72,9 @@ export default function EditPerson() {
           member.userId === user?.id && member.role === 'guru' && member.status === 'active'
       );
       const isElevated = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
-      setCanShareLedger(isBranchGuru || isElevated);
+      const canManage = isBranchGuru || isElevated;
+      setCanShareLedger(canManage);
+      setCanSetGeneration(canManage);
 
       const formatDate = (value?: string | null) => {
         if (!value) return undefined;
@@ -95,6 +99,7 @@ export default function EditPerson() {
         privacyLevel: (personData.privacyLevel as UpdatePersonInput['privacyLevel']) || 'family_only',
         shareInLedger: personData.shareInLedger ?? false,
         estimatedBirthYear: personData.estimatedBirthYear ?? undefined,
+        generationNumber: typeof personData.generationNumber === 'number' ? personData.generationNumber : undefined,
       });
     } catch (error: any) {
       console.error('Failed to load person for editing:', error);
@@ -129,6 +134,18 @@ export default function EditPerson() {
         estimatedBirthYear:
           canShareLedger && data.shareInLedger ? normalizedEstimatedBirthYear : null,
       };
+
+      if (canSetGeneration) {
+        if (typeof data.generationNumber === 'number' && !Number.isNaN(data.generationNumber)) {
+          payload.generationNumber = data.generationNumber;
+        } else if (data.generationNumber === null) {
+          payload.generationNumber = null;
+        } else {
+          delete payload.generationNumber;
+        }
+      } else {
+        delete (payload as { generationNumber?: number | null }).generationNumber;
+      }
 
       if (payload.isAlive) {
         payload.deathDate = null;
@@ -378,11 +395,40 @@ export default function EditPerson() {
                       ))}
                   </select>
                 </div>
+            </div>
+          </div>
+
+          {canSetGeneration && (
+            <div className="space-y-4 pt-6 border-t">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t('createPerson.generationSection')}
+              </h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('persons.generationNumberLabel')}
+                </label>
+                <input
+                  {...register('generationNumber', {
+                    valueAsNumber: true,
+                    min: { value: 1, message: t('createPerson.generationMinError') },
+                    max: { value: 30, message: t('createPerson.generationMaxError') },
+                  })}
+                  type="number"
+                  min={1}
+                  max={30}
+                  placeholder={t('createPerson.generationHint')}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+                />
+                <p className="mt-1 text-xs text-gray-500">{t('createPerson.generationHelp')}</p>
+                {errors.generationNumber && (
+                  <p className="mt-1 text-sm text-red-600">{errors.generationNumber.message}</p>
+                )}
               </div>
             </div>
+          )}
 
-            <div className="space-y-4 pt-6 border-t">
-              <h3 className="text-lg font-semibold text-gray-900">{t('persons.biography')}</h3>
+          <div className="space-y-4 pt-6 border-t">
+            <h3 className="text-lg font-semibold text-gray-900">{t('persons.biography')}</h3>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">

@@ -363,7 +363,8 @@
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
     "genderRequired": "Gender is required",
-    "placeholderCityCountry": "City, Country"
+    "placeholderCityCountry": "City, Country",
+    "generationNumberLabel": "Generation number"
   },
   "createPerson": {
     "title": "Add Family Member",
@@ -372,6 +373,11 @@
     "basicInfo": "Basic Information",
     "lifeInfo": "Life Information",
     "parents": "Parents",
+    "generationSection": "Generation",
+    "generationHint": "Leave blank to auto-calculate",
+    "generationHelp": "Gurus can override the automatic generation when necessary.",
+    "generationMinError": "Generation must be at least 1.",
+    "generationMaxError": "Generation must be 30 or less.",
     "privacy": "Privacy",
     "breadcrumbPeople": "People",
     "breadcrumbAddPerson": "Add Person",

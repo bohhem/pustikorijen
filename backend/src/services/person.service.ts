@@ -183,6 +183,8 @@ export class PersonService {
       }
     }
 
+    const canManageGenerations = isElevated || membership?.role === 'guru';
+
     // Calculate generation based on parents
     let generationNumber = 1; // Default for root ancestors
 
@@ -212,7 +214,14 @@ export class PersonService {
       generationNumber = (parent.generation_number || 1) + 1;
     }
 
-    const canShareInLedger = isElevated || membership?.role === 'guru';
+    if (data.generationNumber !== undefined && data.generationNumber !== null) {
+      if (!canManageGenerations) {
+        throw new Error('Only branch Gurus can set generation numbers manually');
+      }
+      generationNumber = data.generationNumber;
+    }
+
+    const canShareInLedger = canManageGenerations;
     const shareInLedger = canShareInLedger && Boolean(data.shareInLedger);
     const estimatedBirthYear =
       typeof data.estimatedBirthYear === 'number' ? data.estimatedBirthYear : null;
@@ -255,10 +264,23 @@ export class PersonService {
       },
     });
 
-    // Update branch statistics
-    await this.updateBranchStatistics(branchId);
+    // Recalculate generations to keep tree consistent
+    await this.recalculateGenerations(branchId);
 
-    return mapPerson(person as PersonRecord);
+    const refreshed = await prisma.person.findFirst({
+      where: { person_id: person.person_id },
+      include: {
+        family_branches: {
+          select: {
+            branch_id: true,
+            surname: true,
+            city_name: true,
+          },
+        },
+      },
+    });
+
+    return mapPerson((refreshed ?? person) as PersonRecord);
   }
 
   // Get all persons in a branch
@@ -459,7 +481,8 @@ export class PersonService {
     }
 
     // Build update data
-    const canShareInLedger = isElevated || membership?.role === 'guru';
+    const canManageGenerations = isElevated || membership?.role === 'guru';
+    const canShareInLedger = canManageGenerations;
 
     const updateData: {
       full_name?: string;
@@ -478,7 +501,10 @@ export class PersonService {
       mother_id?: string | null;
       share_in_ledger?: boolean;
       estimated_birth_year?: number | null;
+      generation_number?: number | null;
+      generation?: string | null;
     } = {};
+    let shouldRecalculate = false;
 
     if (data.firstName || data.lastName) {
       const firstName = data.firstName || existingPerson.given_name || '';
@@ -510,14 +536,33 @@ export class PersonService {
     if (data.biography !== undefined) updateData.biography = data.biography;
     if (data.isAlive !== undefined) updateData.is_living = data.isAlive;
     if (data.privacyLevel) updateData.visibility = data.privacyLevel;
-    if (data.fatherId !== undefined) updateData.father_id = data.fatherId;
-    if (data.motherId !== undefined) updateData.mother_id = data.motherId;
+    if (data.fatherId !== undefined) {
+      updateData.father_id = data.fatherId;
+      shouldRecalculate = true;
+    }
+    if (data.motherId !== undefined) {
+      updateData.mother_id = data.motherId;
+      shouldRecalculate = true;
+    }
     if (data.shareInLedger !== undefined) {
       updateData.share_in_ledger = canShareInLedger && data.shareInLedger;
     }
     if (data.estimatedBirthYear !== undefined) {
       updateData.estimated_birth_year =
         typeof data.estimatedBirthYear === 'number' ? data.estimatedBirthYear : null;
+    }
+    if (data.generationNumber !== undefined) {
+      if (!canManageGenerations) {
+        throw new Error('Only branch Gurus can set generation numbers manually');
+      }
+      if (data.generationNumber === null) {
+        updateData.generation_number = null;
+        updateData.generation = null;
+      } else {
+        updateData.generation_number = data.generationNumber;
+        updateData.generation = `G${data.generationNumber}`;
+      }
+      shouldRecalculate = true;
     }
 
     // Update the person
@@ -528,6 +573,23 @@ export class PersonService {
         updated_at: new Date(),
       },
     });
+
+    if (shouldRecalculate) {
+      await this.recalculateGenerations(branchId);
+      const refreshed = await prisma.person.findFirst({
+        where: { person_id: personId },
+        include: {
+          family_branches: {
+            select: {
+              branch_id: true,
+              surname: true,
+              city_name: true,
+            },
+          },
+        },
+      });
+      return mapPerson((refreshed ?? person) as PersonRecord);
+    }
 
     return mapPerson(person as PersonRecord);
   }

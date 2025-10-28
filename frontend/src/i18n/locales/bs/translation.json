@@ -363,7 +363,8 @@
     "firstNameRequired": "Ime je obavezno",
     "lastNameRequired": "Prezime je obavezno",
     "genderRequired": "Spol je obavezan",
-    "placeholderCityCountry": "Grad, Država"
+    "placeholderCityCountry": "Grad, Država",
+    "generationNumberLabel": "Generacijski broj"
   },
   "createPerson": {
     "title": "Dodaj člana porodice",
@@ -372,6 +373,11 @@
     "basicInfo": "Osnovne informacije",
     "lifeInfo": "Životne informacije",
     "parents": "Roditelji",
+    "generationSection": "Generacija",
+    "generationHint": "Ostavi prazno za automatski izračun",
+    "generationHelp": "Guru može po potrebi ručno postaviti generaciju.",
+    "generationMinError": "Generacija mora biti najmanje 1.",
+    "generationMaxError": "Generacija ne može biti veća od 30.",
     "privacy": "Privatnost",
     "breadcrumbPeople": "Osobe",
     "breadcrumbAddPerson": "Dodaj osobu",

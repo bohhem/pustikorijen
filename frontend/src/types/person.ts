@@ -72,6 +72,7 @@ export interface CreatePersonInput {
   privacyLevel?: 'public' | 'family_only' | 'private';
   shareInLedger?: boolean;
   estimatedBirthYear?: number | null;
+  generationNumber?: number | null;
 }
 
 export interface UpdatePersonInput {
@@ -90,4 +91,5 @@ export interface UpdatePersonInput {
   privacyLevel?: 'public' | 'family_only' | 'private';
   shareInLedger?: boolean;
   estimatedBirthYear?: number | null;
+  generationNumber?: number | null;
 }

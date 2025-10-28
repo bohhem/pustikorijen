@@ -22,6 +22,7 @@ export default function CreatePerson() {
   const [persons, setPersons] = useState<Person[]>([]);
   const [canShareLedger, setCanShareLedger] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
+  const [canSetGeneration, setCanSetGeneration] = useState(false);
 
   const {
     register,
@@ -33,6 +34,7 @@ export default function CreatePerson() {
       isAlive: true,
       privacyLevel: 'family_only',
       shareInLedger: false,
+      generationNumber: undefined,
     },
   });
 
@@ -59,7 +61,9 @@ export default function CreatePerson() {
           member.userId === user?.id && member.role === 'guru' && member.status === 'active'
       );
       const isElevated = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
-      setCanShareLedger(isBranchGuru || isElevated);
+      const canManage = isBranchGuru || isElevated;
+      setCanShareLedger(canManage);
+      setCanSetGeneration(canManage);
     } catch (err: any) {
       toast.error(err.response?.data?.error || t('createPerson.loadDataError'));
     }
@@ -91,6 +95,18 @@ export default function CreatePerson() {
         shareInLedger: canShareLedger ? Boolean(data.shareInLedger) : false,
         estimatedBirthYear: canShareLedger && data.shareInLedger ? normalizedEstimatedBirthYear : null,
       };
+
+      if (canSetGeneration) {
+        if (typeof data.generationNumber === 'number' && !Number.isNaN(data.generationNumber)) {
+          payload.generationNumber = data.generationNumber;
+        } else if (data.generationNumber === null) {
+          payload.generationNumber = null;
+        } else {
+          delete payload.generationNumber;
+        }
+      } else {
+        delete (payload as { generationNumber?: number | null }).generationNumber;
+      }
 
       await createPerson(branchId!, payload);
       toast.success(t('persons.createSuccess'));
@@ -339,6 +355,37 @@ export default function CreatePerson() {
                 </div>
               </div>
             </div>
+
+            {canSetGeneration && (
+              <div className="space-y-4 pt-6 border-t">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {t('createPerson.generationSection')}
+                </h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('persons.generationNumberLabel')}
+                  </label>
+                  <input
+                    {...register('generationNumber', {
+                      valueAsNumber: true,
+                      min: { value: 1, message: t('createPerson.generationMinError') },
+                      max: { value: 30, message: t('createPerson.generationMaxError') },
+                    })}
+                    type="number"
+                    min={1}
+                    max={30}
+                    placeholder={t('createPerson.generationHint')}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {t('createPerson.generationHelp')}
+                  </p>
+                  {errors.generationNumber && (
+                    <p className="mt-1 text-sm text-red-600">{errors.generationNumber.message}</p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Biography */}
             <div className="space-y-4 pt-6 border-t">
