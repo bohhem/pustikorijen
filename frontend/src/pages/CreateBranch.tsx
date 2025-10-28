@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { createBranch } from '../api/branch';
 import Layout from '../components/layout/Layout';
 import GeoLocationSelector from '../components/geo/GeoLocationSelector';
+import PeopleLedgerPanel from '../components/branch/PeopleLedgerPanel';
 import type { CreateBranchInput } from '../types/branch';
+import type { PeopleLedgerEntry } from '../types/geo';
 
 export default function CreateBranch() {
   const { t } = useTranslation();
@@ -13,6 +15,8 @@ export default function CreateBranch() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCityId, setSelectedCityId] = useState('');
+  const [selectedRegionId, setSelectedRegionId] = useState<string | undefined>(undefined);
+  const [selectedLedgerEntry, setSelectedLedgerEntry] = useState<PeopleLedgerEntry | null>(null);
 
   const {
     register,
@@ -26,10 +30,12 @@ export default function CreateBranch() {
   });
 
   const handleCityChange = useCallback(
-    (cityId: string | null) => {
+    (cityId: string | null, meta?: { city?: { region?: { id?: string }; entity?: { id?: string } } }) => {
       const id = cityId ?? '';
       setSelectedCityId(id);
       setValue('geoCityId', id, { shouldValidate: true });
+      const regionId = meta?.city?.region?.id ?? meta?.city?.entity?.id;
+      setSelectedRegionId(regionId);
     },
     [setValue]
   );
@@ -50,7 +56,7 @@ export default function CreateBranch() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,640px)_minmax(0,420px)] py-12 px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow rounded-lg p-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('createBranch.title')}</h2>
 
@@ -93,6 +99,10 @@ export default function CreateBranch() {
                 title={t('createBranch.locationSectionTitle')}
                 description={t('createBranch.locationDescription')}
               />
+            </div>
+
+            <div className="flex flex-col gap-4 lg:hidden">
+              <PeopleLedgerPanel regionId={selectedRegionId} />
             </div>
 
             <div>
@@ -139,7 +149,53 @@ export default function CreateBranch() {
             </div>
           </form>
         </div>
+        <div className="block lg:hidden">
+          <PeopleLedgerPanel regionId={selectedRegionId} onSelect={(entry) => setSelectedLedgerEntry(entry)} />
+        </div>
+        <div className="hidden lg:block">
+          <PeopleLedgerPanel regionId={selectedRegionId} onSelect={(entry) => setSelectedLedgerEntry(entry)} />
+        </div>
       </div>
+
+      {selectedLedgerEntry && (
+        <div className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-semibold text-gray-900">{t('ledger.claimModalTitle')}</h4>
+                <p className="text-sm text-gray-500">{t('ledger.claimModalSubtitle')}</p>
+              </div>
+              <button onClick={() => setSelectedLedgerEntry(null)} className="text-gray-400 hover:text-gray-600">
+                ✕
+              </button>
+            </div>
+            <div className="px-5 py-4 space-y-3 text-sm text-gray-700">
+              <div>
+                <p className="text-base font-semibold text-gray-900">{selectedLedgerEntry.fullName}</p>
+                {selectedLedgerEntry.approxAge && (
+                  <p className="text-xs text-gray-500">~{selectedLedgerEntry.approxAge}</p>
+                )}
+              </div>
+              <p>{t('ledger.claimModalBody', { branch: selectedLedgerEntry.branchName })}</p>
+              <div className="flex flex-col gap-2">
+                <a
+                  href={`/branches/${selectedLedgerEntry.branchId}`}
+                  className="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700"
+                >
+                  {t('ledger.goToBranch')}
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setSelectedLedgerEntry(null)}
+                  className="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  {t('common.close')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

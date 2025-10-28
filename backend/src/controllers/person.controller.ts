@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import personService from '../services/person.service';
+import { movePersonToBranch } from '../services/person-move.service';
 import { createPersonSchema, updatePersonSchema } from '../validators/person.validator';
+import { movePersonSchema } from '../schemas/branch.schema';
 import { getErrorMessage, isZodError } from '../utils/error.util';
 
 export const createPerson = async (req: Request, res: Response) => {
@@ -10,12 +12,10 @@ export const createPerson = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const userId = req.user.userId;
-
     // Validate input
     const validatedData = createPersonSchema.parse(req.body);
 
-    const person = await personService.createPerson(branchId, userId, validatedData);
+    const person = await personService.createPerson(branchId, req.user, validatedData);
 
     return res.status(201).json({
       message: 'Person created successfully',
@@ -38,7 +38,7 @@ export const getPersonsByBranch = async (req: Request, res: Response) => {
   try {
     const { branchId } = req.params;
 
-    const persons = await personService.getPersonsByBranch(branchId);
+    const persons = await personService.getPersonsByBranch(branchId, req.user);
 
     return res.json({ persons });
   } catch (error: unknown) {
@@ -52,7 +52,7 @@ export const getPersonById = async (req: Request, res: Response) => {
   try {
     const { branchId, personId } = req.params;
 
-    const person = await personService.getPersonById(branchId, personId);
+    const person = await personService.getPersonById(branchId, personId, req.user);
 
     res.json({ person });
   } catch (error: unknown) {
@@ -69,12 +69,10 @@ export const updatePerson = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const userId = req.user.userId;
-
     // Validate input
     const validatedData = updatePersonSchema.parse(req.body);
 
-    const person = await personService.updatePerson(branchId, personId, userId, validatedData);
+    const person = await personService.updatePerson(branchId, personId, req.user, validatedData);
 
     return res.json({
       message: 'Person updated successfully',
@@ -99,9 +97,7 @@ export const deletePerson = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const userId = req.user.userId;
-
-    await personService.deletePerson(branchId, personId, userId);
+    await personService.deletePerson(branchId, personId, req.user);
 
     res.json({ message: 'Person deleted successfully' });
   } catch (error: unknown) {
@@ -121,6 +117,40 @@ export const getFamilyTree = async (req: Request, res: Response) => {
   } catch (error: unknown) {
     console.error('Error fetching family tree:', error);
     const message = getErrorMessage(error) || 'Failed to fetch family tree';
+    res.status(400).json({ error: message });
+  }
+};
+
+export const movePerson = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const { branchId, personId } = req.params;
+    const payload = movePersonSchema.parse(req.body);
+
+    const result = await movePersonToBranch({
+      sourceBranchId: branchId,
+      targetBranchId: payload.targetBranchId,
+      personId,
+      actor: req.user,
+      notes: payload.notes ?? null,
+    });
+
+    res.json({
+      message: 'Person moved successfully',
+      person: result,
+    });
+  } catch (error: unknown) {
+    console.error('Error moving person:', error);
+
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation error', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error) || 'Failed to move person';
     res.status(400).json({ error: message });
   }
 };

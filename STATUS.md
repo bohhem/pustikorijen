@@ -372,7 +372,7 @@ Phase 5: Member Management    ████████████████�
 
 **Current Data (Production):**
 - Users: 2
-- Branches: 2 (Turalić, Ajanovic)
+- Branches: 2 (Turalić, Ajanović)
 - Members: 4
 - Persons: 8
 - Partnerships: 3

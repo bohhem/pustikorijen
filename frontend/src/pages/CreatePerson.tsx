@@ -3,8 +3,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { createPerson, getPersonsByBranch } from '../api/person';
-import { getBranchById } from '../api/branch';
+import { getBranchById, getBranchMembers } from '../api/branch';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 import Layout from '../components/layout/Layout';
 import LinkExistingPersonModal from '../components/branch/LinkExistingPersonModal';
 import type { CreatePersonInput, Person } from '../types/person';
@@ -15,9 +16,11 @@ export default function CreatePerson() {
   const navigate = useNavigate();
   const toast = useToast();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [persons, setPersons] = useState<Person[]>([]);
+  const [canShareLedger, setCanShareLedger] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
 
   const {
@@ -29,25 +32,34 @@ export default function CreatePerson() {
     defaultValues: {
       isAlive: true,
       privacyLevel: 'family_only',
+      shareInLedger: false,
     },
   });
 
   const isAlive = watch('isAlive');
+  const shareInLedger = watch('shareInLedger');
 
   useEffect(() => {
     if (branchId) {
-      loadData();
+      void loadData();
     }
-  }, [branchId]);
+  }, [branchId, user?.id, user?.globalRole]);
 
   const loadData = async () => {
     try {
-      const [branchData, personsData] = await Promise.all([
+      const [branchData, personsData, membersData] = await Promise.all([
         getBranchById(branchId!),
         getPersonsByBranch(branchId!),
+        getBranchMembers(branchId!),
       ]);
       setBranch(branchData);
       setPersons(personsData);
+      const isBranchGuru = membersData.some(
+        (member) =>
+          member.userId === user?.id && member.role === 'guru' && member.status === 'active'
+      );
+      const isElevated = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
+      setCanShareLedger(isBranchGuru || isElevated);
     } catch (err: any) {
       toast.error(err.response?.data?.error || t('createPerson.loadDataError'));
     }
@@ -56,6 +68,11 @@ export default function CreatePerson() {
   const onSubmit = async (data: CreatePersonInput) => {
     setLoading(true);
     try {
+      const normalizedEstimatedBirthYear =
+        typeof data.estimatedBirthYear === 'number' && !Number.isNaN(data.estimatedBirthYear)
+          ? data.estimatedBirthYear
+          : null;
+
       const payload: CreatePersonInput = {
         ...data,
         firstName: data.firstName.trim(),
@@ -71,6 +88,8 @@ export default function CreatePerson() {
         birthPlace: data.birthPlace?.trim() ? data.birthPlace.trim() : null,
         deathDate: data.isAlive ? null : data.deathDate || null,
         deathPlace: data.isAlive ? null : (data.deathPlace?.trim() ? data.deathPlace.trim() : null),
+        shareInLedger: canShareLedger ? Boolean(data.shareInLedger) : false,
+        estimatedBirthYear: canShareLedger && data.shareInLedger ? normalizedEstimatedBirthYear : null,
       };
 
       await createPerson(branchId!, payload);
@@ -354,6 +373,45 @@ export default function CreatePerson() {
                   <option value="family_only">{t('persons.familyOnly')} - {t('persons.familyOnlyDesc')}</option>
                   <option value="private">{t('persons.private')} - {t('persons.privateDesc')}</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Ledger Sharing */}
+            <div className="space-y-4 pt-6 border-t">
+              <h3 className="text-lg font-semibold text-gray-900">{t('persons.ledgerSectionTitle')}</h3>
+              <div className="flex items-start gap-3">
+                <input
+                  {...register('shareInLedger')}
+                  type="checkbox"
+                  disabled={!canShareLedger}
+                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{t('persons.shareInLedgerLabel')}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {canShareLedger ? t('persons.shareInLedgerHelp') : t('persons.shareInLedgerDisabled')}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('persons.estimatedBirthYear')}
+                </label>
+                <input
+                  {...register('estimatedBirthYear', {
+                    valueAsNumber: true,
+                    min: { value: 1600, message: t('persons.estimatedBirthYearRange') },
+                    max: { value: 2200, message: t('persons.estimatedBirthYearRange') },
+                  })}
+                  type="number"
+                  disabled={!shareInLedger || !canShareLedger}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+                  placeholder="1990"
+                />
+                <p className="text-xs text-gray-500 mt-1">{t('persons.estimatedBirthYearHelp')}</p>
+                {errors.estimatedBirthYear && (
+                  <p className="mt-1 text-sm text-red-600">{errors.estimatedBirthYear.message}</p>
+                )}
               </div>
             </div>
 

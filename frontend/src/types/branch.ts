@@ -188,6 +188,24 @@ export interface ConnectedFamiliesResponse {
   connectedFamilies: ConnectedFamily[];
 }
 
+export interface PersonClaim {
+  id: string;
+  personId: string;
+  branchId: string;
+  user: {
+    id: string;
+    fullName: string;
+    email?: string | null;
+  };
+  message?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+  resolvedAt?: string | null;
+  resolvedBy?: string | null;
+  notes?: string | null;
+  personName: string;
+}
+
 export interface PersonLinkCandidate {
   id: string;
   fullName: string;

@@ -1,16 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getPersonsByBranch, deletePerson } from '../api/person';
+import { getPersonsByBranch, getPersonById, deletePerson, movePerson, claimPerson } from '../api/person';
 import { getPersonPartnerships } from '../api/partnership';
-import { getBranchById, getBranchMembers } from '../api/branch';
+import { getBranchById, getBranchMembers, getBranches } from '../api/branch';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import PartnershipCard from '../components/persons/PartnershipCard';
 import PersonBusinessAddressesSection from '../components/business/PersonBusinessAddressesSection';
 import type { Person } from '../types/person';
-import type { Branch, BranchMember } from '../types/branch';
+import type { Branch, BranchMember, MovePersonPayload } from '../types/branch';
 import type { Partnership } from '../types/partnership';
 
 export default function PersonDetail() {
@@ -26,6 +26,9 @@ export default function PersonDetail() {
   const [members, setMembers] = useState<BranchMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [moveModalOpen, setMoveModalOpen] = useState(false);
+  const [moveLoading, setMoveLoading] = useState(false);
+  const [claimLoading, setClaimLoading] = useState(false);
 
   const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
   const isGuru = useMemo(
@@ -33,6 +36,7 @@ export default function PersonDetail() {
     [members, user?.id]
   );
   const canManage = useMemo(() => isGuru || isSuperGuru, [isGuru, isSuperGuru]);
+  const canClaim = useMemo(() => person?.canBeClaimed ?? false, [person?.canBeClaimed]);
 
   useEffect(() => {
     if (branchId && personId) {
@@ -43,20 +47,20 @@ export default function PersonDetail() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [personsData, branchData, membersData] = await Promise.all([
+      const [personData, personsData, branchData, membersData] = await Promise.all([
+        getPersonById(branchId!, personId!),
         getPersonsByBranch(branchId!),
         getBranchById(branchId!),
         getBranchMembers(branchId!),
       ]);
 
-      const currentPerson = personsData.find(p => p.id === personId);
-      if (!currentPerson) {
+      if (!personData) {
         toast.error(t('personDetail.notFound'));
         navigate(`/branches/${branchId}/persons`);
         return;
       }
 
-      setPerson(currentPerson);
+      setPerson(personData);
       setBranch(branchData);
       setAllPersons(personsData);
       setMembers(membersData);
@@ -116,6 +120,21 @@ export default function PersonDetail() {
     }
   };
 
+  const handleClaim = async () => {
+    if (!branchId || !personId) return;
+    const message = window.prompt(t('personDetail.claimPrompt') || '', '');
+    setClaimLoading(true);
+    try {
+      await claimPerson(branchId, personId, message || undefined);
+      toast.success(t('personDetail.claimSuccess'));
+      await loadData();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || t('personDetail.claimError'));
+    } finally {
+      setClaimLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -162,6 +181,25 @@ export default function PersonDetail() {
           >
             {t('personDetail.editPerson')}
           </Link>
+          {canClaim && (
+            <button
+              type="button"
+              onClick={handleClaim}
+              disabled={claimLoading}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {claimLoading ? t('common.loading') : t('personDetail.claimButton')}
+            </button>
+          )}
+          {canManage && (
+            <button
+              type="button"
+              onClick={() => setMoveModalOpen(true)}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700"
+            >
+              {t('personDetail.movePerson')}
+            </button>
+          )}
           <button
             type="button"
             onClick={handleDelete}
@@ -198,6 +236,13 @@ export default function PersonDetail() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {person.fullName}
                 </h1>
+                {person.shareInLedger && (
+                  <div className="mb-2">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                      {t('persons.ledgerSharedBadge')}
+                    </span>
+                  </div>
+                )}
                 {person.maidenName && (
                   <p className="text-lg text-gray-600 mb-2">
                     {t('personDetail.nee')} {person.maidenName}
@@ -205,6 +250,12 @@ export default function PersonDetail() {
                 )}
                 {person.nickname && (
                   <p className="text-gray-600 mb-2">"{person.nickname}"</p>
+                )}
+
+                {person.claimStatus && (
+                  <p className="text-xs font-semibold mt-1 text-indigo-700">
+                    {t(`personDetail.claimStatus.${person.claimStatus}`)}
+                  </p>
                 )}
 
                 <div className="flex items-center gap-3 mt-4">
@@ -410,6 +461,135 @@ export default function PersonDetail() {
           </Link>
         </div>
       </div>
+      {moveModalOpen && branchId && personId && (
+        <MovePersonModal
+          currentBranchId={branchId}
+          loading={moveLoading}
+          onClose={() => setMoveModalOpen(false)}
+          onMove={async (payload) => {
+            setMoveLoading(true);
+            try {
+              await movePerson(branchId, personId, payload);
+              toast.success(t('personDetail.moveSuccess'));
+              navigate(`/branches/${payload.targetBranchId}/persons/${personId}`);
+            } catch (err: any) {
+              toast.error(err.response?.data?.error || t('personDetail.moveError'));
+            } finally {
+              setMoveLoading(false);
+            }
+          }}
+        />
+      )}
     </Layout>
+  );
+}
+interface MovePersonModalProps {
+  currentBranchId: string;
+  loading: boolean;
+  onClose: () => void;
+  onMove: (payload: MovePersonPayload) => Promise<void>;
+}
+
+function MovePersonModal({ currentBranchId, loading, onClose, onMove }: MovePersonModalProps) {
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('');
+  const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const response = await getBranches({ limit: 20, search: searchTerm || undefined });
+        if (!active) return;
+        setBranches(response.branches.filter((branch) => branch.id !== currentBranchId));
+      } catch (err) {
+        console.error('Failed to load branches', err);
+      }
+    };
+    void load();
+    return () => {
+      active = false;
+    };
+  }, [searchTerm, currentBranchId]);
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!selectedBranchId) return;
+    await onMove({ targetBranchId: selectedBranchId, notes });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div>
+            <h4 className="text-base font-semibold text-gray-900">{t('personDetail.moveModalTitle')}</h4>
+            <p className="text-sm text-gray-500">{t('personDetail.moveModalSubtitle')}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            ✕
+          </button>
+        </div>
+        <form onSubmit={submit} className="px-5 py-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">{t('personDetail.moveSearch')}</label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+              placeholder={t('personDetail.moveSearchPlaceholder')}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">{t('personDetail.moveSelectBranch')}</label>
+            <div className="mt-2 max-h-52 overflow-y-auto border rounded-md divide-y divide-gray-200">
+              {branches.length === 0 ? (
+                <p className="text-sm text-gray-500 p-3">{t('personDetail.moveNoBranches')}</p>
+              ) : (
+                branches.map((branch) => (
+                  <label key={branch.id} className="flex items-center px-3 py-2 gap-2">
+                    <input
+                      type="radio"
+                      name="targetBranch"
+                      value={branch.id}
+                      checked={selectedBranchId === branch.id}
+                      onChange={() => setSelectedBranchId(branch.id)}
+                    />
+                    <span>
+                      <span className="font-medium text-gray-900">{branch.surname}</span>
+                      <span className="ml-2 text-xs text-gray-500">{branch.id}</span>
+                    </span>
+                  </label>
+                ))
+              )}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">{t('personDetail.moveNotes')}</label>
+            <textarea
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
+            />
+          </div>
+          <div className="flex justify-end gap-3">
+            <button type="button" onClick={onClose} className="text-sm text-gray-600">
+              {t('common.cancel')}
+            </button>
+            <button
+              type="submit"
+              disabled={!selectedBranchId || loading}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm disabled:opacity-50"
+            >
+              {loading ? t('common.loading') : t('personDetail.moveConfirm')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }

@@ -36,3 +36,15 @@ export interface GeoCity {
   entity?: GeoRegion;
   state?: GeoState;
 }
+
+export interface PeopleLedgerEntry {
+  personId: string;
+  fullName: string;
+  surname?: string;
+  approxAge?: number | null;
+  branchId: string;
+  branchName: string;
+  geoCityId?: string;
+  cityName?: string;
+  regionName?: string;
+}

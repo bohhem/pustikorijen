@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -9,13 +9,17 @@ import {
   getPersonLinks,
   approvePersonLinkRequest,
   rejectPersonLinkRequest,
+  updateBranch,
 } from '../api/branch';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import MemberManagementSection from '../components/branch/MemberManagementSection';
 import PendingPersonLinks from '../components/branch/PendingPersonLinks';
-import type { Branch, BranchMember, PersonLinkRecord } from '../types/branch';
+import EditBranchModal from '../components/branch/EditBranchModal';
+import ConnectedFamiliesSection from '../components/branch/ConnectedFamiliesSection';
+import PersonClaimsSection from '../components/branch/PersonClaimsSection';
+import type { Branch, BranchMember, PersonLinkRecord, UpdateBranchInput } from '../types/branch';
 import { formatBranchLocation } from '../utils/location';
 
 export default function BranchDetail() {
@@ -28,9 +32,11 @@ export default function BranchDetail() {
   const [members, setMembers] = useState<BranchMember[]>([]);
   const [pendingRequests, setPendingRequests] = useState<BranchMember[]>([]);
   const [pendingPersonLinks, setPendingPersonLinks] = useState<PersonLinkRecord[]>([]);
+  const pendingLinksRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [joining, setJoining] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
   const isMember = useMemo(() => members.some(m => m.userId === user?.id && m.status === 'active'), [members, user?.id]);
@@ -156,6 +162,23 @@ export default function BranchDetail() {
     [id, loadPendingPersonLinks, t, toast]
   );
 
+  const handleBranchSave = useCallback(
+    async (changes: UpdateBranchInput) => {
+      if (!id) {
+        throw new Error('Branch not found');
+      }
+      try {
+        const { branch: updated } = await updateBranch(id, changes);
+        setBranch(updated);
+        toast.success(t('branchDetail.edit.success'));
+        setEditModalOpen(false);
+      } catch (err) {
+        throw err;
+      }
+    },
+    [id, toast, t]
+  );
+
   if (loading) {
     return (
       <Layout>
@@ -185,21 +208,32 @@ export default function BranchDetail() {
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white shadow rounded-lg p-8 mb-6">
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{branch.surname} {t('branchDetail.family')}</h1>
               <p className="text-gray-600">{formatBranchLocation(branch)}</p>
               <p className="text-sm text-gray-500 font-mono mt-2">{branch.id}</p>
             </div>
-            {!isMember && !isSuperGuru && user && (
-              <button
-                onClick={handleJoin}
-                disabled={joining}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {joining ? t('branchDetail.requesting') : t('branchDetail.requestToJoin')}
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {canModerateBranch && (
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(true)}
+                  className="px-4 py-2 border border-indigo-200 text-indigo-700 rounded-md hover:bg-indigo-50 font-medium transition"
+                >
+                  {t('branchDetail.edit.openButton')}
+                </button>
+              )}
+              {!isMember && !isSuperGuru && user && (
+                <button
+                  onClick={handleJoin}
+                  disabled={joining}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  {joining ? t('branchDetail.requesting') : t('branchDetail.requestToJoin')}
+                </button>
+              )}
+            </div>
           </div>
 
           {branch.description && (
@@ -256,28 +290,51 @@ export default function BranchDetail() {
           )}
         </div>
 
-        {canModerateBranch && (
-          <MemberManagementSection
-            branchId={branch.id}
-            members={members}
-            pendingRequests={pendingRequests}
-            currentUserId={user?.id || ''}
-            isGuru={canModerateBranch}
-            onRefresh={handleMemberRefresh}
-          />
-        )}
-
-        {canModerateBranch && (
-          <div className="mt-6">
-            <PendingPersonLinks
+        <div className="space-y-6 mt-8">
+          {canModerateBranch && (
+            <ConnectedFamiliesSection
               branchId={branch.id}
-              links={pendingPersonLinks}
-              onApprove={handleApprovePersonLink}
-              onReject={handleRejectPersonLink}
+              canModerate={canModerateBranch}
+              onShowPendingLinks={() => {
+                if (pendingLinksRef.current) {
+                  pendingLinksRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
             />
-          </div>
-        )}
+          )}
+          {canModerateBranch && (
+            <PersonClaimsSection branchId={branch.id} canModerate={canModerateBranch} />
+          )}
+
+          {canModerateBranch && (
+            <MemberManagementSection
+              branchId={branch.id}
+              members={members}
+              pendingRequests={pendingRequests}
+              currentUserId={user?.id || ''}
+              isGuru={canModerateBranch}
+              onRefresh={handleMemberRefresh}
+            />
+          )}
+
+          {canModerateBranch && (
+            <div ref={pendingLinksRef} id="pending-person-links">
+              <PendingPersonLinks
+                branchId={branch.id}
+                links={pendingPersonLinks}
+                onApprove={handleApprovePersonLink}
+                onReject={handleRejectPersonLink}
+              />
+            </div>
+          )}
+        </div>
       </div>
+      <EditBranchModal
+        branch={branch}
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSave={handleBranchSave}
+      />
     </Layout>
   );
 }

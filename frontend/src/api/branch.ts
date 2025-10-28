@@ -14,6 +14,7 @@ import type {
   BranchPlaceholderClaim,
   ConnectedFamiliesResponse,
   MultiBranchTreeResponse,
+  PersonClaim,
 } from '../types/branch';
 
 /**
@@ -171,6 +172,24 @@ export async function resolveBranchPlaceholderClaim(
 export async function getConnectedFamilies(branchId: string): Promise<ConnectedFamiliesResponse> {
   const response = await api.get(`/branches/${branchId}/connected-families`);
   return response.data;
+}
+
+export async function getPersonClaims(branchId: string): Promise<PersonClaim[]> {
+  const response = await api.get(`/branches/${branchId}/person-claims`);
+  return response.data.claims ?? [];
+}
+
+export async function resolvePersonClaim(
+  branchId: string,
+  claimId: string,
+  status: 'approved' | 'rejected',
+  notes?: string
+): Promise<PersonClaim> {
+  const response = await api.post(`/branches/${branchId}/person-claims/${claimId}/resolve`, {
+    status,
+    notes,
+  });
+  return response.data.claim;
 }
 
 /**

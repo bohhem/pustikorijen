@@ -22,6 +22,8 @@ export interface Person {
   motherId?: string | null;
   profilePhotoUrl?: string;
   isAlive?: boolean;
+  shareInLedger?: boolean;
+  estimatedBirthYear?: number | null;
   privacyLevel?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -46,6 +48,9 @@ export interface Person {
     cityName?: string | null;
   } | null;
 
+  canBeClaimed?: boolean;
+  claimStatus?: 'pending' | 'approved' | 'rejected';
+
   // Computed properties for backward compatibility
   firstName?: string;
   lastName?: string;
@@ -65,6 +70,8 @@ export interface CreatePersonInput {
   motherId?: string;
   isAlive: boolean;
   privacyLevel?: 'public' | 'family_only' | 'private';
+  shareInLedger?: boolean;
+  estimatedBirthYear?: number | null;
 }
 
 export interface UpdatePersonInput {
@@ -81,4 +88,6 @@ export interface UpdatePersonInput {
   motherId?: string | null;
   isAlive?: boolean;
   privacyLevel?: 'public' | 'family_only' | 'private';
+  shareInLedger?: boolean;
+  estimatedBirthYear?: number | null;
 }

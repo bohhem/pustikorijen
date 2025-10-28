@@ -6,6 +6,7 @@ import {
   listCitiesByState,
   getCityDetail,
 } from '../services/geo.service';
+import { getPeopleLedgerByRegion } from '../services/ledger.service';
 import { getErrorMessage } from '../utils/error.util';
 
 export async function getStates(_req: Request, res: Response) {
@@ -54,5 +55,18 @@ export async function getCity(req: Request, res: Response) {
   } catch (error) {
     const message = getErrorMessage(error) || 'City not found';
     res.status(404).json({ error: message });
+  }
+}
+
+export async function getPeopleLedger(req: Request, res: Response) {
+  try {
+    const { regionId } = req.params;
+    const q = typeof req.query.q === 'string' ? req.query.q : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const ledger = await getPeopleLedgerByRegion(regionId, q, limit);
+    res.json({ ledger });
+  } catch (error) {
+    const message = getErrorMessage(error) || 'Failed to load ledger';
+    res.status(400).json({ error: message });
   }
 }

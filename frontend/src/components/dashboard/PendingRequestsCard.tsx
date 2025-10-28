@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { getBranches, getBranchMembers, getPendingJoinRequests, getPersonLinks } from '../../api/branch';
-import type { BranchMember, PersonLinkRecord } from '../../types/branch';
+import { getBranches, getBranchMembers, getPendingJoinRequests, getPersonLinks, getPersonClaims } from '../../api/branch';
+import type { BranchMember, PersonLinkRecord, PersonClaim } from '../../types/branch';
 
 interface PendingRequest {
   id: string;
-  type: 'join' | 'person-link' | 'my-join';
+  type: 'join' | 'person-link' | 'person-claim' | 'my-join';
   branchId: string;
   branchSurname: string;
   userName?: string;
@@ -79,6 +79,25 @@ export default function PendingRequestsCard() {
               });
             } catch (err) {
               console.error('Failed to load person link requests for branch:', branch.id);
+            }
+
+            // Fetch pending person identity claims
+            try {
+              const claims = await getPersonClaims(branch.id);
+              claims.forEach((claim: PersonClaim) => {
+                allRequests.push({
+                  id: `claim-${claim.id}`,
+                  type: 'person-claim',
+                  branchId: branch.id,
+                  branchSurname: branch.surname,
+                  userName: claim.user.fullName,
+                  personName: claim.personName,
+                  message: claim.message || undefined,
+                  createdAt: claim.createdAt,
+                });
+              });
+            } catch (err) {
+              console.error('Failed to load person claims for branch:', branch.id);
             }
           }
 
@@ -158,6 +177,11 @@ export default function PendingRequestsCard() {
                   {request.type === 'person-link' && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
                       {t('dashboard.pendingRequests.linkRequest')}
+                    </span>
+                  )}
+                  {request.type === 'person-claim' && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
+                      {t('dashboard.pendingRequests.claimRequest')}
                     </span>
                   )}
                   {request.type === 'my-join' && (

@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import prisma from '../utils/prisma';
 
 export interface CreatePartnershipInput {
@@ -185,6 +186,7 @@ export async function createPartnership(
   // Create partnership
   const partnership = await prisma.partnership.create({
     data: {
+      partnership_id: randomUUID(),
       branch_id: branchId,
       person1_id: partnerId1,
       person2_id: partnerId2,
@@ -201,6 +203,7 @@ export async function createPartnership(
       ceremony_type: rest.ceremonyType ?? null,
       visibility: rest.visibility ?? 'family_only',
       created_by: userId,
+      updated_at: new Date(),
     },
     include: {
       persons_partnerships_person1_idTopersons: {

@@ -17,6 +17,9 @@ interface PrismaAliasClient extends PrismaClient {
   geoCity: Delegate<'geo_cities'>;
   guruBusinessAddress: Delegate<'guru_business_addresses'>;
   personBusinessAddress: Delegate<'person_business_addresses'>;
+  branchPlaceholder: Delegate<'branch_placeholders'>;
+  branchPlaceholderClaim: Delegate<'branch_placeholder_claims'>;
+  personClaim: any;
 }
 
 const prisma = basePrisma as PrismaAliasClient;
@@ -80,6 +83,21 @@ Object.defineProperties(basePrisma, {
   personBusinessAddress: {
     get() {
       return (basePrisma as any).person_business_addresses;
+    },
+  },
+  branchPlaceholder: {
+    get() {
+      return (basePrisma as any).branch_placeholders;
+    },
+  },
+  branchPlaceholderClaim: {
+    get() {
+      return (basePrisma as any).branch_placeholder_claims;
+    },
+  },
+  personClaim: {
+    get() {
+      return (basePrisma as any).person_claims;
     },
   },
 });

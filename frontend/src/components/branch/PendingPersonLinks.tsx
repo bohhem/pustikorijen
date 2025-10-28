@@ -53,7 +53,8 @@ export default function PendingPersonLinks({ branchId, links, onApprove, onRejec
       <ul className="divide-y divide-gray-200">
         {links.map((link) => {
           const isSourceBranch = link.sourceBranchId === branchId;
-          const awaitingApproval = isSourceBranch ? !link.sourceApprovedBy : !link.targetApprovedBy;
+          const isTargetBranch = link.targetBranchId === branchId;
+          const awaitingApproval = isSourceBranch ? !link.sourceApprovedBy : isTargetBranch ? !link.targetApprovedBy : false;
           const personName = link.displayName || link.person.fullName;
 
           return (

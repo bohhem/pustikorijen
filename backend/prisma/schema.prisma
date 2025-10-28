@@ -70,6 +70,7 @@ model geo_cities {
   family_branches family_branches[]
   guru_business_addresses guru_business_addresses[]
   person_business_addresses person_business_addresses[]
+  branch_placeholders branch_placeholders[] @relation("placeholder_geo_city")
 
   @@index([state_id])
   @@index([region_id])
@@ -289,12 +290,35 @@ model family_branches {
   root_change_proposals root_change_proposals[]
   stories               stories[]
   geo_city              geo_cities?             @relation(fields: [geo_city_id], references: [city_id])
+  placeholders          branch_placeholders[]
+  person_claims         person_claims[]
 
   @@index([admin_region_id])
   @@index([geo_city_id])
   @@index([city_code])
   @@index([surname_normalized])
   @@index([visibility])
+}
+
+model person_claims {
+  claim_id        String          @id
+  branch_id       String          @db.VarChar(50)
+  person_id       String
+  user_id         String
+  message         String?
+  status          String          @default("pending") @db.VarChar(20)
+  resolution_notes String?
+  resolved_at     DateTime?
+  resolved_by     String?
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+  family_branches family_branches @relation(fields: [branch_id], references: [branch_id])
+  person          persons         @relation("person_claim_person", fields: [person_id], references: [person_id])
+  user            users           @relation("person_claims_user", fields: [user_id], references: [user_id])
+  resolver        users?          @relation("person_claims_resolver", fields: [resolved_by], references: [user_id])
+
+  @@index([branch_id, status])
+  @@index([user_id, status])
 }
 
 model notifications {
@@ -416,6 +440,8 @@ model persons {
   created_from_root_change                                                String?                 @db.VarChar(50)
   created_by                                                              String?
   visibility                                                              String                  @default("family_only") @db.VarChar(20)
+  share_in_ledger                                                         Boolean                 @default(false)
+  estimated_birth_year                                                    Int?
   created_at                                                              DateTime                @default(now())
   updated_at                                                              DateTime
   audit_log                                                               audit_log[]
@@ -436,6 +462,8 @@ model persons {
   root_change_proposals_root_change_proposals_old_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_old_root_person_idTopersons")
   branch_person_links                                                        branch_person_links[]
   person_business_addresses                                                 person_business_addresses[]
+  placeholder_links                                                         branch_placeholders[] @relation("placeholder_person_link")
+  person_claims                                                             person_claims[]        @relation("person_claim_person")
 
   @@index([birth_year])
   @@index([branch_id, generation_number])
@@ -491,6 +519,49 @@ model person_business_addresses {
   @@index([person_id])
   @@index([geo_city_id])
   @@index([is_primary])
+}
+
+model branch_placeholders {
+  placeholder_id    String                    @id @db.VarChar(50)
+  branch_id         String                    @db.VarChar(50)
+  created_by        String
+  display_name      String                    @db.VarChar(150)
+  relation_hint     String?                   @db.VarChar(200)
+  approx_birth_year Int?
+  notes             String?
+  is_public         Boolean                   @default(true)
+  status            String                    @default("open") @db.VarChar(20)
+  linked_person_id  String?
+  geo_city_id       String?                   @db.VarChar(60)
+  created_at        DateTime                  @default(now())
+  updated_at        DateTime                  @updatedAt
+  family_branches   family_branches           @relation(fields: [branch_id], references: [branch_id])
+  created_by_user   users                     @relation("placeholder_creator", fields: [created_by], references: [user_id])
+  linked_person     persons?                  @relation("placeholder_person_link", fields: [linked_person_id], references: [person_id])
+  geo_city          geo_cities?               @relation("placeholder_geo_city", fields: [geo_city_id], references: [city_id])
+  claims            branch_placeholder_claims[]
+
+  @@index([branch_id])
+  @@index([status])
+}
+
+model branch_placeholder_claims {
+  claim_id       String               @id @db.VarChar(50)
+  placeholder_id String
+  branch_id      String               @db.VarChar(50)
+  user_id        String
+  message        String?              @db.VarChar(1000)
+  status         String               @default("pending") @db.VarChar(20)
+  resolved_by    String?
+  resolved_at    DateTime?
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+  placeholder    branch_placeholders  @relation(fields: [placeholder_id], references: [placeholder_id])
+  user           users                @relation("placeholder_claim_user", fields: [user_id], references: [user_id])
+  resolver       users?               @relation("placeholder_claim_resolver", fields: [resolved_by], references: [user_id])
+
+  @@index([branch_id])
+  @@index([status])
 }
 
 model root_change_proposals {
@@ -620,6 +691,11 @@ model users {
   branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
   branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
   guru_business_addresses                                          guru_business_addresses?
+  branch_placeholders_created                                      branch_placeholders[]     @relation("placeholder_creator")
+  placeholder_claims                                               branch_placeholder_claims[] @relation("placeholder_claim_user")
+  placeholder_claims_resolved                                      branch_placeholder_claims[] @relation("placeholder_claim_resolver")
+  person_claims_user                                               person_claims[]          @relation("person_claims_user")
+  person_claims_resolved                                           person_claims[]          @relation("person_claims_resolver")
 
   @@index([email])
   @@index([is_active])

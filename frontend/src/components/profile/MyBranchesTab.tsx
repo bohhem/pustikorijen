@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { getBranches } from '../../api/branch';
+import { getBranches, getBranchMembers } from '../../api/branch';
 import { formatBranchLocation } from '../../utils/location';
 import type { Branch } from '../../types/branch';
 
 interface BranchMembershipInfo extends Branch {
   userRole?: string;
+  userStatus?: string;
   joinedAt?: string;
 }
 
@@ -25,14 +26,33 @@ export default function MyBranchesTab() {
       setLoading(true);
       setError(null);
       try {
-        // Fetch all branches - in future, add API endpoint for user's branches only
+        // Fetch all branches
         const data = await getBranches({ page: 1, limit: 100 });
 
-        // Filter branches where user is founder or member
-        // For now, we can only check founder - in future, check members array
-        const userBranches = data.branches.filter(
-          (branch) => branch.foundedBy?.id === user.id
-        );
+        // For each branch, check if user is a member
+        const userBranchesPromises = data.branches.map(async (branch) => {
+          try {
+            const members = await getBranchMembers(branch.id);
+            const userMembership = members.find(m => m.userId === user.id);
+
+            if (userMembership && userMembership.status === 'active') {
+              return {
+                ...branch,
+                userRole: userMembership.role,
+                userStatus: userMembership.status,
+                joinedAt: userMembership.joinedAt,
+              } as BranchMembershipInfo;
+            }
+            return null;
+          } catch (err) {
+            // If we can't fetch members, skip this branch
+            console.warn(`Could not fetch members for branch ${branch.id}`);
+            return null;
+          }
+        });
+
+        const userBranchesResults = await Promise.all(userBranchesPromises);
+        const userBranches = userBranchesResults.filter((b): b is BranchMembershipInfo => b !== null);
 
         setBranches(userBranches);
       } catch (err: any) {
@@ -120,6 +140,19 @@ export default function MyBranchesTab() {
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <h4 className="text-lg font-semibold text-gray-900">{branch.surname}</h4>
+                  {branch.userRole && (
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      branch.userRole === 'guru'
+                        ? 'bg-purple-100 text-purple-800'
+                        : branch.userRole === 'editor'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {branch.userRole === 'guru' ? 'Guru' :
+                       branch.userRole === 'editor' ? 'Editor' :
+                       branch.userRole === 'member' ? 'Member' : branch.userRole}
+                    </span>
+                  )}
                   {branch.foundedBy?.id === user?.id && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                       {t('profile.branches.founder')}

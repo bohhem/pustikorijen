@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import Layout from '../components/layout/Layout';
 import { useToast } from '../contexts/ToastContext';
-import { getBranchById } from '../api/branch';
+import { useAuth } from '../contexts/AuthContext';
+import { getBranchById, getBranchMembers } from '../api/branch';
 import { getPersonById, getPersonsByBranch, updatePerson } from '../api/person';
 import type { Branch } from '../types/branch';
 import type { Person, UpdatePersonInput } from '../types/person';
@@ -14,11 +15,13 @@ export default function EditPerson() {
   const navigate = useNavigate();
   const toast = useToast();
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [branch, setBranch] = useState<Branch | null>(null);
   const [persons, setPersons] = useState<Person[]>([]);
+  const [canShareLedger, setCanShareLedger] = useState(false);
 
   const {
     register,
@@ -30,24 +33,27 @@ export default function EditPerson() {
     defaultValues: {
       isAlive: true,
       privacyLevel: 'family_only',
+      shareInLedger: false,
     },
   });
 
   const isAlive = watch('isAlive', true);
+  const shareInLedger = watch('shareInLedger', false);
 
   useEffect(() => {
     if (branchId && personId) {
-      loadData();
+      void loadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [branchId, personId]);
+  }, [branchId, personId, user?.id, user?.globalRole]);
 
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [branchData, personsData, personData] = await Promise.all([
+      const [branchData, personsData, membersData, personData] = await Promise.all([
         getBranchById(branchId!),
         getPersonsByBranch(branchId!),
+        getBranchMembers(branchId!),
         getPersonById(branchId!, personId!),
       ]);
 
@@ -59,6 +65,12 @@ export default function EditPerson() {
 
       setBranch(branchData);
       setPersons(personsData);
+      const isBranchGuru = membersData.some(
+        (member) =>
+          member.userId === user?.id && member.role === 'guru' && member.status === 'active'
+      );
+      const isElevated = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
+      setCanShareLedger(isBranchGuru || isElevated);
 
       const formatDate = (value?: string | null) => {
         if (!value) return undefined;
@@ -81,6 +93,8 @@ export default function EditPerson() {
         motherId: personData.motherId || '',
         isAlive: personData.isAlive !== false,
         privacyLevel: (personData.privacyLevel as UpdatePersonInput['privacyLevel']) || 'family_only',
+        shareInLedger: personData.shareInLedger ?? false,
+        estimatedBirthYear: personData.estimatedBirthYear ?? undefined,
       });
     } catch (error: any) {
       console.error('Failed to load person for editing:', error);
@@ -96,6 +110,11 @@ export default function EditPerson() {
 
     setIsSubmitting(true);
     try {
+      const normalizedEstimatedBirthYear =
+        typeof data.estimatedBirthYear === 'number' && !Number.isNaN(data.estimatedBirthYear)
+          ? data.estimatedBirthYear
+          : null;
+
       const payload: UpdatePersonInput = {
         ...data,
         birthDate: data.birthDate ? data.birthDate : null,
@@ -106,6 +125,9 @@ export default function EditPerson() {
         biography: data.biography?.trim() ? data.biography.trim() : null,
         privacyLevel: data.privacyLevel || 'family_only',
         isAlive: data.isAlive ?? true,
+        shareInLedger: canShareLedger ? data.shareInLedger : false,
+        estimatedBirthYear:
+          canShareLedger && data.shareInLedger ? normalizedEstimatedBirthYear : null,
       };
 
       if (payload.isAlive) {
@@ -390,6 +412,44 @@ export default function EditPerson() {
                   <option value="family_only">{t('persons.familyOnly')} - {t('persons.familyOnlyDesc')}</option>
                   <option value="private">{t('persons.private')} - {t('persons.privateDesc')}</option>
                 </select>
+              </div>
+            </div>
+
+            <div className="space-y-4 pt-6 border-t">
+              <h3 className="text-lg font-semibold text-gray-900">{t('persons.ledgerSectionTitle')}</h3>
+              <div className="flex items-start gap-3">
+                <input
+                  {...register('shareInLedger')}
+                  type="checkbox"
+                  disabled={!canShareLedger}
+                  className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{t('persons.shareInLedgerLabel')}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {canShareLedger ? t('persons.shareInLedgerHelp') : t('persons.shareInLedgerDisabled')}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('persons.estimatedBirthYear')}
+                </label>
+                <input
+                  {...register('estimatedBirthYear', {
+                    valueAsNumber: true,
+                    min: { value: 1600, message: t('persons.estimatedBirthYearRange') },
+                    max: { value: 2200, message: t('persons.estimatedBirthYearRange') },
+                  })}
+                  type="number"
+                  disabled={!shareInLedger || !canShareLedger}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-2 border"
+                  placeholder="1990"
+                />
+                <p className="text-xs text-gray-500 mt-1">{t('persons.estimatedBirthYearHelp')}</p>
+                {errors.estimatedBirthYear && (
+                  <p className="mt-1 text-sm text-red-600">{errors.estimatedBirthYear.message}</p>
+                )}
               </div>
             </div>
 

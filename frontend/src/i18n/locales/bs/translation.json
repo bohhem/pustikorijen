@@ -75,10 +75,11 @@
     "manageProfile": "Upravljajte svojim profilom i adresama",
     "pendingRequests": {
       "title": "Zahtjevi na čekanju",
-      "noPending": "Nema zahtjeva na čekanju",
-      "joinRequest": "Zahtjev za pridruživanje",
-      "linkRequest": "Zahtjev za povezivanje",
-      "yourRequest": "Vaš zahtjev",
+    "noPending": "Nema zahtjeva na čekanju",
+    "joinRequest": "Zahtjev za pridruživanje",
+    "linkRequest": "Zahtjev za povezivanje",
+    "claimRequest": "Zahtjev za prepoznavanje",
+    "yourRequest": "Vaš zahtjev",
       "branch": "grana",
       "from": "Od",
       "person": "Osoba",
@@ -166,7 +167,72 @@
     "linkApprovalFailed": "Neuspješno odobravanje veze.",
     "linkRejected": "Veza je odbijena.",
     "linkRejectionFailed": "Neuspješno odbijanje veze.",
-    "linkedNotice": "Ova osoba potiče iz porodice {{branch}}. Osnovni podaci se uređuju tamo."
+    "linkedNotice": "Ova osoba potiče iz porodice {{branch}}. Osnovni podaci se uređuju tamo.",
+    "edit": {
+      "openButton": "Uredi granu",
+      "title": "Uredi podatke za granu {{branch}}",
+      "subtitle": "Samo gurui i SuperGurui mogu mijenjati informacije o grani.",
+      "descriptionLabel": "Opis grane",
+      "descriptionHelp": "Podijelite kontekst, historiju ili očekivanja za članove (opcionalno).",
+      "visibilityLabel": "Nivo privatnosti",
+      "visibilityHelp": "Odredite ko može vidjeti ovu granu i njene osobe.",
+      "currentLocation": "Trenutna lokacija",
+      "locationUnknown": "Lokacija nije postavljena",
+      "locationHint": "Odaberite tačan entitet/kanton/grad radi boljeg pretraživanja i pozivnica.",
+      "locationTitle": "Ažuriraj lokaciju grane",
+      "locationDescription": "Ispravite zvaničnu lokaciju ako se porodica preselila ili je pogrešno evidentirana.",
+      "noChanges": "Unesite barem jednu izmjenu prije spremanja.",
+      "generalError": "Greška pri ažuriranju grane. Pokušajte ponovo.",
+      "save": "Sačuvaj promjene",
+      "saving": "Spremanje...",
+      "success": "Grana je uspješno ažurirana."
+    },
+    "claims": {
+      "title": "Zahtjevi za identitet",
+      "subtitle": "Odobrite ili odbijte zahtjeve rodbine koja se prepoznaje u stablu.",
+      "empty": "Nema zahtjeva za identitet.",
+      "approve": "Odobri",
+      "approved": "Zahtjev je odobren",
+      "reject": "Odbij",
+      "rejected": "Zahtjev je odbijen",
+      "resolveError": "Neuspješno ažuriranje zahtjeva",
+      "requestedBy": "Zahtjev poslao/la {{user}}"
+    }
+  },
+  "connectedFamilies": {
+    "title": "Povezane porodice",
+    "subtitle": "Porodice koje dijele odobrene veze sa ovom granom.",
+    "viewMode": {
+      "cards": "Kartice",
+      "graph": "Graf"
+    },
+    "filter": {
+      "all": "Sve",
+      "approved": "Odobrene",
+      "pending": "Na čekanju"
+    },
+    "loadError": "Greška pri učitavanju povezanih porodica.",
+    "empty": "Još nema povezanih porodica. Odobrite zahtjeve kako biste stvorili mostove.",
+    "verified": "Verifikovana",
+    "viewBranch": "Otvori granu",
+    "thisBranch": "Ova grana",
+    "graphHint": "Kliknite na granu za detalje",
+    "pendingCount": "{{count}} na čekanju",
+    "stats": {
+      "approved": "{{count}} odobreno",
+      "pending": "{{count}} na čekanju"
+    },
+    "linkedSince": "Povezano od {{date}}",
+    "lastUpdated": "Ažurirano {{date}}",
+    "bridgesHeading": "Mostovi",
+    "noBridges": "Još nema mostova.",
+    "homeBranch": "Matična grana: {{branch}}",
+    "displayAs": "Prikazano kao {{name}}",
+    "bridgeStatus": {
+      "approved": "Odobreno",
+      "pending": "Na čekanju"
+    },
+    "reviewPending": "Pregledaj {{count}} na čekanju"
   },
   "personList": {
     "searchPlaceholder": "Pretraži po imenu...",
@@ -198,6 +264,20 @@
     "visibilityFamilyOnly": "Samo porodica - Samo članovi mogu vidjeti",
     "visibilityPrivate": "Privatno - Samo putem pozivnice",
     "creating": "Kreiranje..."
+  },
+  "ledger": {
+    "title": "Javni registar",
+    "subtitle": "Gurui dijele osnovne podatke kako bi izbjegli dupliranje.",
+    "searchPlaceholder": "Pretraga po imenu ili grani...",
+    "loadError": "Greška pri učitavanju registra",
+    "empty": "Nema javnih zapisa.",
+    "noRegionSelected": "Odaberite regiju da vidite osobe.",
+    "unknownLocation": "Nepoznata lokacija",
+    "claimAction": "To sam ja",
+    "claimModalTitle": "Poveži se sa postojećom granom",
+    "claimModalSubtitle": "Otvorit ćemo stranicu grane kako biste poslali zahtjev.",
+    "claimModalBody": "Tamo ćete pronaći detalje za {{branch}} i poslati zahtjev bez ponovnog unosa podataka.",
+    "goToBranch": "Otvori granu"
   },
   "geoSelector": {
     "title": "Lokacija",
@@ -254,6 +334,14 @@
     "publicDesc": "Svi mogu vidjeti",
     "familyOnlyDesc": "Samo članovi grane",
     "privateDesc": "Samo ja i Gurui",
+    "ledgerSectionTitle": "Javni registar",
+    "shareInLedgerLabel": "Objavi ovu osobu u javnom registru",
+    "shareInLedgerHelp": "Vidljivo drugim guruima kako bi se izbjegli dupli unosi.",
+    "shareInLedgerDisabled": "Samo gurui mogu dijeliti u registar.",
+    "estimatedBirthYear": "Procijenjena godina rođenja",
+    "estimatedBirthYearHelp": "Koristite kada nema tačnog datuma rođenja kako bismo prikazali približnu starost.",
+    "estimatedBirthYearRange": "Unesite godinu između 1600 i 2200.",
+    "ledgerSharedBadge": "Javni registar",
     "father": "Otac",
     "mother": "Majka",
     "children": "Djeca",
@@ -325,7 +413,27 @@
     "in": "u",
     "editPerson": "Uredi",
     "deletePerson": "Obriši",
-    "confirmDelete": "Jeste li sigurni da želite obrisati ovu osobu? Ova radnja je nepovratna."
+    "confirmDelete": "Jeste li sigurni da želite obrisati ovu osobu? Ova radnja je nepovratna.",
+    "movePerson": "Premjesti",
+    "moveModalTitle": "Premjesti osobu u drugu granu",
+    "moveModalSubtitle": "Odaberite odredišnu granu. Cijeli profil će biti prebačen.",
+    "moveSearch": "Pretraga grana",
+    "moveSearchPlaceholder": "Prezime ili grad...",
+    "moveSelectBranch": "Odaberite odredišnu granu",
+    "moveNoBranches": "Nema pronađenih grana",
+    "moveNotes": "Bilješka za Gurue (opcionalno)",
+    "moveConfirm": "Premjesti osobu",
+    "moveSuccess": "Osoba je uspješno premještena",
+    "moveError": "Greška pri premještanju osobe",
+    "claimButton": "To sam ja",
+    "claimPrompt": "Napišite kratku poruku za gurua grane (opcionalno)",
+    "claimSuccess": "Zahtjev je poslan. Guru će ga uskoro pregledati.",
+    "claimError": "Greška pri slanju zahtjeva",
+    "claimStatus": {
+      "pending": "Vaš zahtjev čeka odobrenje",
+      "approved": "Vaš zahtjev je odobren",
+      "rejected": "Vaš zahtjev je odbijen"
+    }
   },
   "businessAddresses": {
     "guruTitle": "Poslovna prisutnost",
@@ -366,6 +474,54 @@
       "markPrimary": "Postavi kao primarnu",
       "notes": "Bilješke",
       "empty": "Još nema poslovnih adresa."
+    }
+  },
+  "placeholders": {
+    "title": "Nedostajuća mjesta",
+    "subtitle": "Brzi unosi koji pomažu dijaspori da se poveže sa granom.",
+    "empty": "Još nema unosa.",
+    "public": "Javno",
+    "private": "Skriveno",
+    "noRelation": "Nepoznata veza",
+    "claimCount": "{{count}} zahtjevaa",
+    "createdBy": "Dodao/la {{name}}",
+    "loadError": "Greška pri učitavanju unosa",
+    "modalDescription": "Opišite osobu kako bi se rodbina mogla prepoznati.",
+    "claimInstructions": "Objasnite ko ste i kako ste povezani s ovom granom.",
+    "form": {
+      "displayName": "Ime prikaza",
+      "relationHint": "Povezanost",
+      "approxYear": "Procijenjena godina rođenja",
+      "notes": "Bilješke",
+      "isPublic": "Vidljivo svima",
+      "message": "Poruka"
+    },
+    "actions": {
+      "add": "Dodaj unos",
+      "claim": "Ja sam ovo",
+      "submitClaim": "Pošalji zahtjev"
+    },
+    "messages": {
+      "createSuccess": "Unos je kreiran",
+      "createError": "Greška pri kreiranju unosa",
+      "claimSuccess": "Zahtjev je poslan Guruima",
+      "claimError": "Greška pri slanju zahtjeva",
+      "claimUpdated": "Zahtjev je ažuriran"
+    },
+    "claims": {
+      "title": "Pristigli zahtjevi",
+      "subtitle": "Pregledajte zahtjeve rodbine koja traži unos.",
+      "empty": "Još nema zahtjeva.",
+      "loadError": "Greška pri učitavanju zahtjeva",
+      "resolveError": "Greška pri izmjeni zahtjeva",
+      "user": "Korisnik",
+      "placeholder": "Unos",
+      "message": "Poruka",
+      "status": "Status",
+      "actions": "Akcije",
+      "unknownUser": "Nepoznat korisnik",
+      "noMessage": "Bez poruke",
+      "resolved": "Riješeno"
     }
   },
   "partnerships": {

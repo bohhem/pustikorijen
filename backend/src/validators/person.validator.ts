@@ -8,6 +8,14 @@ const dateStringSchema = z
   .optional()
   .or(z.literal(null));
 
+const estimatedBirthYearSchema = z
+  .number()
+  .int()
+  .min(1600)
+  .max(2200)
+  .optional()
+  .nullable();
+
 export const createPersonSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(100),
   lastName: z.string().min(1, 'Last name is required').max(100),
@@ -22,6 +30,8 @@ export const createPersonSchema = z.object({
   motherId: z.string().uuid().optional().nullable(),
   isAlive: z.boolean().default(true),
   privacyLevel: z.enum(['public', 'family_only', 'private']).default('family_only'),
+  shareInLedger: z.boolean().optional().default(false),
+  estimatedBirthYear: estimatedBirthYearSchema,
 });
 
 export const updatePersonSchema = z.object({
@@ -38,6 +48,8 @@ export const updatePersonSchema = z.object({
   motherId: z.string().uuid().optional().nullable(),
   isAlive: z.boolean().optional(),
   privacyLevel: z.enum(['public', 'family_only', 'private']).optional(),
+  shareInLedger: z.boolean().optional(),
+  estimatedBirthYear: estimatedBirthYearSchema,
 });
 
 export type CreatePersonInput = z.infer<typeof createPersonSchema>;

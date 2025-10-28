@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, type MouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getPersonsByBranch } from '../api/person';
+import { getPersonsByBranch, getPersonById, claimPerson } from '../api/person';
 import { getBranchById, getMultiBranchTree } from '../api/branch';
 import { getBranchPartnerships } from '../api/partnership';
 import { useToast } from '../contexts/ToastContext';
@@ -25,6 +25,8 @@ export default function FamilyTree() {
   const [multiBranchView, setMultiBranchView] = useState(false);
   const [multiBranchData, setMultiBranchData] = useState<MultiBranchTreeResponse | null>(null);
   const [loadingMultiBranch, setLoadingMultiBranch] = useState(false);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [selectedLoading, setSelectedLoading] = useState(false);
 
   const orderedPartnerData = useMemo(
     () => orderPersonsByPartnerPairing(persons, partnerships),
@@ -75,12 +77,38 @@ export default function FamilyTree() {
     setMultiBranchView(!multiBranchView);
   };
 
-  const handlePersonSelect = (person: Person | any) => {
-    setSelectedPerson(person as Person);
+  const handlePersonSelect = async (person: Person | any) => {
+    if (!branchId) return;
+    setSelectedLoading(true);
+    try {
+      const detail = await getPersonById(branchId, person.id);
+      setSelectedPerson(detail);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || t('personDetail.notFound'));
+    } finally {
+      setSelectedLoading(false);
+    }
   };
 
   const closeSelectedPanel = () => setSelectedPerson(null);
   const preventOverlayClose = (event: MouseEvent) => event.stopPropagation();
+
+  const handleClaimSelected = async () => {
+    if (!branchId || !selectedPerson) return;
+    const message = window.prompt(t('personDetail.claimPrompt') || '', '');
+    setClaimingId(selectedPerson.id);
+    try {
+      await claimPerson(branchId, selectedPerson.id, message || undefined);
+      toast.success(t('personDetail.claimSuccess'));
+      await loadData();
+      const detail = await getPersonById(branchId, selectedPerson.id);
+      setSelectedPerson(detail);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || t('personDetail.claimError'));
+    } finally {
+      setClaimingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -104,13 +132,17 @@ export default function FamilyTree() {
         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
         <div
           className={`absolute top-16 left-1/2 w-full max-w-4xl px-4 transform -translate-x-1/2 transition-transform duration-300 ease-out ${
-            selectedPerson ? 'translate-y-0' : '-translate-y-6'
+            selectedPerson || selectedLoading ? 'translate-y-0' : '-translate-y-6'
           }`}
           onClick={preventOverlayClose}
           role="dialog"
           aria-modal={selectedPerson ? 'true' : 'false'}
         >
-          {selectedPerson && (
+          {selectedLoading ? (
+            <div className="bg-white shadow-2xl rounded-lg p-6 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+            </div>
+          ) : selectedPerson ? (
             <div className="bg-white shadow-2xl rounded-lg p-6">
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold text-gray-900">{t('tree.selectedPersonTitle')}</h3>
@@ -121,6 +153,16 @@ export default function FamilyTree() {
                   >
                     {t('personDetail.editPerson')}
                   </Link>
+                  {selectedPerson.canBeClaimed && (
+                    <button
+                      type="button"
+                      onClick={handleClaimSelected}
+                      disabled={claimingId === selectedPerson.id}
+                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60"
+                    >
+                      {claimingId === selectedPerson.id ? t('common.loading') : t('personDetail.claimButton')}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={closeSelectedPanel}
@@ -271,7 +313,7 @@ export default function FamilyTree() {
                 </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import api from '../lib/axios';
-import type { GeoState, GeoRegion, GeoCity } from '../types/geo';
+import type { GeoState, GeoRegion, GeoCity, PeopleLedgerEntry } from '../types/geo';
 
 export async function getGeoStates(): Promise<GeoState[]> {
   const response = await api.get('/geo/states');
@@ -24,4 +24,11 @@ export async function getCitiesByState(stateId: string): Promise<GeoCity[]> {
 export async function getGeoCity(cityId: string): Promise<GeoCity> {
   const response = await api.get(`/geo/cities/${cityId}`);
   return response.data.city;
+}
+
+export async function getPeopleLedger(regionId: string, params?: { q?: string; limit?: number }): Promise<PeopleLedgerEntry[]> {
+  const response = await api.get(`/geo/regions/${regionId}/people-ledger`, {
+    params,
+  });
+  return response.data.ledger ?? [];
 }

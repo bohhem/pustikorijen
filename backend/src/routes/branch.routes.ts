@@ -18,6 +18,10 @@ import {
   rejectPersonLinkRequest,
   getMultiBranchTreeController,
 } from '../controllers/branch.controller';
+import {
+  listPersonClaimsController,
+  resolvePersonClaimController,
+} from '../controllers/person-claim.controller';
 import { authenticateToken, optionalAuth } from '../middleware/auth.middleware';
 import {
   listBranchPlaceholders,
@@ -37,6 +41,7 @@ router.get('/:id/connected-families', authenticateToken, getConnectedFamiliesCon
 router.get('/:id/tree/connected', authenticateToken, getMultiBranchTreeController); // Get multi-branch tree
 router.get('/:id/placeholders', optionalAuth, listBranchPlaceholders);
 router.get('/:id/placeholders/claims', authenticateToken, listBranchPlaceholderClaims);
+router.get('/:id/person-claims', authenticateToken, listPersonClaimsController);
 
 // Protected routes (require authentication)
 router.post('/', authenticateToken, create); // Create branch
@@ -56,5 +61,6 @@ router.get('/:id/person-links', authenticateToken, listPersonLinksController);
 router.post('/:id/person-links', authenticateToken, createPersonLink);
 router.post('/:id/person-links/:linkId/approve', authenticateToken, approvePersonLinkRequest);
 router.post('/:id/person-links/:linkId/reject', authenticateToken, rejectPersonLinkRequest);
+router.post('/:id/person-claims/:claimId/resolve', authenticateToken, resolvePersonClaimController);
 
 export default router;

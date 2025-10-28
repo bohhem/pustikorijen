@@ -13,6 +13,22 @@ export const createBranchSchema = z.object({
 export type CreateBranchInput = z.infer<typeof createBranchSchema>;
 
 /**
+ * Update branch schema
+ */
+export const updateBranchSchema = z
+  .object({
+    description: z.string().max(5000).optional().nullable(),
+    visibility: z.enum(['public', 'family_only', 'private']).optional(),
+    geoCityId: z.string().min(1, 'City selection is required').optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided',
+    path: [],
+  });
+
+export type UpdateBranchInput = z.infer<typeof updateBranchSchema>;
+
+/**
  * Get branches query schema
  */
 export const getBranchesSchema = z.object({
@@ -72,3 +88,10 @@ export const personLinkSearchQuerySchema = z.object({
 });
 
 export type PersonLinkSearchQuery = z.infer<typeof personLinkSearchQuerySchema>;
+
+export const movePersonSchema = z.object({
+  targetBranchId: z.string().min(1, 'Target branch is required'),
+  notes: z.string().max(1000).optional().nullable(),
+});
+
+export type MovePersonInput = z.infer<typeof movePersonSchema>;

@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import type { branch_person_links as BranchPersonLink } from '@prisma/client';
 import prisma from '../utils/prisma';
 import type { JwtPayload } from '../utils/jwt';
 
@@ -251,11 +252,28 @@ export async function requestPersonLink(params: {
     throw new Error('Person belongs to a different region');
   }
 
+  // Check for existing link to target branch
   if (person.branch_person_links.length > 0) {
     const existing = person.branch_person_links[0];
     if (existing.status === LINK_APPROVED_STATUS || PENDING_STATUSES.includes(existing.status as typeof PENDING_STATUSES[number])) {
       throw new Error('A link request already exists for this person and branch');
     }
+  }
+
+  // Check for reverse link (from target branch to source branch)
+  const reverseLink = await prisma.branchPersonLink.findFirst({
+    where: {
+      person_id: personId,
+      branch_id: person.family_branches.branch_id,
+      source_branch_id: branchId,
+      status: {
+        not: LINK_REJECTED_STATUS,
+      },
+    },
+  });
+
+  if (reverseLink) {
+    throw new Error('A link request already exists in the opposite direction for this person and these branches');
   }
 
   const link = await prisma.branchPersonLink.create({
@@ -302,12 +320,12 @@ export async function requestPersonLink(params: {
   return formatLink(link);
 }
 
-export async function listPersonLinks(params: { branchId: string; status?: string | null }) {
+export async function listPersonLinks(params: { branchId: string; status?: string | null; includeSource?: boolean }) {
   const { branchId, status } = params;
 
   const links = (await prisma.branchPersonLink.findMany({
     where: {
-      branch_id: branchId,
+      OR: [{ branch_id: branchId }, { source_branch_id: branchId }],
       ...(status ? { status } : {}),
     },
     include: {
@@ -381,6 +399,16 @@ export async function listPersonLinks(params: { branchId: string; status?: strin
   return links.map((link) => formatLink(link));
 }
 
+function hasAlreadyApproved(link: BranchPersonLink, branchId: string, userId: string) {
+  if (link.source_branch_id === branchId && link.source_approved_by === userId) {
+    return true;
+  }
+  if (link.branch_id === branchId && link.target_approved_by === userId) {
+    return true;
+  }
+  return false;
+}
+
 export async function approvePersonLink(params: {
   linkId: string;
   branchId: string;
@@ -414,6 +442,10 @@ export async function approvePersonLink(params: {
 
   await ensureGuru(branchId, actor.userId);
 
+  if (hasAlreadyApproved(link, branchId, actor.userId)) {
+    throw new Error('Already approved this link from this branch');
+  }
+
   const updateData: Record<string, unknown> = {};
 
   if (link.status === LINK_REJECTED_STATUS) {
@@ -435,10 +467,8 @@ export async function approvePersonLink(params: {
     data: {
       ...updateData,
       status:
-        (isSourceBranch && link.target_approved_by) ||
-        (isTargetBranch && link.source_approved_by) ||
-        (updateData.source_approved_by && (link.target_approved_by || updateData.target_approved_by)) ||
-        (updateData.target_approved_by && (link.source_approved_by || updateData.source_approved_by))
+        (isSourceBranch && (link.target_approved_by || updateData.target_approved_by)) ||
+        (isTargetBranch && (link.source_approved_by || updateData.source_approved_by))
           ? LINK_APPROVED_STATUS
           : link.status,
     },
