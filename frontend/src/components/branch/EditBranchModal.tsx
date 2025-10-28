@@ -91,9 +91,10 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-4" onClick={handleOverlayClick}>
-      <div className="bg-white sm:rounded-2xl rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden max-h-[90vh] sm:max-h-[85vh] overflow-y-auto">
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-start justify-between sticky top-0 bg-white z-10">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
+      <div className="bg-white sm:rounded-2xl rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden max-h-[95vh] flex flex-col">
+        {/* Sticky Header */}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex items-start justify-between bg-white flex-shrink-0">
           <div className="flex-1 min-w-0 mr-2">
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">{t('branchDetail.edit.title', { branch: branch.surname })}</h3>
             <p className="text-xs sm:text-sm text-gray-500">{t('branchDetail.edit.subtitle')}</p>
@@ -108,7 +109,9 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+        {/* Scrollable Form Content */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+          <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
           <div>
             <label className="block text-sm font-medium text-gray-700">
               {t('branchDetail.edit.descriptionLabel')}
@@ -166,8 +169,10 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
               {error}
             </div>
           )}
+          </div>
 
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-gray-100 pt-4">
+          {/* Sticky Footer with Buttons */}
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 border-t border-gray-100 px-4 sm:px-6 py-4 bg-white flex-shrink-0">
             <button
               type="button"
               onClick={onClose}
