@@ -28,6 +28,8 @@ export default function FamilyTreeView({ persons, partnerships, onPersonSelect }
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [selectedGeneration, setSelectedGeneration] = useState<number | null>(null);
+  const [showFilter, setShowFilter] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
 
   useEffect(() => {
     if (persons.length === 0) return;
@@ -173,7 +175,7 @@ export default function FamilyTreeView({ persons, partnerships, onPersonSelect }
   ).sort((a, b) => a - b);
 
   return (
-    <div className="w-full h-[700px] bg-gray-50 rounded-lg border border-gray-200">
+    <div className="w-full h-[500px] sm:h-[700px] bg-gray-50 rounded-lg border border-gray-200">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -188,8 +190,19 @@ export default function FamilyTreeView({ persons, partnerships, onPersonSelect }
         <Background color="#e5e7eb" gap={16} />
         <Controls />
 
-        <Panel position="top-left" className="bg-white rounded-lg shadow-lg p-4 space-y-2">
-          <h3 className="font-semibold text-gray-900 text-sm mb-2">Filter by Generation</h3>
+        {/* Mobile Filter Toggle */}
+        <Panel position="top-left" className="sm:hidden">
+          <button
+            onClick={() => setShowFilter(!showFilter)}
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            aria-label="Toggle filter"
+          >
+            {showFilter ? '✕' : '☰'}
+          </button>
+        </Panel>
+
+        <Panel position="top-left" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 space-y-2 max-w-[300px] ${showFilter ? 'block' : 'hidden sm:block'}`}>
+          <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-2">Filter by Generation</h3>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleGenerationFilter(null)}
@@ -220,8 +233,19 @@ export default function FamilyTreeView({ persons, partnerships, onPersonSelect }
           </div>
         </Panel>
 
-        <Panel position="top-right" className="bg-white rounded-lg shadow-lg p-4">
-          <h3 className="font-semibold text-gray-900 text-sm mb-2">Legend</h3>
+        {/* Mobile Legend Toggle */}
+        <Panel position="top-right" className="sm:hidden">
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            aria-label="Toggle legend"
+          >
+            {showLegend ? '✕' : 'ℹ'}
+          </button>
+        </Panel>
+
+        <Panel position="top-right" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 max-w-[200px] ${showLegend ? 'block' : 'hidden sm:block'}`}>
+          <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-2">Legend</h3>
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-indigo-500"></div>

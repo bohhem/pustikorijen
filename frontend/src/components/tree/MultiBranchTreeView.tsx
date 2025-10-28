@@ -30,6 +30,8 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [viewMode, setViewMode] = useState<ViewMode>('branches');
+  const [showControls, setShowControls] = useState(false);
+  const [showLegend, setShowLegend] = useState(false);
 
   useEffect(() => {
     if (!treeData) return;
@@ -206,7 +208,7 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
     treeData.connectedBranches.reduce((sum, b) => sum + b.persons.length, 0);
 
   return (
-    <div className="w-full h-[700px] bg-gray-50 rounded-lg border border-gray-200">
+    <div className="w-full h-[500px] sm:h-[700px] bg-gray-50 rounded-lg border border-gray-200 relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -221,42 +223,53 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
         <Background color="#e5e7eb" gap={16} />
         <Controls />
 
+        {/* Mobile Control Toggle */}
+        <Panel position="top-left" className="sm:hidden">
+          <button
+            onClick={() => setShowControls(!showControls)}
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            aria-label="Toggle controls"
+          >
+            {showControls ? '✕' : '☰'}
+          </button>
+        </Panel>
+
         {/* View Mode Controls */}
-        <Panel position="top-left" className="bg-white rounded-lg shadow-lg p-4 space-y-2">
+        <Panel position="top-left" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 space-y-2 max-w-[280px] ${showControls ? 'block' : 'hidden sm:block'}`}>
           <h3 className="font-semibold text-gray-900 text-sm mb-2">View Mode</h3>
           <div className="flex flex-col gap-2">
             <button
               onClick={() => handleViewModeChange('network')}
-              className={`px-3 py-2 rounded text-xs font-medium transition ${
+              className={`px-3 py-2 rounded text-xs font-medium transition touch-manipulation ${
                 viewMode === 'network'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               title="Network view - See all branches"
             >
-              🌐 Network ({branchCount} branches)
+              🌐 Network ({branchCount})
             </button>
             <button
               onClick={() => handleViewModeChange('branches')}
-              className={`px-3 py-2 rounded text-xs font-medium transition ${
+              className={`px-3 py-2 rounded text-xs font-medium transition touch-manipulation ${
                 viewMode === 'branches'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               title="Branch view - See all persons in branches"
             >
-              🌳 Branches ({totalPersons} persons)
+              🌳 Branches ({totalPersons})
             </button>
             <button
               onClick={() => handleViewModeChange('focus')}
-              className={`px-3 py-2 rounded text-xs font-medium transition ${
+              className={`px-3 py-2 rounded text-xs font-medium transition touch-manipulation ${
                 viewMode === 'focus'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
               title="Person focus - Zoom to individual person"
             >
-              👤 Person Focus
+              👤 Focus
             </button>
           </div>
 
@@ -277,9 +290,20 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
           </div>
         </Panel>
 
+        {/* Mobile Legend Toggle */}
+        <Panel position="top-right" className="sm:hidden">
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            aria-label="Toggle legend"
+          >
+            {showLegend ? '✕' : 'ℹ'}
+          </button>
+        </Panel>
+
         {/* Legend */}
-        <Panel position="top-right" className="bg-white rounded-lg shadow-lg p-4">
-          <h3 className="font-semibold text-gray-900 text-sm mb-2">Legend</h3>
+        <Panel position="top-right" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 max-w-[200px] ${showLegend ? 'block' : 'hidden sm:block'}`}>
+          <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-2">Legend</h3>
           <div className="space-y-2 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-4 h-0.5 bg-indigo-500"></div>

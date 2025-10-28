@@ -36,7 +36,7 @@ export default function BridgePersonNode({ data }: BridgePersonNodeProps) {
   return (
     <div
       onClick={handleClick}
-      className="relative px-4 py-3 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg shadow-md border-2 border-amber-400 cursor-pointer hover:shadow-xl transition-all min-w-[180px] max-w-[220px]"
+      className="relative px-3 sm:px-4 py-2 sm:py-3 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-lg shadow-md border-2 border-amber-400 cursor-pointer hover:shadow-xl transition-all min-w-[140px] sm:min-w-[180px] max-w-[180px] sm:max-w-[220px] touch-manipulation"
       style={{
         animation: 'pulse-glow 2s ease-in-out infinite',
       }}
@@ -59,11 +59,11 @@ export default function BridgePersonNode({ data }: BridgePersonNodeProps) {
         <img
           src={person.profilePhotoUrl}
           alt={person.fullName}
-          className="w-12 h-12 rounded-full mx-auto mb-2 border-2 border-amber-400 object-cover"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mx-auto mb-2 border-2 border-amber-400 object-cover"
         />
       ) : (
-        <div className="w-12 h-12 rounded-full mx-auto mb-2 bg-amber-200 flex items-center justify-center border-2 border-amber-400">
-          <span className="text-amber-700 font-bold text-lg">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mx-auto mb-2 bg-amber-200 flex items-center justify-center border-2 border-amber-400">
+          <span className="text-amber-700 font-bold text-base sm:text-lg">
             {person.givenName?.[0] || person.fullName[0]}
           </span>
         </div>
@@ -71,25 +71,25 @@ export default function BridgePersonNode({ data }: BridgePersonNodeProps) {
 
       {/* Person Name */}
       <div className="text-center">
-        <div className="font-semibold text-gray-900 text-sm leading-tight">
+        <div className="font-semibold text-gray-900 text-xs sm:text-sm leading-tight">
           {person.givenName || person.fullName}
         </div>
         {person.surname && (
-          <div className="text-xs text-gray-600 font-medium">{person.surname}</div>
+          <div className="text-[10px] sm:text-xs text-gray-600 font-medium">{person.surname}</div>
         )}
         {person.maidenName && (
-          <div className="text-xs text-gray-500 italic">({person.maidenName})</div>
+          <div className="text-[10px] sm:text-xs text-gray-500 italic">({person.maidenName})</div>
         )}
       </div>
 
       {/* Life Span */}
       {getLifeSpan() && (
-        <div className="text-xs text-gray-500 text-center mt-1">{getLifeSpan()}</div>
+        <div className="text-[10px] sm:text-xs text-gray-500 text-center mt-1">{getLifeSpan()}</div>
       )}
 
       {/* Generation Badge */}
       {person.generation && (
-        <div className="absolute bottom-2 left-2 bg-amber-100 text-amber-800 text-xs px-1.5 py-0.5 rounded font-medium">
+        <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2 bg-amber-100 text-amber-800 text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded font-medium">
           {person.generation}
         </div>
       )}

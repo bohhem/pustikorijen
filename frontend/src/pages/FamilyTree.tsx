@@ -131,25 +131,25 @@ export default function FamilyTree() {
       >
         <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
         <div
-          className={`absolute top-16 left-1/2 w-full max-w-4xl px-4 transform -translate-x-1/2 transition-transform duration-300 ease-out ${
+          className={`absolute sm:top-16 top-0 left-1/2 w-full max-w-4xl sm:px-4 px-0 transform -translate-x-1/2 transition-transform duration-300 ease-out ${
             selectedPerson || selectedLoading ? 'translate-y-0' : '-translate-y-6'
-          }`}
+          } max-h-screen overflow-y-auto`}
           onClick={preventOverlayClose}
           role="dialog"
           aria-modal={selectedPerson ? 'true' : 'false'}
         >
           {selectedLoading ? (
-            <div className="bg-white shadow-2xl rounded-lg p-6 flex items-center justify-center">
+            <div className="bg-white shadow-2xl sm:rounded-lg rounded-none p-6 flex items-center justify-center min-h-[200px]">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
             </div>
           ) : selectedPerson ? (
-            <div className="bg-white shadow-2xl rounded-lg p-6">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">{t('tree.selectedPersonTitle')}</h3>
-                <div className="flex items-center gap-2">
+            <div className="bg-white shadow-2xl sm:rounded-lg rounded-none p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">{t('tree.selectedPersonTitle')}</h3>
+                <div className="flex items-center gap-2 flex-wrap">
                   <Link
                     to={`/branches/${branchId}/persons/${selectedPerson.id}/edit`}
-                    className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none min-w-[100px]"
                   >
                     {t('personDetail.editPerson')}
                   </Link>
@@ -158,7 +158,7 @@ export default function FamilyTree() {
                       type="button"
                       onClick={handleClaimSelected}
                       disabled={claimingId === selectedPerson.id}
-                      className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60"
+                      className="inline-flex items-center justify-center px-3 py-1.5 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 flex-1 sm:flex-none min-w-[100px]"
                     >
                       {claimingId === selectedPerson.id ? t('common.loading') : t('personDetail.claimButton')}
                     </button>
@@ -166,7 +166,7 @@ export default function FamilyTree() {
                   <button
                     type="button"
                     onClick={closeSelectedPanel}
-                    className="rounded-full p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="rounded-full p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 touch-manipulation"
                     aria-label={t('common.close')}
                   >
                     ✕
@@ -329,41 +329,42 @@ export default function FamilyTree() {
             <span className="mx-2">/</span>
             <span className="text-gray-900">{t('tree.title')}</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
                 {branch?.surname} {t('tree.title')}
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 {persons.length} {t('tree.peopleAcross')} {Math.max(...persons.map(p => p.generationNumber || 0), 0)} {t('tree.generations')}
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2 flex-wrap">
               <button
                 onClick={handleToggleMultiBranch}
                 disabled={loadingMultiBranch}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation"
               >
                 {loadingMultiBranch ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
-                    Loading...
+                    <span className="hidden sm:inline">Loading...</span>
                   </>
                 ) : (
                   <>
-                    {multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}
+                    <span className="hidden sm:inline">{multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}</span>
+                    <span className="sm:hidden">{multiBranchView ? '🌳 Single' : '🌐 Multi'}</span>
                   </>
                 )}
               </button>
               <Link
                 to={`/branches/${branchId}/persons`}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 flex-1 sm:flex-none min-w-[100px] touch-manipulation"
               >
                 {t('tree.viewList')}
               </Link>
               <Link
                 to={`/branches/${branchId}/persons/create`}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none min-w-[100px] touch-manipulation"
               >
                 {t('persons.create')}
               </Link>
