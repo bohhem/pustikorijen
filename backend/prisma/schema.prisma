@@ -173,6 +173,10 @@ model branch_person_links {
   source_approved_at                               DateTime?
   target_approved_by                               String?
   target_approved_at                               DateTime?
+  is_primary_bridge                                Boolean         @default(false)
+  primary_set_by                                   String?
+  primary_set_at                                   DateTime?
+  display_generation_override                      Int?
   created_at                                       DateTime         @default(now())
   updated_at                                       DateTime         @updatedAt
   persons                                          persons          @relation(fields: [person_id], references: [person_id])
@@ -180,6 +184,7 @@ model branch_person_links {
   users_branch_person_links_requested_byTousers    users            @relation("branch_person_links_requested_byTousers", fields: [requested_by], references: [user_id])
   users_branch_person_links_source_approved_byTousers users?        @relation("branch_person_links_source_approved_byTousers", fields: [source_approved_by], references: [user_id])
   users_branch_person_links_target_approved_byTousers users?        @relation("branch_person_links_target_approved_byTousers", fields: [target_approved_by], references: [user_id])
+  users_branch_person_links_primary_set_byTousers  users?           @relation("branch_person_links_primary_set_byTousers", fields: [primary_set_by], references: [user_id])
 
   @@unique([person_id, branch_id])
   @@index([branch_id, status])
@@ -690,6 +695,7 @@ model users {
   branch_person_links_branch_person_links_requested_byTousers     branch_person_links[]    @relation("branch_person_links_requested_byTousers")
   branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
   branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
+  branch_person_links_branch_person_links_primary_set_byTousers   branch_person_links[]    @relation("branch_person_links_primary_set_byTousers")
   guru_business_addresses                                          guru_business_addresses?
   branch_placeholders_created                                      branch_placeholders[]     @relation("placeholder_creator")
   placeholder_claims                                               branch_placeholder_claims[] @relation("placeholder_claim_user")

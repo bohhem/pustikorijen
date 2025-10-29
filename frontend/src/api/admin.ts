@@ -3,6 +3,9 @@ import type {
   AdminRegionsResponse,
   AdminRegionOverview,
   AssignSuperGuruPayload,
+  BridgeIssueMutationResponse,
+  BridgeIssuesResponse,
+  BridgeIssueSummary,
   CreateAdminRegionPayload,
   UpdateAssignmentPayload,
 } from '../types/admin';
@@ -39,4 +42,33 @@ export async function removeSuperGuruAssignment(regionId: string, assignmentId: 
     `/admin/regions/${regionId}/assignments/${assignmentId}`,
   );
   return response.data.regions;
+}
+
+export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
+  const response = await api.get<BridgeIssuesResponse>('/admin/bridge-issues');
+  return response.data.issues;
+}
+
+export async function setPrimaryBridge(linkId: string): Promise<BridgeIssueSummary[]> {
+  const response = await api.post<BridgeIssueMutationResponse>(`/admin/bridge-issues/${linkId}/primary`);
+  return response.data.issues;
+}
+
+export async function clearPrimaryBridge(linkId: string): Promise<BridgeIssueSummary[]> {
+  const response = await api.delete<BridgeIssueMutationResponse>(`/admin/bridge-issues/${linkId}/primary`);
+  return response.data.issues;
+}
+
+export async function rejectBridgeLink(linkId: string, reason?: string): Promise<BridgeIssueSummary[]> {
+  const response = await api.post<BridgeIssueMutationResponse>(`/admin/bridge-issues/${linkId}/reject`, {
+    reason: reason ?? null,
+  });
+  return response.data.issues;
+}
+
+export async function updateBridgeGeneration(linkId: string, generationNumber: number | null): Promise<BridgeIssueSummary[]> {
+  const response = await api.post<BridgeIssueMutationResponse>(`/admin/bridge-issues/${linkId}/generation`, {
+    generationNumber,
+  });
+  return response.data.issues;
 }

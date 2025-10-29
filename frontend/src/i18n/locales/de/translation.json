@@ -226,6 +226,7 @@
     "lastUpdated": "Aktualisiert {{date}}",
     "bridgesHeading": "Brückenpersonen",
     "noBridges": "Noch keine Brückenpersonen.",
+    "primaryBridge": "Primäre Brücke",
     "homeBranch": "Heimatzweig: {{branch}}",
     "displayAs": "Angezeigt als {{name}}",
     "bridgeStatus": {
@@ -660,6 +661,7 @@
     "sections": {
       "overview": "Übersicht",
       "regions": "Regionen",
+      "bridgeIssues": "Brücken",
       "users": "Benutzer",
       "backups": "Backups",
       "activity": "Aktivität"
@@ -687,7 +689,43 @@
       "guruRemoved": "SuperGuru entfernt",
       "cannotRemoveLast": "Mindestens ein SuperGuru muss zugewiesen bleiben"
     },
-    "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze."
+    "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze.",
+    "bridgeIssues": {
+      "title": "Brückenverbindungen prüfen",
+      "subtitle": "Bereinige doppelte Verknüpfungen zwischen Zweigen und lege pro Paar eine primäre Brücke fest.",
+      "loadError": "Brückenverbindungen konnten nicht geladen werden.",
+      "empty": "Alle verbundenen Zweige besitzen bereits eine primäre Brücke.",
+      "focusPair": "Fokus: Ajanović und Kahvić haben derzeit {{count}} genehmigte Brücken.",
+      "missingPrimary": "Primäre Brücke fehlt",
+      "hasPrimary": "Primäre Brücke gesetzt",
+      "clearedPrimary": "Primäre Brücke entfernt",
+      "connectionCount": "{{count}} Verbindungen",
+      "pairLabel": "{{branchA}} ↔ {{branchB}}",
+      "setPrimary": "Als primär markieren",
+      "clearPrimary": "Primärstatus entfernen",
+      "rejectBridge": "Brücke ablehnen",
+      "confirmReject": "Diese Brücke ablehnen? Die Branch-Gurus können sie später erneut anlegen.",
+      "bridgeRejected": "Brückenverbindung abgelehnt",
+      "person": "Person",
+      "direction": "Richtung",
+      "directionValue": "{{source}} → {{target}}",
+      "status": "Status",
+      "notes": "Notizen",
+      "actions": "Aktionen",
+      "pendingBadge": "Ausstehend",
+      "approvedBadge": "Genehmigt",
+      "generationColumn": "Generation",
+      "homeGeneration": "Heimat: G{{number}}",
+      "overrideLabel": "Override",
+      "overrideHint": "Lege fest, mit welcher Generation dieser Zweig die Brücke anzeigt.",
+      "overridePlaceholder": "z. B. 3",
+      "saveOverride": "Override speichern",
+      "clearOverride": "Override löschen",
+      "overrideRequired": "Bitte eine Generation eingeben.",
+      "overrideOutOfRange": "Generation muss zwischen 1 und 30 liegen.",
+      "generationUpdated": "Generation aktualisiert",
+      "generationCleared": "Generation zurückgesetzt"
+    }
   },
   "profile": {
     "title": "Mein Profil",

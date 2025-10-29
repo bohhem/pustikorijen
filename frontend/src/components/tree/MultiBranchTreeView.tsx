@@ -153,6 +153,52 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
     // Create nodes for main branch (index 0)
     createBranchNodes(treeData.mainBranch, 0);
 
+    // Ensure bridge persons from connected branches also appear in main branch space
+    const existingNodeIds = new Set(newNodes.map((node) => node.id));
+    let bridgePlaceholderIndex = 0;
+
+    treeData.mainBranch.bridgeLinks?.forEach((bridgeLink) => {
+      const nodeId = `${treeData.mainBranch.branch.id}-${bridgeLink.personId}`;
+      if (existingNodeIds.has(nodeId)) {
+        return;
+      }
+
+      const person =
+        treeData.mainBranch.persons.find((p) => p.id === bridgeLink.personId) ??
+        treeData.connectedBranches
+          .flatMap((connectedBranch) => connectedBranch.persons)
+          .find((p) => p.id === bridgeLink.personId);
+
+      if (!person) {
+        return;
+      }
+
+      const displayGeneration = Math.max(
+        1,
+        bridgeLink.displayGenerationOverride ?? person.generationNumber ?? 1
+      );
+      const yPosition = (displayGeneration - 1) * VERTICAL_SPACING + 50;
+      const xPosition = bridgePlaceholderIndex * HORIZONTAL_SPACING + 100;
+      const displayPerson: MultiBranchTreePerson = {
+        ...person,
+        generationNumber: displayGeneration,
+        generation: `G${displayGeneration}`,
+      };
+      newNodes.push({
+        id: nodeId,
+        type: 'bridge',
+        position: { x: xPosition, y: yPosition },
+        data: {
+          person: displayPerson,
+          branchSurname: treeData.mainBranch.branch.surname,
+          onSelect: onPersonSelect,
+        },
+      });
+
+      existingNodeIds.add(nodeId);
+      bridgePlaceholderIndex += 1;
+    });
+
     // Create nodes for connected branches (index 1, 2, 3...)
     treeData.connectedBranches.forEach((connectedBranch, index) => {
       createBranchNodes(connectedBranch, index + 1);
@@ -164,11 +210,13 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
         const mainNodeId = `${treeData.mainBranch.branch.id}-${bridgeLink.personId}`;
         const connectedNodeId = `${connectedBranch.branch.id}-${bridgeLink.personId}`;
 
-        // Check if both nodes exist
-        const hasMainNode = treeData.mainBranch.persons.some(p => p.id === bridgeLink.personId);
-        const hasConnectedNode = connectedBranch.persons.some(p => p.id === bridgeLink.personId);
+        // Check if both nodes exist in the prepared node list
+        const hasMainNode = newNodes.some((node) => node.id === mainNodeId);
+        const hasConnectedNode = newNodes.some((node) => node.id === connectedNodeId);
 
         if (hasMainNode && hasConnectedNode) {
+          const isPrimary = Boolean(bridgeLink.isPrimary);
+
           newEdges.push({
             id: `bridge-${bridgeLink.linkId}`,
             source: mainNodeId,
@@ -177,10 +225,10 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
             animated: true,
             style: {
               stroke: '#f59e0b', // amber-500
-              strokeWidth: 4,
-              strokeDasharray: '10 5',
+              strokeWidth: isPrimary ? 5 : 4,
+              strokeDasharray: isPrimary ? '2 6' : '10 5',
             },
-            label: '🌉',
+            label: isPrimary ? '🌉⭐' : '🌉',
             labelStyle: {
               fontSize: 20,
               fontWeight: 'bold',
@@ -189,6 +237,14 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
               fill: '#fef3c7', // amber-100
               fillOpacity: 0.9,
             },
+            markerEnd: isPrimary
+              ? {
+                  type: MarkerType.ArrowClosed,
+                  color: '#f59e0b',
+                  width: 20,
+                  height: 20,
+                }
+              : undefined,
           });
         }
       });

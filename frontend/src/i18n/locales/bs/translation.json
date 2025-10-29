@@ -226,6 +226,7 @@
     "lastUpdated": "Ažurirano {{date}}",
     "bridgesHeading": "Mostovi",
     "noBridges": "Još nema mostova.",
+    "primaryBridge": "Primarni most",
     "homeBranch": "Matična grana: {{branch}}",
     "displayAs": "Prikazano kao {{name}}",
     "bridgeStatus": {
@@ -660,6 +661,7 @@
     "sections": {
       "overview": "Pregled",
       "regions": "Regioni",
+      "bridgeIssues": "Mostovi",
       "users": "Korisnici",
       "backups": "Backupi",
       "activity": "Aktivnost"
@@ -687,7 +689,43 @@
       "guruRemoved": "SuperGuru je uklonjen",
       "cannotRemoveLast": "Najmanje jedan SuperGuru mora ostati dodijeljen"
     },
-    "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže."
+    "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže.",
+    "bridgeIssues": {
+      "title": "Problemi sa mostovima",
+      "subtitle": "Pregledaj duple veze između grana i odaberi jedan primarni most za svaku porodicu.",
+      "loadError": "Greška pri učitavanju mostova.",
+      "empty": "Sve povezane grane već imaju primarni most.",
+      "focusPair": "Fokus: Ajanović i Kahvić trenutno imaju {{count}} odobrenih mostova.",
+      "missingPrimary": "Nedostaje primarni most",
+      "hasPrimary": "Primarni most je postavljen",
+      "clearedPrimary": "Primarni most je uklonjen",
+      "connectionCount": "{{count}} veza",
+      "pairLabel": "{{branchA}} ↔ {{branchB}}",
+      "setPrimary": "Postavi kao primarni",
+      "clearPrimary": "Ukloni primarni",
+      "rejectBridge": "Odbij most",
+      "confirmReject": "Odbiti ovaj most? Guru grane može ga ponovo kreirati kasnije.",
+      "bridgeRejected": "Most je odbijen",
+      "person": "Osoba",
+      "direction": "Smjer",
+      "directionValue": "{{source}} → {{target}}",
+      "status": "Status",
+      "notes": "Napomene",
+      "actions": "Akcije",
+      "pendingBadge": "Na čekanju",
+      "approvedBadge": "Odobreno",
+      "generationColumn": "Generacija",
+      "homeGeneration": "Matična: G{{number}}",
+      "overrideLabel": "Override",
+      "overrideHint": "Postavi kako ova grana treba prikazati mostovsku osobu.",
+      "overridePlaceholder": "npr. 3",
+      "saveOverride": "Sačuvaj override",
+      "clearOverride": "Ukloni override",
+      "overrideRequired": "Unesi generaciju prije snimanja.",
+      "overrideOutOfRange": "Generacija mora biti između 1 i 30.",
+      "generationUpdated": "Generacija mosta je ažurirana",
+      "generationCleared": "Generacija mosta je uklonjena"
+    }
   },
   "profile": {
     "title": "Moj profil",

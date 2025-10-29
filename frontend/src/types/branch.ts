@@ -148,6 +148,9 @@ export interface ConnectedFamilyBridge {
   notes?: string | null;
   approvedAt?: string | null;
   createdAt: string;
+  isPrimary: boolean;
+  primaryAssignedAt?: string | null;
+  displayGenerationOverride?: number | null;
   person: {
     id: string;
     fullName: string;
@@ -290,6 +293,9 @@ export interface MultiBranchTreeBridgeLink {
   direction?: 'outgoing' | 'incoming'; // For connected branches
   displayName?: string | null;
   approvedAt?: string;
+  isPrimary?: boolean;
+  primaryAssignedAt?: string | null;
+  displayGenerationOverride?: number | null;
 }
 
 export interface MultiBranchTreeBranchInfo {

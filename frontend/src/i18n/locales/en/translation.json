@@ -226,6 +226,7 @@
     "lastUpdated": "Updated {{date}}",
     "bridgesHeading": "Bridge relatives",
     "noBridges": "No bridge people to show yet.",
+    "primaryBridge": "Primary bridge",
     "homeBranch": "Home branch: {{branch}}",
     "displayAs": "Displayed as {{name}}",
     "bridgeStatus": {
@@ -660,6 +661,7 @@
     "sections": {
       "overview": "Overview",
       "regions": "Regions",
+      "bridgeIssues": "Bridge issues",
       "users": "Users",
       "backups": "Backups",
       "activity": "Activity"
@@ -687,7 +689,43 @@
       "guruRemoved": "SuperGuru removed",
       "cannotRemoveLast": "At least one SuperGuru must remain assigned"
     },
-    "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon."
+    "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon.",
+    "bridgeIssues": {
+      "title": "Bridge link issues",
+      "subtitle": "Resolve duplicate branch links and promote a single primary bridge per family pair.",
+      "loadError": "Failed to load bridge issues.",
+      "empty": "All linked branches already have a primary bridge.",
+      "focusPair": "Focus: Ajanovic ↔ Kahvic currently share {{count}} approved bridges.",
+      "missingPrimary": "Primary bridge missing",
+      "hasPrimary": "Primary bridge set",
+      "clearedPrimary": "Primary bridge cleared",
+      "connectionCount": "{{count}} connections",
+      "pairLabel": "{{branchA}} ↔ {{branchB}}",
+      "setPrimary": "Set as primary",
+      "clearPrimary": "Clear primary",
+      "rejectBridge": "Reject bridge",
+      "confirmReject": "Reject this bridge link? Branch gurus can re-create it later.",
+      "bridgeRejected": "Bridge link rejected",
+      "person": "Person",
+      "direction": "Direction",
+      "directionValue": "{{source}} → {{target}}",
+      "status": "Status",
+      "notes": "Notes",
+      "actions": "Actions",
+      "pendingBadge": "Pending",
+      "approvedBadge": "Approved",
+      "generationColumn": "Generation",
+      "homeGeneration": "Home: G{{number}}",
+      "overrideLabel": "Override",
+      "overrideHint": "Set how this branch should display the bridge person.",
+      "overridePlaceholder": "e.g. 3",
+      "saveOverride": "Save override",
+      "clearOverride": "Clear override",
+      "overrideRequired": "Enter a generation before saving.",
+      "overrideOutOfRange": "Generation must be between 1 and 30.",
+      "generationUpdated": "Bridge generation updated",
+      "generationCleared": "Bridge generation cleared"
+    }
   },
   "profile": {
     "title": "My Profile",

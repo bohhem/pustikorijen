@@ -53,3 +53,53 @@ export interface AssignSuperGuruPayload {
 export interface UpdateAssignmentPayload {
   isPrimary: boolean;
 }
+
+export interface BridgeIssueLink {
+  id: string;
+  status: 'pending' | 'approved';
+  isPrimary: boolean;
+  sourceBranchId: string;
+  targetBranchId: string;
+  displayName?: string | null;
+  notes?: string | null;
+  approvedAt?: string | null;
+  primaryAssignedAt?: string | null;
+  displayGenerationOverride?: number | null;
+  person: {
+    id: string;
+    fullName: string;
+    generation?: string | null;
+    generationNumber?: number | null;
+  };
+}
+
+export interface BridgeIssueSummary {
+  pairId: string;
+  branchA: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+    region?: string | null;
+    country?: string | null;
+  };
+  branchB: {
+    id: string;
+    surname: string;
+    cityName?: string | null;
+    region?: string | null;
+    country?: string | null;
+  };
+  totalLinks: number;
+  hasPrimary: boolean;
+  primaryLinkId: string | null;
+  links: BridgeIssueLink[];
+}
+
+export interface BridgeIssuesResponse {
+  issues: BridgeIssueSummary[];
+}
+
+export interface BridgeIssueMutationResponse {
+  message: string;
+  issues: BridgeIssueSummary[];
+}

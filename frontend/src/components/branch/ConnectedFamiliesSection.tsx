@@ -365,7 +365,14 @@ function ConnectedFamilyCard({
             {family.bridges.map((bridge) => (
               <li key={bridge.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2">
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
+                    {bridge.isPrimary && (
+                      <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+                        {t('connectedFamilies.primaryBridge')}
+                      </span>
+                    )}
+                  </div>
                   {bridge.person.homeBranch && (
                     <p className="text-xs text-gray-500">
                       {t('connectedFamilies.homeBranch', { branch: bridge.person.homeBranch.surname })}

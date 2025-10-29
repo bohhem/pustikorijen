@@ -22,6 +22,9 @@ function formatLink(link: {
   source_approved_at: Date | null;
   target_approved_by: string | null;
   target_approved_at: Date | null;
+  is_primary_bridge?: boolean;
+  primary_set_at?: Date | null;
+  display_generation_override?: number | null;
   created_at: Date;
   updated_at: Date;
   persons: {
@@ -58,6 +61,9 @@ function formatLink(link: {
     notes: link.notes,
     createdAt: link.created_at,
     updatedAt: link.updated_at,
+    displayGenerationOverride: link.display_generation_override ?? null,
+    isPrimary: link.is_primary_bridge,
+    primaryAssignedAt: link.primary_set_at,
     sourceBranchId: link.source_branch_id,
     targetBranchId: link.branch_id,
     sourceApprovedBy: link.source_approved_by,
@@ -374,6 +380,7 @@ export async function listPersonLinks(params: { branchId: string; status?: strin
     target_approved_at: Date | null;
     created_at: Date;
     updated_at: Date;
+    display_generation_override: number | null;
     persons: {
       person_id: string;
       full_name: string;
@@ -571,4 +578,375 @@ export async function rejectPersonLink(params: {
   });
 
   return formatLink(updated);
+}
+
+function ensureSuperGuru(actor: ActingUser) {
+  if (actor.globalRole !== 'SUPER_GURU' && actor.globalRole !== 'ADMIN') {
+    throw new Error('Only SuperGurus can manage primary bridges');
+  }
+}
+
+function buildPairWhere(branchA: string, branchB: string) {
+  return {
+    OR: [
+      { branch_id: branchA, source_branch_id: branchB },
+      { branch_id: branchB, source_branch_id: branchA },
+    ],
+  };
+}
+
+export interface BridgeIssueLinkSummary {
+  id: string;
+  status: string;
+  isPrimary: boolean;
+  sourceBranchId: string;
+  targetBranchId: string;
+  displayName: string | null;
+  notes: string | null;
+  approvedAt: Date | null;
+  primaryAssignedAt: Date | null;
+  displayGenerationOverride: number | null;
+  person: {
+    id: string;
+    fullName: string;
+    generation: string | null;
+    generationNumber: number | null;
+  };
+}
+
+export interface BridgeIssueSummary {
+  pairId: string;
+  branchA: {
+    id: string;
+    surname: string;
+    cityName: string | null;
+    region: string | null;
+    country: string | null;
+  };
+  branchB: {
+    id: string;
+    surname: string;
+    cityName: string | null;
+    region: string | null;
+    country: string | null;
+  };
+  totalLinks: number;
+  hasPrimary: boolean;
+  primaryLinkId: string | null;
+  links: BridgeIssueLinkSummary[];
+}
+
+export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
+  const links = await prisma.branchPersonLink.findMany({
+    where: {
+      status: {
+        in: ['pending', 'approved'],
+      },
+    },
+    include: {
+      persons: {
+        select: {
+          person_id: true,
+          full_name: true,
+          generation: true,
+          generation_number: true,
+        },
+      },
+    },
+    orderBy: {
+      created_at: 'asc',
+    },
+  });
+
+  if (links.length === 0) {
+    return [];
+  }
+
+  const branchIds = new Set<string>();
+  for (const link of links) {
+    branchIds.add(link.branch_id);
+    branchIds.add(link.source_branch_id);
+  }
+
+  const branches = (await prisma.familyBranch.findMany({
+    where: {
+      branch_id: {
+        in: Array.from(branchIds),
+      },
+    },
+    select: {
+      branch_id: true,
+      surname: true,
+      city_name: true,
+      region: true,
+      country: true,
+    },
+  })) as Array<{
+    branch_id: string;
+    surname: string;
+    city_name: string | null;
+    region: string | null;
+    country: string | null;
+  }>;
+
+  const branchMeta = new Map<string, {
+    id: string;
+    surname: string;
+    cityName: string | null;
+    region: string | null;
+    country: string | null;
+  }>(
+    branches.map((branch) => [
+      branch.branch_id,
+      {
+        id: branch.branch_id,
+        surname: branch.surname,
+        cityName: branch.city_name,
+        region: branch.region,
+        country: branch.country,
+      },
+    ])
+  );
+
+  const grouped = new Map<
+    string,
+    {
+      branchAId: string;
+      branchBId: string;
+      links: BridgeIssueLinkSummary[];
+    }
+  >();
+
+  for (const link of links) {
+    const [branchAId, branchBId] =
+      link.branch_id < link.source_branch_id
+        ? [link.branch_id, link.source_branch_id]
+        : [link.source_branch_id, link.branch_id];
+
+    const pairKey = `${branchAId}::${branchBId}`;
+
+    if (!grouped.has(pairKey)) {
+      grouped.set(pairKey, {
+        branchAId,
+        branchBId,
+        links: [],
+      });
+    }
+
+    grouped.get(pairKey)!.links.push({
+      id: link.link_id,
+      status: link.status,
+      isPrimary: link.is_primary_bridge,
+      sourceBranchId: link.source_branch_id,
+      targetBranchId: link.branch_id,
+      displayName: link.display_name,
+      notes: link.notes,
+      approvedAt:
+        link.status === LINK_APPROVED_STATUS
+          ? link.target_approved_at ?? link.source_approved_at ?? link.updated_at
+          : null,
+      primaryAssignedAt: link.primary_set_at,
+      displayGenerationOverride: link.display_generation_override,
+      person: {
+        id: link.person_id,
+        fullName: link.persons.full_name,
+        generation: link.persons.generation,
+        generationNumber: link.persons.generation_number,
+      },
+    });
+  }
+
+  const summaries: BridgeIssueSummary[] = [];
+
+  for (const [pairId, payload] of grouped.entries()) {
+    const branchA = branchMeta.get(payload.branchAId);
+    const branchB = branchMeta.get(payload.branchBId);
+
+    if (!branchA || !branchB) {
+      continue;
+    }
+
+    const approvedOrPendingLinks = payload.links.filter((link) => link.status !== LINK_REJECTED_STATUS);
+    if (approvedOrPendingLinks.length <= 1) {
+      continue;
+    }
+
+    const hasPrimary = approvedOrPendingLinks.some((link) => link.isPrimary);
+    const primaryLink = approvedOrPendingLinks.find((link) => link.isPrimary) ?? null;
+
+    summaries.push({
+      pairId,
+      branchA,
+      branchB,
+      totalLinks: approvedOrPendingLinks.length,
+      hasPrimary,
+      primaryLinkId: primaryLink?.id ?? null,
+      links: approvedOrPendingLinks.sort((a, b) => {
+        if (a.isPrimary && !b.isPrimary) return -1;
+        if (!a.isPrimary && b.isPrimary) return 1;
+        if (a.status === LINK_APPROVED_STATUS && b.status !== LINK_APPROVED_STATUS) return -1;
+        if (a.status !== LINK_APPROVED_STATUS && b.status === LINK_APPROVED_STATUS) return 1;
+        return a.person.fullName.localeCompare(b.person.fullName);
+      }),
+    });
+  }
+
+  return summaries.sort((a, b) => b.totalLinks - a.totalLinks);
+}
+
+export async function setPrimaryBridge(linkId: string, actor: ActingUser) {
+  ensureSuperGuru(actor);
+
+  return prisma.$transaction(async (tx: typeof prisma) => {
+    const link = await tx.branchPersonLink.findUnique({
+      where: { link_id: linkId },
+      include: {
+        persons: {
+          select: {
+            person_id: true,
+            full_name: true,
+            generation: true,
+            generation_number: true,
+          },
+        },
+      },
+    });
+
+    if (!link) {
+      throw new Error('Link not found');
+    }
+
+    const pairWhere = buildPairWhere(link.branch_id, link.source_branch_id);
+
+    await tx.branchPersonLink.updateMany({
+      where: pairWhere,
+      data: {
+        is_primary_bridge: false,
+        primary_set_at: null,
+        primary_set_by: null,
+      },
+    });
+
+    const updated = await tx.branchPersonLink.update({
+      where: { link_id: linkId },
+      data: {
+        is_primary_bridge: true,
+        primary_set_at: new Date(),
+        primary_set_by: actor.userId,
+      },
+      include: {
+        persons: {
+          select: {
+            person_id: true,
+            full_name: true,
+            given_name: true,
+            surname: true,
+            maiden_name: true,
+            birth_date: true,
+            death_date: true,
+            family_branches: {
+              select: {
+                branch_id: true,
+                surname: true,
+                city_name: true,
+              },
+            },
+          },
+        },
+        users_branch_person_links_requested_byTousers: {
+          select: {
+            user_id: true,
+            full_name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return formatLink(updated);
+  });
+}
+
+export async function clearPrimaryBridge(linkId: string, actor: ActingUser) {
+  ensureSuperGuru(actor);
+
+  const link = await prisma.branchPersonLink.findUnique({
+    where: { link_id: linkId },
+  });
+
+  if (!link) {
+    throw new Error('Link not found');
+  }
+
+  await prisma.branchPersonLink.update({
+    where: { link_id: linkId },
+    data: {
+      is_primary_bridge: false,
+      primary_set_at: null,
+      primary_set_by: null,
+    },
+  });
+}
+
+export async function superGuruRejectBridge(linkId: string, actor: ActingUser, reason?: string | null) {
+  ensureSuperGuru(actor);
+
+  const link = await prisma.branchPersonLink.findUnique({
+    where: { link_id: linkId },
+  });
+
+  if (!link) {
+    throw new Error('Link not found');
+  }
+
+  if (link.is_primary_bridge) {
+    throw new Error('Cannot reject a primary bridge. Clear the primary status first.');
+  }
+
+  await prisma.branchPersonLink.update({
+    where: { link_id: linkId },
+    data: {
+      status: LINK_REJECTED_STATUS,
+      notes: reason ?? link.notes,
+      is_primary_bridge: false,
+      primary_set_at: null,
+      primary_set_by: null,
+      display_generation_override: null,
+      updated_at: new Date(),
+    },
+  });
+}
+
+export async function superGuruUpdateBridgeGeneration(
+  linkId: string,
+  actor: ActingUser,
+  generationNumber: number | null,
+): Promise<void> {
+  ensureSuperGuru(actor);
+
+  const link = await prisma.branchPersonLink.findUnique({
+    where: { link_id: linkId },
+  });
+
+  if (!link) {
+    throw new Error('Link not found');
+  }
+
+  if (link.status === LINK_REJECTED_STATUS) {
+    throw new Error('Cannot set generation on a rejected bridge');
+  }
+
+  if (generationNumber !== null) {
+    if (!Number.isInteger(generationNumber) || generationNumber < 1 || generationNumber > 30) {
+      throw new Error('Generation override must be between 1 and 30');
+    }
+  }
+
+  await prisma.branchPersonLink.update({
+    where: { link_id: linkId },
+    data: {
+      display_generation_override: generationNumber,
+      updated_at: new Date(),
+    },
+  });
 }

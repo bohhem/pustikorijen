@@ -953,6 +953,9 @@ interface ConnectedFamilyBridge {
   notes?: string | null;
   approvedAt?: Date | null;
   createdAt: Date;
+  isPrimary: boolean;
+  primaryAssignedAt?: Date;
+  displayGenerationOverride?: number | null;
   person: {
     id: string;
     fullName: string;
@@ -993,6 +996,9 @@ type BranchPersonLinkRecord = {
   updated_at: Date;
   source_approved_at: Date | null;
   target_approved_at: Date | null;
+  is_primary_bridge: boolean;
+  primary_set_at: Date | null;
+  display_generation_override: number | null;
   persons: {
     person_id: string;
     full_name: string;
@@ -1114,7 +1120,7 @@ export async function getConnectedFamilies(
     {
       branch: ConnectedFamily['branch'];
       stats: ConnectedFamilyStats;
-      bridges: ConnectedFamilyBridge[];
+      bridgesMap: Map<string, ConnectedFamilyBridge>;
     }
   >();
 
@@ -1144,7 +1150,7 @@ export async function getConnectedFamilies(
           firstLinkAt: null,
           lastLinkAt: null,
         },
-        bridges: [],
+        bridgesMap: new Map(),
       });
     }
 
@@ -1166,8 +1172,6 @@ export async function getConnectedFamilies(
     }
 
     // Add bridge, but avoid duplicates per person (prioritize approved over pending)
-    const existingBridgeIndex = entry.bridges.findIndex(b => b.person.id === link.person_id);
-
     const newBridge: ConnectedFamilyBridge = {
       id: link.link_id,
       status: link.status,
@@ -1176,6 +1180,9 @@ export async function getConnectedFamilies(
       notes: link.notes ?? undefined,
       approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
       createdAt,
+      isPrimary: Boolean(link.is_primary_bridge),
+      primaryAssignedAt: link.primary_set_at ?? undefined,
+      displayGenerationOverride: link.display_generation_override,
       person: {
         id: link.person_id,
         fullName: link.persons.full_name,
@@ -1192,23 +1199,34 @@ export async function getConnectedFamilies(
       },
     };
 
-    if (existingBridgeIndex >= 0) {
-      // Person already exists - keep approved over pending
-      const existing = entry.bridges[existingBridgeIndex];
-      if (link.status === 'approved' && existing.status === 'pending') {
-        entry.bridges[existingBridgeIndex] = newBridge;
+    const existing = entry.bridgesMap.get(link.person_id);
+    if (!existing) {
+      entry.bridgesMap.set(link.person_id, newBridge);
+    } else {
+      const existingIsApproved = existing.status === 'approved';
+      const incomingIsApproved = link.status === 'approved';
+
+      // Prefer approved link over pending, or keep the earliest approval for deterministic order
+      if ((!existingIsApproved && incomingIsApproved) || (existingIsApproved === incomingIsApproved && existing.createdAt > createdAt)) {
+        entry.bridgesMap.set(link.person_id, newBridge);
+      } else if (incomingIsApproved && newBridge.isPrimary) {
+        // Always keep primary flag in sync
+        entry.bridgesMap.set(link.person_id, newBridge);
       }
-      // Otherwise keep the existing one (approved or same status - first one wins)
-    } else if (entry.bridges.length < 5) {
-      // New person, add if under limit
-      entry.bridges.push(newBridge);
     }
   }
 
   return Array.from(grouped.values()).map((item) => ({
     branch: item.branch,
     stats: item.stats,
-    bridges: item.bridges,
+    bridges: Array.from(item.bridgesMap.values()).sort((a, b) => {
+      if (a.isPrimary && !b.isPrimary) return -1;
+      if (!a.isPrimary && b.isPrimary) return 1;
+      // Approved before pending
+      if (a.status === 'approved' && b.status !== 'approved') return -1;
+      if (a.status !== 'approved' && b.status === 'approved') return 1;
+      return a.createdAt.getTime() - b.createdAt.getTime();
+    }),
   }));
 }
 
@@ -1257,6 +1275,9 @@ export async function getMultiBranchTree(branchId: string) {
       display_name: true,
       target_approved_at: true,
       source_approved_at: true,
+      is_primary_bridge: true,
+      primary_set_at: true,
+      display_generation_override: true,
     },
   });
 
@@ -1269,6 +1290,9 @@ export async function getMultiBranchTree(branchId: string) {
     targetBranchId: string;
     displayName: string | null;
     approvedAt: Date | null;
+    isPrimary: boolean;
+    primaryAssignedAt: Date | null;
+    displayGenerationOverride: number | null;
   }> = [];
 
   for (const link of approvedLinks) {
@@ -1283,6 +1307,9 @@ export async function getMultiBranchTree(branchId: string) {
       targetBranchId: link.branch_id,
       displayName: link.display_name,
       approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
+      isPrimary: link.is_primary_bridge,
+      primaryAssignedAt: link.primary_set_at,
+      displayGenerationOverride: link.display_generation_override,
     });
   }
 
@@ -1365,6 +1392,9 @@ export async function getMultiBranchTree(branchId: string) {
           direction: bl.sourceBranchId === branchId ? 'outgoing' : 'incoming',
           displayName: bl.displayName,
           approvedAt: bl.approvedAt?.toISOString(),
+          isPrimary: bl.isPrimary,
+          primaryAssignedAt: bl.primaryAssignedAt?.toISOString() ?? null,
+          displayGenerationOverride: bl.displayGenerationOverride,
         })),
       };
     })
@@ -1422,6 +1452,9 @@ export async function getMultiBranchTree(branchId: string) {
         toBranchId: bl.sourceBranchId === branchId ? bl.targetBranchId : bl.sourceBranchId,
         displayName: bl.displayName,
         approvedAt: bl.approvedAt?.toISOString(),
+        isPrimary: bl.isPrimary,
+        primaryAssignedAt: bl.primaryAssignedAt?.toISOString() ?? null,
+        displayGenerationOverride: bl.displayGenerationOverride,
       })),
     },
     connectedBranches,

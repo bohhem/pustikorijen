@@ -28,6 +28,12 @@ export default function AdminLayout({ title, description, children }: AdminLayou
       enabled: true,
     },
     {
+      to: '/admin/bridge-issues',
+      label: t('admin.sections.bridgeIssues'),
+      icon: '🌉',
+      enabled: true,
+    },
+    {
       to: '/admin/users',
       label: t('admin.sections.users'),
       icon: '👥',
