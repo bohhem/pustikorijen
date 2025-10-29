@@ -16,6 +16,7 @@ import {
   listPersonLinksController,
   approvePersonLinkRequest,
   rejectPersonLinkRequest,
+  setBridgePrimary,
   getMultiBranchTreeController,
 } from '../controllers/branch.controller';
 import {
@@ -61,6 +62,7 @@ router.get('/:id/person-links', authenticateToken, listPersonLinksController);
 router.post('/:id/person-links', authenticateToken, createPersonLink);
 router.post('/:id/person-links/:linkId/approve', authenticateToken, approvePersonLinkRequest);
 router.post('/:id/person-links/:linkId/reject', authenticateToken, rejectPersonLinkRequest);
+router.post('/:id/person-links/:linkId/primary', authenticateToken, setBridgePrimary);
 router.post('/:id/person-claims/:claimId/resolve', authenticateToken, resolvePersonClaimController);
 
 export default router;

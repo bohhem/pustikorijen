@@ -59,8 +59,8 @@ Zbir pravila i najboljih praksi za grane, mostove i veze između različitih por
 - Svaki par grana mora imati samo **jedan** primarni most.
 - Primarni most dobija naglašenu isprekidanu liniju i ⭐ u grafu.
 - Za postavljanje novog primarnog mosta:
-  1. Odbij ostale mostove u tom paru (ili ih skloni iz primarnog statusa).
-  2. Dodijeli primarni flag željenom mostu putem SuperGuru konzole.
+  1. Klikni “Postavi kao primarni” na kartici povezanih porodica (Guru) ili uradi isto kroz SuperGuru konzolu.
+  2. Sistem automatski odbija (arhivira) ostale mostove između te dvije grane.
   3. Ako treba, namjesti override generacije.
 
 ### Šta uraditi s neprimarnim mostovima?
@@ -84,7 +84,7 @@ Zbir pravila i najboljih praksi za grane, mostove i veze između različitih por
 ## 7. Kratki workflow podsjetnik
 
 1. **Kreiraj granu** → dodaj matične članove i rodoslov.
-2. **Kreiraj most** → odobri ga u matičnoj grani → SuperGuru postavlja primarni most.
+2. **Kreiraj most** → odobri ga u matičnoj grani → Guru (ili SuperGuru) označava primarni most.
 3. **(Opcionalno) Override generacije** → zbog vizuelne usklađenosti u drugoj grani.
 4. **Unesi partnerstvo** tek kad most funkcioniše.
 5. **Pregledaj više grana** preko Family Tree prikaza.

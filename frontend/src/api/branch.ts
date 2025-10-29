@@ -97,6 +97,11 @@ export async function rejectBridgeLink(branchId: string, linkId: string): Promis
   return response.data;
 }
 
+export async function setBridgePrimary(branchId: string, linkId: string): Promise<{ message: string }> {
+  const response = await api.post(`/branches/${branchId}/person-links/${linkId}/primary`);
+  return response.data;
+}
+
 /**
  * Update member role (Guru only)
  */

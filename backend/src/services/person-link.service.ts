@@ -767,11 +767,12 @@ export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
     }
 
     const approvedOrPendingLinks = payload.links.filter((link) => link.status !== LINK_REJECTED_STATUS);
-    if (approvedOrPendingLinks.length <= 1) {
+    const hasPrimary = approvedOrPendingLinks.some((link) => link.isPrimary);
+
+    if (approvedOrPendingLinks.length <= 1 && hasPrimary) {
       continue;
     }
 
-    const hasPrimary = approvedOrPendingLinks.some((link) => link.isPrimary);
     const primaryLink = approvedOrPendingLinks.find((link) => link.isPrimary) ?? null;
 
     summaries.push({
@@ -795,8 +796,6 @@ export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
 }
 
 export async function setPrimaryBridge(linkId: string, actor: ActingUser) {
-  ensureSuperGuru(actor);
-
   return prisma.$transaction(async (tx: typeof prisma) => {
     const link = await tx.branchPersonLink.findUnique({
       where: { link_id: linkId },
@@ -814,6 +813,24 @@ export async function setPrimaryBridge(linkId: string, actor: ActingUser) {
 
     if (!link) {
       throw new Error('Link not found');
+    }
+
+    const isSuperGuru = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
+    if (!isSuperGuru) {
+      const memberships = await tx.branchMember.findMany({
+        where: {
+          branch_id: {
+            in: [link.branch_id, link.source_branch_id],
+          },
+          user_id: actor.userId,
+          status: 'active',
+          role: 'guru',
+        },
+      });
+
+      if (memberships.length === 0) {
+        throw new Error('Only branch Gurus can manage bridges');
+      }
     }
 
     const pairWhere = buildPairWhere(link.branch_id, link.source_branch_id);

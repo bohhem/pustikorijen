@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ConnectedFamily } from '../../types/branch';
-import { getConnectedFamilies, rejectBridgeLink } from '../../api/branch';
+import { getConnectedFamilies, rejectBridgeLink, setBridgePrimary } from '../../api/branch';
 import { useToast } from '../../contexts/ToastContext';
 
 interface ConnectedFamiliesSectionProps {
@@ -75,6 +75,22 @@ export default function ConnectedFamiliesSection({ branchId, canModerate, onShow
     [branchId, fetchFamilies, showErrorToast, showSuccessToast, t],
   );
 
+  const handleSetPrimary = useCallback(
+    async (bridgeId: string) => {
+      setActiveBridgeAction(bridgeId);
+      try {
+        await setBridgePrimary(branchId, bridgeId);
+        showSuccessToast(t('connectedFamilies.toast.primarySet'));
+        await fetchFamilies();
+      } catch (err: any) {
+        showErrorToast(err?.response?.data?.error || t('connectedFamilies.toast.primarySetError'));
+      } finally {
+        setActiveBridgeAction(null);
+      }
+    },
+    [branchId, fetchFamilies, showErrorToast, showSuccessToast, t],
+  );
+
   return (
     <section className="bg-white shadow rounded-lg p-6 space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -140,6 +156,7 @@ export default function ConnectedFamiliesSection({ branchId, canModerate, onShow
               key={family.branch.id}
               family={family}
               onShowPendingLinks={onShowPendingLinks}
+              onSetPrimary={handleSetPrimary}
               onRejectBridge={handleRejectBridge}
               activeBridgeAction={activeBridgeAction}
             />
@@ -283,11 +300,13 @@ function ConnectedFamiliesGraph({ families, selectedId, onSelect, onShowPendingL
 function ConnectedFamilyCard({
   family,
   onShowPendingLinks,
+  onSetPrimary,
   onRejectBridge,
   activeBridgeAction,
 }: {
   family: ConnectedFamily;
   onShowPendingLinks?: () => void;
+  onSetPrimary?: (bridgeId: string) => Promise<void> | void;
   onRejectBridge?: (bridgeId: string) => Promise<void> | void;
   activeBridgeAction?: string | null;
 }) {
@@ -380,8 +399,15 @@ function ConnectedFamilyCard({
           <ul className="space-y-2">
             {family.bridges.map((bridge) => {
               const isProcessing = activeBridgeAction === bridge.id;
+              const canPromote =
+                onSetPrimary && bridge.status === 'approved' && !bridge.isPrimary;
+              const canReject = onRejectBridge && !bridge.isPrimary;
+
               return (
-                <li key={bridge.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2">
+                <li
+                  key={bridge.id}
+                  className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2"
+                >
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
@@ -407,7 +433,7 @@ function ConnectedFamilyCard({
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold $
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
                         bridge.status === 'approved'
                           ? 'bg-green-50 text-green-700'
                           : 'bg-amber-50 text-amber-700'
@@ -415,7 +441,21 @@ function ConnectedFamilyCard({
                     >
                       {t(`connectedFamilies.bridgeStatus.${bridge.status}`)}
                     </span>
-                    {onRejectBridge && !bridge.isPrimary && (
+                    {canPromote && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(t('connectedFamilies.setPrimaryConfirm'))) {
+                            void onSetPrimary(bridge.id);
+                          }
+                        }}
+                        disabled={isProcessing}
+                        className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 disabled:opacity-60"
+                      >
+                        {isProcessing ? t('common.loading') : t('connectedFamilies.setPrimary')}
+                      </button>
+                    )}
+                    {canReject && (
                       <button
                         type="button"
                         onClick={() => {

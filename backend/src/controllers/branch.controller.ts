@@ -30,6 +30,7 @@ import {
   listPersonLinks as fetchPersonLinks,
   approvePersonLink,
   rejectPersonLink,
+  setPrimaryBridge,
 } from '../services/person-link.service';
 import { getErrorMessage, isZodError } from '../utils/error.util';
 
@@ -604,6 +605,36 @@ export async function rejectPersonLinkRequest(req: Request, res: Response): Prom
 
     console.error('Reject person link error:', error);
     res.status(500).json({ error: 'Failed to reject person link' });
+  }
+}
+
+export async function setBridgePrimary(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { linkId } = req.params;
+
+    await setPrimaryBridge(linkId, req.user);
+
+    res.status(200).json({ message: 'Bridge promoted to primary' });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    if (message === 'Link not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message === 'Only branch Gurus can manage bridges') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Set primary bridge error:', error);
+    res.status(500).json({ error: 'Failed to set primary bridge' });
   }
 }
 
