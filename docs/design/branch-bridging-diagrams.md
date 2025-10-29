@@ -66,9 +66,9 @@ graph LR
     %% Notes
     A1_display:::displayNode
     note right of A1_display
-        • Exactly one primary bridge per branch pair
-        • Bridge stores display_generation_override
-        • No duplicate canonical person records
-        • Supporting links require demotion/rejection first
+        Exactly one primary bridge per branch pair
+        Bridge stores display_generation_override
+        No duplicate canonical person records
+        Supporting links require demotion or rejection first
     end note
 ```
