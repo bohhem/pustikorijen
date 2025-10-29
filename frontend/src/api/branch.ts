@@ -92,6 +92,11 @@ export async function rejectJoinRequest(branchId: string, userId: string): Promi
   return response.data;
 }
 
+export async function rejectBridgeLink(branchId: string, linkId: string): Promise<{ message: string }> {
+  const response = await api.post(`/branches/${branchId}/person-links/${linkId}/reject`);
+  return response.data;
+}
+
 /**
  * Update member role (Guru only)
  */

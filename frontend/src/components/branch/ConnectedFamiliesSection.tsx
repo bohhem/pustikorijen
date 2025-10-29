@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ConnectedFamily } from '../../types/branch';
-import { getConnectedFamilies } from '../../api/branch';
+import { getConnectedFamilies, rejectBridgeLink } from '../../api/branch';
+import { useToast } from '../../contexts/ToastContext';
 
 interface ConnectedFamiliesSectionProps {
   branchId: string;
@@ -20,36 +21,29 @@ export default function ConnectedFamiliesSection({ branchId, canModerate, onShow
   const [filter, setFilter] = useState<FilterOption>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [selectedFamilyId, setSelectedFamilyId] = useState<string | null>(null);
+  const [activeBridgeAction, setActiveBridgeAction] = useState<string | null>(null);
+  const { success: showSuccessToast, error: showErrorToast } = useToast();
 
-  useEffect(() => {
+  const fetchFamilies = useCallback(async () => {
     if (!canModerate) {
       return;
     }
 
-    let ignore = false;
     setLoading(true);
     setError(null);
-    getConnectedFamilies(branchId)
-      .then((result) => {
-        if (!ignore) {
-          setFamilies(result.connectedFamilies);
-        }
-      })
-      .catch((err) => {
-        if (!ignore) {
-          setError(err?.response?.data?.error || t('connectedFamilies.loadError'));
-        }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      ignore = true;
-    };
+    try {
+      const result = await getConnectedFamilies(branchId);
+      setFamilies(result.connectedFamilies);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || t('connectedFamilies.loadError'));
+    } finally {
+      setLoading(false);
+    }
   }, [branchId, canModerate, t]);
+
+  useEffect(() => {
+    void fetchFamilies();
+  }, [fetchFamilies]);
 
   const filteredFamilies = useMemo(() => {
     if (filter === 'approved') {
@@ -64,6 +58,22 @@ export default function ConnectedFamiliesSection({ branchId, canModerate, onShow
   if (!canModerate) {
     return null;
   }
+
+  const handleRejectBridge = useCallback(
+    async (bridgeId: string) => {
+      setActiveBridgeAction(bridgeId);
+      try {
+        await rejectBridgeLink(branchId, bridgeId);
+        showSuccessToast(t('connectedFamilies.toast.bridgeRejected'));
+        await fetchFamilies();
+      } catch (err: any) {
+        showErrorToast(err?.response?.data?.error || t('connectedFamilies.toast.bridgeRejectedError'));
+      } finally {
+        setActiveBridgeAction(null);
+      }
+    },
+    [branchId, fetchFamilies, showErrorToast, showSuccessToast, t],
+  );
 
   return (
     <section className="bg-white shadow rounded-lg p-6 space-y-4">
@@ -130,6 +140,8 @@ export default function ConnectedFamiliesSection({ branchId, canModerate, onShow
               key={family.branch.id}
               family={family}
               onShowPendingLinks={onShowPendingLinks}
+              onRejectBridge={handleRejectBridge}
+              activeBridgeAction={activeBridgeAction}
             />
           ))}
         </div>
@@ -271,9 +283,13 @@ function ConnectedFamiliesGraph({ families, selectedId, onSelect, onShowPendingL
 function ConnectedFamilyCard({
   family,
   onShowPendingLinks,
+  onRejectBridge,
+  activeBridgeAction,
 }: {
   family: ConnectedFamily;
   onShowPendingLinks?: () => void;
+  onRejectBridge?: (bridgeId: string) => Promise<void> | void;
+  activeBridgeAction?: string | null;
 }) {
   const { t } = useTranslation();
 
@@ -362,42 +378,61 @@ function ConnectedFamilyCard({
           <p className="text-sm text-gray-500">{t('connectedFamilies.noBridges')}</p>
         ) : (
           <ul className="space-y-2">
-            {family.bridges.map((bridge) => (
-              <li key={bridge.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
-                    {bridge.isPrimary && (
-                      <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
-                        {t('connectedFamilies.primaryBridge')}
-                      </span>
+            {family.bridges.map((bridge) => {
+              const isProcessing = activeBridgeAction === bridge.id;
+              return (
+                <li key={bridge.id} className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
+                      {bridge.isPrimary && (
+                        <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+                          {t('connectedFamilies.primaryBridge')}
+                        </span>
+                      )}
+                    </div>
+                    {bridge.person.homeBranch && (
+                      <p className="text-xs text-gray-500">
+                        {t('connectedFamilies.homeBranch', { branch: bridge.person.homeBranch.surname })}
+                      </p>
+                    )}
+                    {bridge.displayName && (
+                      <p className="text-xs text-gray-500">
+                        {t('connectedFamilies.displayAs', { name: bridge.displayName })}
+                      </p>
+                    )}
+                    {bridge.notes && (
+                      <p className="text-xs text-gray-500 italic mt-1">“{bridge.notes}”</p>
                     )}
                   </div>
-                  {bridge.person.homeBranch && (
-                    <p className="text-xs text-gray-500">
-                      {t('connectedFamilies.homeBranch', { branch: bridge.person.homeBranch.surname })}
-                    </p>
-                  )}
-                  {bridge.displayName && (
-                    <p className="text-xs text-gray-500">
-                      {t('connectedFamilies.displayAs', { name: bridge.displayName })}
-                    </p>
-                  )}
-                  {bridge.notes && (
-                    <p className="text-xs text-gray-500 italic mt-1">“{bridge.notes}”</p>
-                  )}
-                </div>
-                <span
-                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
-                    bridge.status === 'approved'
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-amber-50 text-amber-700'
-                  }`}
-                >
-                  {t(`connectedFamilies.bridgeStatus.${bridge.status}`)}
-                </span>
-              </li>
-            ))}
+                  <div className="flex flex-col items-end gap-2">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold $
+                        bridge.status === 'approved'
+                          ? 'bg-green-50 text-green-700'
+                          : 'bg-amber-50 text-amber-700'
+                      }`}
+                    >
+                      {t(`connectedFamilies.bridgeStatus.${bridge.status}`)}
+                    </span>
+                    {onRejectBridge && !bridge.isPrimary && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(t('connectedFamilies.rejectBridgeConfirm'))) {
+                            void onRejectBridge(bridge.id);
+                          }
+                        }}
+                        disabled={isProcessing}
+                        className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                      >
+                        {isProcessing ? t('common.loading') : t('connectedFamilies.rejectBridge')}
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

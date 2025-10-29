@@ -233,7 +233,13 @@
       "approved": "Genehmigt",
       "pending": "Ausstehend"
     },
-    "reviewPending": "{{count}} prüfen"
+    "reviewPending": "{{count}} prüfen",
+    "rejectBridge": "Brücke ablehnen",
+    "rejectBridgeConfirm": "Diese Brücke entfernen? Du kannst sie später erneut anlegen.",
+    "toast": {
+      "bridgeRejected": "Brücke abgelehnt",
+      "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden"
+    }
   },
   "personList": {
     "searchPlaceholder": "Nach Namen suchen...",
@@ -703,16 +709,13 @@
       "pairLabel": "{{branchA}} ↔ {{branchB}}",
       "setPrimary": "Als primär markieren",
       "clearPrimary": "Primärstatus entfernen",
-      "rejectBridge": "Brücke ablehnen",
-      "confirmReject": "Diese Brücke ablehnen? Die Branch-Gurus können sie später erneut anlegen.",
-      "bridgeRejected": "Brückenverbindung abgelehnt",
       "person": "Person",
       "direction": "Richtung",
       "directionValue": "{{source}} → {{target}}",
       "status": "Status",
       "notes": "Notizen",
       "actions": "Aktionen",
-      "pendingBadge": "Ausstehend",
+    "pendingBadge": "Ausstehend",
       "approvedBadge": "Genehmigt",
       "generationColumn": "Generation",
       "homeGeneration": "Heimat: G{{number}}",
@@ -724,7 +727,13 @@
       "overrideRequired": "Bitte eine Generation eingeben.",
       "overrideOutOfRange": "Generation muss zwischen 1 und 30 liegen.",
       "generationUpdated": "Generation aktualisiert",
-      "generationCleared": "Generation zurückgesetzt"
+      "generationCleared": "Generation zurückgesetzt",
+      "rejectBridge": "Brücke ablehnen",
+      "rejectBridgeConfirm": "Diese Brücke entfernen? Du kannst sie später erneut anlegen.",
+      "toast": {
+        "bridgeRejected": "Brücke abgelehnt",
+        "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden"
+      }
     }
   },
   "profile": {

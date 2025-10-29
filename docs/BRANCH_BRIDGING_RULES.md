@@ -64,8 +64,9 @@ Zbir pravila i najboljih praksi za grane, mostove i veze između različitih por
   3. Ako treba, namjesti override generacije.
 
 ### Šta uraditi s neprimarnim mostovima?
-- Razloga za više mostova može biti (rodbina, kumstvo), ali u grafu ostavljaj samo jedan aktivan.
-- SuperGuru treba da klikne **Reject** na redundantnim mostovima. Time se most arhivira (ostaje u istoriji), ali ne zagušuje prikaz. Po potrebi ga je lako ponovo aktivirati.
+- Razloga za više mostova može biti (rodbina, kumstvo), ali u grafu ostavljamo samo jedan aktivan.
+- Kada SuperGuru postavi primarni most, sistem automatski odbija ostale mostove između iste dvije grane (status `rejected`).
+- Gurui i dalje mogu ručno odbiti (Reject) mostove iz svoje grane ako žele dodatno počistiti listu.
 
 ---
 

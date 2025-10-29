@@ -233,7 +233,13 @@
       "approved": "Odobreno",
       "pending": "Na čekanju"
     },
-    "reviewPending": "Pregledaj {{count}} na čekanju"
+    "reviewPending": "Pregledaj {{count}} na čekanju",
+    "rejectBridge": "Odbij most",
+    "rejectBridgeConfirm": "Ukloniti ovaj most? Možeš ga ponovo kreirati kasnije.",
+    "toast": {
+      "bridgeRejected": "Most je odbijen",
+      "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
+    }
   },
   "personList": {
     "searchPlaceholder": "Pretraži po imenu...",
@@ -703,29 +709,32 @@
       "pairLabel": "{{branchA}} ↔ {{branchB}}",
       "setPrimary": "Postavi kao primarni",
       "clearPrimary": "Ukloni primarni",
-      "rejectBridge": "Odbij most",
-      "confirmReject": "Odbiti ovaj most? Guru grane može ga ponovo kreirati kasnije.",
-      "bridgeRejected": "Most je odbijen",
       "person": "Osoba",
       "direction": "Smjer",
       "directionValue": "{{source}} → {{target}}",
       "status": "Status",
       "notes": "Napomene",
       "actions": "Akcije",
-      "pendingBadge": "Na čekanju",
-      "approvedBadge": "Odobreno",
-      "generationColumn": "Generacija",
-      "homeGeneration": "Matična: G{{number}}",
-      "overrideLabel": "Override",
-      "overrideHint": "Postavi kako ova grana treba prikazati mostovsku osobu.",
-      "overridePlaceholder": "npr. 3",
-      "saveOverride": "Sačuvaj override",
-      "clearOverride": "Ukloni override",
-      "overrideRequired": "Unesi generaciju prije snimanja.",
-      "overrideOutOfRange": "Generacija mora biti između 1 i 30.",
-      "generationUpdated": "Generacija mosta je ažurirana",
-      "generationCleared": "Generacija mosta je uklonjena"
+    "pendingBadge": "Na čekanju",
+    "approvedBadge": "Odobreno",
+    "generationColumn": "Generacija",
+    "homeGeneration": "Matična: G{{number}}",
+    "overrideLabel": "Override",
+    "overrideHint": "Postavi kako ova grana treba prikazati mostovsku osobu.",
+    "overridePlaceholder": "npr. 3",
+    "saveOverride": "Sačuvaj override",
+    "clearOverride": "Ukloni override",
+    "overrideRequired": "Unesi generaciju prije snimanja.",
+    "overrideOutOfRange": "Generacija mora biti između 1 i 30.",
+    "generationUpdated": "Generacija mosta je ažurirana",
+    "generationCleared": "Generacija mosta je uklonjena",
+    "rejectBridge": "Odbij most",
+    "rejectBridgeConfirm": "Ukloniti ovaj most? Možeš ga ponovo kreirati kasnije.",
+    "toast": {
+      "bridgeRejected": "Most je odbijen",
+      "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
     }
+  }
   },
   "profile": {
     "title": "Moj profil",

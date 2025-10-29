@@ -233,7 +233,13 @@
       "approved": "Approved",
       "pending": "Pending"
     },
-    "reviewPending": "Review {{count}} pending"
+    "reviewPending": "Review {{count}} pending",
+    "rejectBridge": "Reject bridge",
+    "rejectBridgeConfirm": "Remove this bridge? You can recreate it later if needed.",
+    "toast": {
+      "bridgeRejected": "Bridge rejected",
+      "bridgeRejectedError": "Failed to reject bridge"
+    }
   },
   "personList": {
     "searchPlaceholder": "Search by name...",
@@ -526,6 +532,12 @@
       "message": "Message",
       "status": "Status",
       "actions": "Actions",
+      "rejectBridge": "Reject bridge",
+      "rejectBridgeConfirm": "Remove this bridge? You can recreate it later if needed.",
+      "toast": {
+        "bridgeRejected": "Bridge rejected",
+        "bridgeRejectedError": "Failed to reject bridge"
+      },
       "unknownUser": "Unknown user",
       "noMessage": "No message provided",
       "resolved": "Resolved"
@@ -703,29 +715,26 @@
       "pairLabel": "{{branchA}} ↔ {{branchB}}",
       "setPrimary": "Set as primary",
       "clearPrimary": "Clear primary",
-      "rejectBridge": "Reject bridge",
-      "confirmReject": "Reject this bridge link? Branch gurus can re-create it later.",
-      "bridgeRejected": "Bridge link rejected",
       "person": "Person",
       "direction": "Direction",
       "directionValue": "{{source}} → {{target}}",
       "status": "Status",
       "notes": "Notes",
       "actions": "Actions",
-      "pendingBadge": "Pending",
-      "approvedBadge": "Approved",
-      "generationColumn": "Generation",
-      "homeGeneration": "Home: G{{number}}",
-      "overrideLabel": "Override",
-      "overrideHint": "Set how this branch should display the bridge person.",
-      "overridePlaceholder": "e.g. 3",
-      "saveOverride": "Save override",
-      "clearOverride": "Clear override",
-      "overrideRequired": "Enter a generation before saving.",
-      "overrideOutOfRange": "Generation must be between 1 and 30.",
-      "generationUpdated": "Bridge generation updated",
-      "generationCleared": "Bridge generation cleared"
-    }
+    "pendingBadge": "Pending",
+    "approvedBadge": "Approved",
+    "generationColumn": "Generation",
+    "homeGeneration": "Home: G{{number}}",
+    "overrideLabel": "Override",
+    "overrideHint": "Set how this branch should display the bridge person.",
+    "overridePlaceholder": "e.g. 3",
+    "saveOverride": "Save override",
+    "clearOverride": "Clear override",
+    "overrideRequired": "Enter a generation before saving.",
+    "overrideOutOfRange": "Generation must be between 1 and 30.",
+    "generationUpdated": "Bridge generation updated",
+    "generationCleared": "Bridge generation cleared"
+  }
   },
   "profile": {
     "title": "My Profile",

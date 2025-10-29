@@ -863,6 +863,26 @@ export async function setPrimaryBridge(linkId: string, actor: ActingUser) {
       },
     });
 
+    await tx.branchPersonLink.updateMany({
+      where: {
+        ...pairWhere,
+        link_id: {
+          not: linkId,
+        },
+        status: {
+          in: [LINK_APPROVED_STATUS, ...PENDING_STATUSES],
+        },
+      },
+      data: {
+        status: LINK_REJECTED_STATUS,
+        is_primary_bridge: false,
+        primary_set_at: null,
+        primary_set_by: null,
+        display_generation_override: null,
+        updated_at: new Date(),
+      },
+    });
+
     return formatLink(updated);
   });
 }
