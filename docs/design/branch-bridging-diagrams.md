@@ -1,6 +1,10 @@
-%% Mermaid diagrams describing current vs. proposed branch bridging behaviour
+## Branch Bridging Diagrams
 
-%% Current bridging behaviour
+The following Mermaid diagrams compare today’s flexible bridge model with the proposed stricter approach.
+
+### Current Bridging Behaviour
+
+```mermaid
 graph LR
     %% Branch A canonical records
     subgraph Branch_A["Branch A (canonical lineage)"]
@@ -27,9 +31,11 @@ graph LR
     style A2_dup fill:#fee2e2,stroke:#f87171,stroke-dasharray:5 3
     style B1 fill:#ffe4d6,stroke:#fb923c,stroke-width:2px
     style B2 fill:#ffedd5,stroke:#f97316,stroke-width:1px
+```
 
+### Proposed Stricter Bridging Behaviour
 
-%% Proposed stricter bridging behaviour
+```mermaid
 graph LR
     %% Canonical ownership per branch
     subgraph Branch_A_new["Branch A (canonical)"]
@@ -65,3 +71,4 @@ graph LR
         • No duplicate canonical person records
         • Supporting links require demotion/rejection first
     end note
+```
