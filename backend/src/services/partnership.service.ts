@@ -144,24 +144,56 @@ export async function createPartnership(
 ): Promise<unknown> {
   const { branchId, person1Id, person2Id, startDate, endDate, ...rest } = input;
 
-  // Validate that both persons exist and belong to the branch
+  // Validate that both persons exist and get their full details including generation
   const [person1, person2] = await Promise.all([
     prisma.person.findUnique({
       where: { person_id: person1Id },
-      select: { person_id: true, branch_id: true },
+      select: {
+        person_id: true,
+        branch_id: true,
+        generation_number: true,
+        full_name: true,
+      },
     }),
     prisma.person.findUnique({
       where: { person_id: person2Id },
-      select: { person_id: true, branch_id: true },
+      select: {
+        person_id: true,
+        branch_id: true,
+        generation_number: true,
+        full_name: true,
+      },
     }),
   ]);
 
-  if (!person1 || person1.branch_id !== branchId) {
-    throw new Error('Person 1 not found in this branch');
+  if (!person1) {
+    throw new Error('Person 1 not found');
   }
 
-  if (!person2 || person2.branch_id !== branchId) {
-    throw new Error('Person 2 not found in this branch');
+  if (!person2) {
+    throw new Error('Person 2 not found');
+  }
+
+  // At least one person must be from the partnership branch
+  const hasLocalPerson = person1.branch_id === branchId || person2.branch_id === branchId;
+  if (!hasLocalPerson) {
+    throw new Error('At least one person must be from the partnership branch');
+  }
+
+  // Detect cross-branch partnership
+  const isCrossBranchPartnership = person1.branch_id !== person2.branch_id;
+  let foreignPerson = null;
+  let localPerson = null;
+
+  if (isCrossBranchPartnership) {
+    // Identify which person is from the partnership branch (local) and which is foreign
+    if (person1.branch_id === branchId) {
+      localPerson = person1;
+      foreignPerson = person2;
+    } else {
+      localPerson = person2;
+      foreignPerson = person1;
+    }
   }
 
   // Ensure person1Id < person2Id for consistency
@@ -220,6 +252,56 @@ export async function createPartnership(
       },
     },
   });
+
+  // Auto-create bridge link for cross-branch partnerships
+  if (isCrossBranchPartnership && foreignPerson && localPerson) {
+    try {
+      // Check if bridge link already exists
+      const existingBridgeLink = await prisma.branchPersonLink.findFirst({
+        where: {
+          person_id: foreignPerson.person_id,
+          branch_id: branchId,
+          source_branch_id: foreignPerson.branch_id,
+        },
+      });
+
+      if (!existingBridgeLink) {
+        // Create new bridge link
+        await prisma.branchPersonLink.create({
+          data: {
+            link_id: randomUUID(),
+            person_id: foreignPerson.person_id,
+            branch_id: branchId, // Target branch (marrying into)
+            source_branch_id: foreignPerson.branch_id, // Source branch (birth branch)
+            status: 'approved', // Auto-approve for marriages
+            display_generation_override: localPerson.generation_number, // Adopt spouse's generation
+            notes: `Auto-created bridge link through marriage to ${localPerson.full_name}`,
+            requested_by: userId,
+            source_approved_by: userId,
+            source_approved_at: new Date(),
+            target_approved_by: userId,
+            target_approved_at: new Date(),
+            is_primary_bridge: true, // Mark as primary bridge
+            primary_set_by: userId,
+            primary_set_at: new Date(),
+            updated_at: new Date(),
+          },
+        });
+      } else if (!existingBridgeLink.display_generation_override) {
+        // Update existing bridge link with generation override if not set
+        await prisma.branchPersonLink.update({
+          where: { link_id: existingBridgeLink.link_id },
+          data: {
+            display_generation_override: localPerson.generation_number,
+            updated_at: new Date(),
+          },
+        });
+      }
+    } catch (error) {
+      // Log error but don't fail partnership creation
+      console.error('Failed to create/update bridge link:', error);
+    }
+  }
 
   return mapPartnership(partnership as PartnershipRecord);
 }

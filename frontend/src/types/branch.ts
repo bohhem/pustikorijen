@@ -45,6 +45,7 @@ export interface CreateBranchInput {
 }
 
 export interface UpdateBranchInput {
+  surname?: string;
   description?: string | null;
   visibility?: 'public' | 'family_only' | 'private';
   geoCityId?: string;

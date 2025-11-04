@@ -172,6 +172,7 @@
       "openButton": "Uredi granu",
       "title": "Uredi podatke za granu {{branch}}",
       "subtitle": "Samo gurui i SuperGurui mogu mijenjati informacije o grani.",
+      "surnameHelp": "Prezime porodice za ovu granu. Može uključivati varijacije ili načine pisanja.",
       "descriptionLabel": "Opis grane",
       "descriptionHelp": "Podijelite kontekst, historiju ili očekivanja za članove (opcionalno).",
       "visibilityLabel": "Nivo privatnosti",
@@ -234,11 +235,15 @@
       "pending": "Na čekanju"
     },
     "reviewPending": "Pregledaj {{count}} na čekanju",
+    "setPrimary": "Postavi kao primarni",
+    "setPrimaryConfirm": "Postaviti ovo kao primarni most između ovih porodica?",
     "rejectBridge": "Odbij most",
     "rejectBridgeConfirm": "Ukloniti ovaj most? Možeš ga ponovo kreirati kasnije.",
     "toast": {
       "bridgeRejected": "Most je odbijen",
-      "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
+      "bridgeRejectedError": "Odbijanje mosta nije uspjelo",
+      "primarySet": "Primarni most je uspješno postavljen",
+      "primarySetError": "Postavljanje primarnog mosta nije uspjelo"
     }
   },
   "personList": {
@@ -603,7 +608,45 @@
     "noMembersDesc": "Započnite izgradnju vašeg porodičnog stabla dodavanjem prve osobe.",
     "addFirstPerson": "Dodaj prvu osobu",
     "peopleAcross": "osoba kroz",
-    "selectedPersonTitle": "Odabrana osoba"
+    "selectedPersonTitle": "Odabrana osoba",
+    "viewModes": {
+      "network": "Mrežni prikaz - Pogledajte sve povezane grane",
+      "networkShort": "Mreža",
+      "pedigree": "Pedigre - Prikaz predaka",
+      "pedigreeShort": "Preci",
+      "descendants": "Prikaz potomaka",
+      "descendantsShort": "Potomci",
+      "hourglass": "Pješčani sat - Prikaz predaka i potomaka",
+      "hourglassShort": "Pješčani sat"
+    },
+    "filters": {
+      "title": "Filteri",
+      "toggle": "Prikaži/sakrij filtere",
+      "clearAll": "Obriši sve",
+      "generation": "Generacija",
+      "lifeStatus": "Status života",
+      "livingOnly": "Samo živi",
+      "deceasedOnly": "Samo preminuli",
+      "location": "Lokacija",
+      "locationComingSoon": "Geografsko filtriranje uskoro...",
+      "active": "Aktivni filteri",
+      "living": "Živi",
+      "deceased": "Preminuli"
+    },
+    "search": {
+      "placeholder": "Pretražite osobe...",
+      "noResults": "Nema pronađenih osoba"
+    },
+    "legend": {
+      "toggle": "Prikaži/sakrij legendu"
+    },
+    "stats": {
+      "showing": "Prikazuje se",
+      "of": "od",
+      "people": "osoba",
+      "branches": "grana",
+      "focusOn": "Fokus:"
+    }
   },
   "validation": {
     "required": "Ovo polje je obavezno",

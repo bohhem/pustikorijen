@@ -85,46 +85,77 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
             },
           });
 
-          // Add parent edges
+          // Add parent edges (inner-branch relationships)
+          // Special styling for bridge person -> parent connections
           if (person.fatherId) {
+            const fatherColor = isBridgePerson ? '#8b5cf6' : '#6366f1'; // purple for bridge, indigo for normal
             newEdges.push({
               id: `${branch.branch.id}-father-${person.fatherId}-${person.id}`,
               source: `${branch.branch.id}-${person.fatherId}`,
               target: `${branch.branch.id}-${person.id}`,
               type: 'smoothstep',
-              animated: false,
+              animated: isBridgePerson, // Animate bridge person parent connections
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                color: '#6366f1',
+                color: fatherColor,
+                width: 15,
+                height: 15,
               },
               style: {
-                stroke: '#6366f1',
-                strokeWidth: 2,
+                stroke: fatherColor,
+                strokeWidth: isBridgePerson ? 3 : 2.5,
+                strokeDasharray: isBridgePerson ? '8 4' : '0', // Dashed for bridge persons
+                opacity: isBridgePerson ? 0.95 : 0.85,
+              },
+              label: isBridgePerson ? '👨🌉' : '👨',
+              labelStyle: {
+                fontSize: isBridgePerson ? 14 : 12,
+                fill: fatherColor,
+                fontWeight: 600,
+              },
+              labelBgStyle: {
+                fill: isBridgePerson ? '#f3e8ff' : '#eef2ff', // lighter purple for bridge
+                fillOpacity: 0.95,
               },
             });
           }
 
           if (person.motherId) {
+            const motherColor = isBridgePerson ? '#d946ef' : '#ec4899'; // fuchsia for bridge, pink for normal
             newEdges.push({
               id: `${branch.branch.id}-mother-${person.motherId}-${person.id}`,
               source: `${branch.branch.id}-${person.motherId}`,
               target: `${branch.branch.id}-${person.id}`,
               type: 'smoothstep',
-              animated: false,
+              animated: isBridgePerson, // Animate bridge person parent connections
               markerEnd: {
                 type: MarkerType.ArrowClosed,
-                color: '#ec4899',
+                color: motherColor,
+                width: 15,
+                height: 15,
               },
               style: {
-                stroke: '#ec4899',
-                strokeWidth: 2,
+                stroke: motherColor,
+                strokeWidth: isBridgePerson ? 3 : 2.5,
+                strokeDasharray: isBridgePerson ? '8 4' : '0', // Dashed for bridge persons
+                opacity: isBridgePerson ? 0.95 : 0.85,
+              },
+              label: isBridgePerson ? '👩🌉' : '👩',
+              labelStyle: {
+                fontSize: isBridgePerson ? 14 : 12,
+                fill: motherColor,
+                fontWeight: 600,
+              },
+              labelBgStyle: {
+                fill: isBridgePerson ? '#fdf4ff' : '#fdf2f8', // lighter fuchsia for bridge
+                fillOpacity: 0.95,
               },
             });
           }
         });
       });
 
-      // Add partnership edges
+      // Add partnership edges (inner-branch relationships)
       partnerships.forEach((partnership) => {
         const person1 = persons.find(p => p.id === partnership.person1Id);
         const person2 = persons.find(p => p.id === partnership.person2Id);
@@ -141,10 +172,19 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
             animated: isActive,
             style: {
               stroke: edgeColor,
-              strokeWidth: 3,
-              strokeDasharray: isActive ? '0' : '5 5',
+              strokeWidth: 3.5,
+              strokeDasharray: isActive ? '0' : '8 4',
+              opacity: isActive ? 0.9 : 0.6,
             },
             label: partnership.partnershipType === 'marriage' ? '💑' : '🤝',
+            labelStyle: {
+              fontSize: 14,
+              fontWeight: 600,
+            },
+            labelBgStyle: {
+              fill: isActive ? '#d1fae5' : '#f1f5f9',
+              fillOpacity: 0.95,
+            },
           });
         }
       });
@@ -204,7 +244,7 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
       createBranchNodes(connectedBranch, index + 1);
     });
 
-    // Add bridge connection edges (yellow lines between branches)
+    // Add bridge connection edges (inter-branch connections - visually prominent!)
     treeData.connectedBranches.forEach((connectedBranch) => {
       connectedBranch.bridgeLinks.forEach((bridgeLink) => {
         const mainNodeId = `${treeData.mainBranch.branch.id}-${bridgeLink.personId}`;
@@ -221,30 +261,42 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
             id: `bridge-${bridgeLink.linkId}`,
             source: mainNodeId,
             target: connectedNodeId,
-            type: 'straight',
+            type: 'default', // Use bezier curves for inter-branch connections
             animated: true,
             style: {
-              stroke: '#f59e0b', // amber-500
-              strokeWidth: isPrimary ? 5 : 4,
-              strokeDasharray: isPrimary ? '2 6' : '10 5',
+              stroke: isPrimary ? '#f59e0b' : '#fbbf24', // amber-500 vs amber-400
+              strokeWidth: isPrimary ? 6 : 5,
+              strokeDasharray: isPrimary ? '0' : '12 8',
+              opacity: 1,
+              // Add shadow/glow effect for bridge connections
+              filter: isPrimary
+                ? 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.6))'
+                : 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.4))',
             },
-            label: isPrimary ? '🌉⭐' : '🌉',
+            label: isPrimary ? '🌉 ⭐ PRIMARY' : '🌉 BRIDGE',
             labelStyle: {
-              fontSize: 20,
+              fontSize: isPrimary ? 14 : 12,
               fontWeight: 'bold',
+              fill: '#92400e', // amber-800
             },
             labelBgStyle: {
-              fill: '#fef3c7', // amber-100
-              fillOpacity: 0.9,
+              fill: isPrimary ? '#fef3c7' : '#fef9e7', // amber-100 vs lighter
+              fillOpacity: 1,
+              stroke: '#f59e0b',
+              strokeWidth: 1.5,
             },
-            markerEnd: isPrimary
-              ? {
-                  type: MarkerType.ArrowClosed,
-                  color: '#f59e0b',
-                  width: 20,
-                  height: 20,
-                }
-              : undefined,
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+              color: isPrimary ? '#f59e0b' : '#fbbf24',
+              width: isPrimary ? 24 : 20,
+              height: isPrimary ? 24 : 20,
+            },
+            markerStart: {
+              type: MarkerType.ArrowClosed,
+              color: isPrimary ? '#f59e0b' : '#fbbf24',
+              width: isPrimary ? 24 : 20,
+              height: isPrimary ? 24 : 20,
+            },
           });
         }
       });
@@ -279,20 +331,31 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
         <Background color="#e5e7eb" gap={16} />
         <Controls />
 
-        {/* Mobile Control Toggle */}
-        <Panel position="top-left" className="sm:hidden">
+        {/* View Mode Controls Toggle */}
+        <Panel position="top-left">
           <button
             onClick={() => setShowControls(!showControls)}
-            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation hover:bg-gray-50 transition"
             aria-label="Toggle controls"
+            title={showControls ? "Hide view controls" : "Show view controls"}
           >
             {showControls ? '✕' : '☰'}
           </button>
         </Panel>
 
         {/* View Mode Controls */}
-        <Panel position="top-left" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 space-y-2 max-w-[280px] ${showControls ? 'block' : 'hidden sm:block'}`}>
-          <h3 className="font-semibold text-gray-900 text-sm mb-2">View Mode</h3>
+        {showControls && (
+          <Panel position="top-left" className="bg-white rounded-lg shadow-lg p-3 sm:p-4 space-y-2 max-w-[280px] mt-12">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-gray-900 text-sm">View Mode</h3>
+              <button
+                onClick={() => setShowControls(false)}
+                className="text-gray-400 hover:text-gray-600 transition p-1"
+                aria-label="Close controls"
+              >
+                ✕
+              </button>
+            </div>
           <div className="flex flex-col gap-2">
             <button
               onClick={() => handleViewModeChange('network')}
@@ -345,44 +408,82 @@ export default function MultiBranchTreeView({ treeData, onPersonSelect }: MultiB
             </div>
           </div>
         </Panel>
+        )}
 
-        {/* Mobile Legend Toggle */}
-        <Panel position="top-right" className="sm:hidden">
+        {/* Legend Toggle */}
+        <Panel position="top-right">
           <button
             onClick={() => setShowLegend(!showLegend)}
-            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation"
+            className="bg-white rounded-lg shadow-lg p-2 touch-manipulation hover:bg-gray-50 transition"
             aria-label="Toggle legend"
+            title={showLegend ? "Hide legend" : "Show legend"}
           >
             {showLegend ? '✕' : 'ℹ'}
           </button>
         </Panel>
 
         {/* Legend */}
-        <Panel position="top-right" className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 max-w-[200px] ${showLegend ? 'block' : 'hidden sm:block'}`}>
-          <h3 className="font-semibold text-gray-900 text-xs sm:text-sm mb-2">Legend</h3>
-          <div className="space-y-2 text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-indigo-500"></div>
-              <span className="text-gray-700">Father connection</span>
+        {showLegend && (
+          <Panel position="top-right" className="bg-white rounded-lg shadow-lg p-3 sm:p-4 max-w-[240px] mt-12">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">Legend</h3>
+              <button
+                onClick={() => setShowLegend(false)}
+                className="text-gray-400 hover:text-gray-600 transition p-1"
+                aria-label="Close legend"
+              >
+                ✕
+              </button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-pink-500"></div>
-              <span className="text-gray-700">Mother connection</span>
+          <div className="space-y-4 text-xs">
+            {/* Inner-Branch Relationships */}
+            <div>
+              <h4 className="font-semibold text-gray-700 text-[10px] uppercase tracking-wide mb-2">Within Branch</h4>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-indigo-500 rounded-full"></div>
+                  <span className="text-gray-700">👨 Father</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-pink-500 rounded-full"></div>
+                  <span className="text-gray-700">👩 Mother</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-purple-500" style={{ backgroundImage: 'linear-gradient(to right, #8b5cf6 50%, transparent 50%)', backgroundSize: '6px 2px' }}></div>
+                  <span className="text-gray-700">👨🌉 Bridge parent</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-green-500"></div>
+                  <span className="text-gray-700">💑 Partnership</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-gray-400" style={{ backgroundImage: 'linear-gradient(to right, #94a3b8 50%, transparent 50%)', backgroundSize: '6px 2px' }}></div>
+                  <span className="text-gray-700">💔 Ended</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-green-500"></div>
-              <span className="text-gray-700">Active partnership 💑</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-0.5 bg-amber-500" style={{ backgroundImage: 'linear-gradient(to right, #f59e0b 50%, transparent 50%)', backgroundSize: '8px 2px', height: '2px' }}></div>
-              <span className="text-gray-700">Bridge connection 🌉</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-400"></div>
-              <span className="text-gray-700">Bridge person</span>
+
+            {/* Inter-Branch Connections */}
+            <div className="pt-2 border-t border-gray-200">
+              <h4 className="font-semibold text-amber-700 text-[10px] uppercase tracking-wide mb-2">Between Branches</h4>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-1 bg-amber-500 rounded-full shadow-sm"></div>
+                  <span className="text-gray-700">🌉⭐ Primary</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-0.5 bg-amber-400" style={{ backgroundImage: 'linear-gradient(to right, #fbbf24 50%, transparent 50%)', backgroundSize: '8px 2px' }}></div>
+                  <span className="text-gray-700">🌉 Bridge</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-400 shadow-sm"></div>
+                  <span className="text-gray-700">Bridge person</span>
+                </div>
+              </div>
             </div>
           </div>
         </Panel>
+        )}
       </ReactFlow>
     </div>
   );

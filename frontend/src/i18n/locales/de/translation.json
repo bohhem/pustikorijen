@@ -172,6 +172,7 @@
       "openButton": "Zweig bearbeiten",
       "title": "Details für Zweig {{branch}} bearbeiten",
       "subtitle": "Nur Gurus und SuperGurus dürfen diese Informationen ändern.",
+      "surnameHelp": "Der Familienname für diesen Zweig. Kann Variationen oder Schreibweisen enthalten.",
       "descriptionLabel": "Beschreibung des Zweigs",
       "descriptionHelp": "Teilen Sie Geschichte, Kontext oder Erwartungen (optional).",
       "visibilityLabel": "Privatsphäre",
@@ -234,11 +235,15 @@
       "pending": "Ausstehend"
     },
     "reviewPending": "{{count}} prüfen",
+    "setPrimary": "Als primär markieren",
+    "setPrimaryConfirm": "Diese als primäre Brücke zwischen diesen Familien setzen?",
     "rejectBridge": "Brücke ablehnen",
     "rejectBridgeConfirm": "Diese Brücke entfernen? Du kannst sie später erneut anlegen.",
     "toast": {
       "bridgeRejected": "Brücke abgelehnt",
-      "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden"
+      "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden",
+      "primarySet": "Primäre Brücke erfolgreich gesetzt",
+      "primarySetError": "Primäre Brücke konnte nicht gesetzt werden"
     }
   },
   "personList": {
@@ -499,7 +504,45 @@
     "noMembersDesc": "Beginnen Sie mit dem Aufbau Ihres Stammbaums, indem Sie die erste Person hinzufügen.",
     "addFirstPerson": "Erste Person hinzufügen",
     "peopleAcross": "Personen über",
-    "selectedPersonTitle": "Ausgewählte Person"
+    "selectedPersonTitle": "Ausgewählte Person",
+    "viewModes": {
+      "network": "Netzwerkansicht - Alle verbundenen Zweige anzeigen",
+      "networkShort": "Netzwerk",
+      "pedigree": "Ahnentafel - Vorfahren anzeigen",
+      "pedigreeShort": "Vorfahren",
+      "descendants": "Nachkommenansicht",
+      "descendantsShort": "Nachkommen",
+      "hourglass": "Sanduhr - Vorfahren und Nachkommen anzeigen",
+      "hourglassShort": "Sanduhr"
+    },
+    "filters": {
+      "title": "Filter",
+      "toggle": "Filter ein-/ausblenden",
+      "clearAll": "Alle löschen",
+      "generation": "Generation",
+      "lifeStatus": "Lebensstatus",
+      "livingOnly": "Nur Lebende",
+      "deceasedOnly": "Nur Verstorbene",
+      "location": "Standort",
+      "locationComingSoon": "Geografische Filterung demnächst...",
+      "active": "Aktive Filter",
+      "living": "Lebend",
+      "deceased": "Verstorben"
+    },
+    "search": {
+      "placeholder": "Personen suchen...",
+      "noResults": "Keine Personen gefunden"
+    },
+    "legend": {
+      "toggle": "Legende ein-/ausblenden"
+    },
+    "stats": {
+      "showing": "Zeige",
+      "of": "von",
+      "people": "Personen",
+      "branches": "Zweige",
+      "focusOn": "Fokus:"
+    }
   },
   "geoSelector": {
     "title": "Standort",

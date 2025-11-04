@@ -406,11 +406,11 @@ function ConnectedFamilyCard({
               return (
                 <li
                   key={bridge.id}
-                  className="flex items-start justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2"
+                  className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 rounded-lg border border-gray-100 px-3 py-2 sm:py-3"
                 >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-gray-900">{bridge.person.fullName}</p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-semibold text-gray-900 break-words">{bridge.person.fullName}</p>
                       {bridge.isPrimary && (
                         <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
                           {t('connectedFamilies.primaryBridge')}
@@ -418,22 +418,22 @@ function ConnectedFamilyCard({
                       )}
                     </div>
                     {bridge.person.homeBranch && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 break-words">
                         {t('connectedFamilies.homeBranch', { branch: bridge.person.homeBranch.surname })}
                       </p>
                     )}
                     {bridge.displayName && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 break-words">
                         {t('connectedFamilies.displayAs', { name: bridge.displayName })}
                       </p>
                     )}
                     {bridge.notes && (
-                      <p className="text-xs text-gray-500 italic mt-1">“{bridge.notes}”</p>
+                      <p className="text-xs text-gray-500 italic mt-1 break-words">"{bridge.notes}"</p>
                     )}
                   </div>
-                  <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 flex-shrink-0">
                     <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
+                      className={`inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-semibold ${
                         bridge.status === 'approved'
                           ? 'bg-green-50 text-green-700'
                           : 'bg-amber-50 text-amber-700'
@@ -450,7 +450,7 @@ function ConnectedFamilyCard({
                           }
                         }}
                         disabled={isProcessing}
-                        className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 disabled:opacity-60"
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 disabled:opacity-60 touch-manipulation w-full sm:w-auto"
                       >
                         {isProcessing ? t('common.loading') : t('connectedFamilies.setPrimary')}
                       </button>
@@ -464,7 +464,7 @@ function ConnectedFamilyCard({
                           }
                         }}
                         disabled={isProcessing}
-                        className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                        className="inline-flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60 touch-manipulation w-full sm:w-auto"
                       >
                         {isProcessing ? t('common.loading') : t('connectedFamilies.rejectBridge')}
                       </button>

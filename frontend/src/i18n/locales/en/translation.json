@@ -172,6 +172,7 @@
       "openButton": "Edit branch",
       "title": "Edit {{branch}} branch details",
       "subtitle": "Only Gurus and SuperGurus can update branch information.",
+      "surnameHelp": "The family surname for this branch. Can include variations or spellings.",
       "descriptionLabel": "Branch description",
       "descriptionHelp": "Share context, history or expectations for members (optional).",
       "visibilityLabel": "Privacy level",
@@ -234,11 +235,15 @@
       "pending": "Pending"
     },
     "reviewPending": "Review {{count}} pending",
+    "setPrimary": "Set as primary",
+    "setPrimaryConfirm": "Set this as the primary bridge between these families?",
     "rejectBridge": "Reject bridge",
     "rejectBridgeConfirm": "Remove this bridge? You can recreate it later if needed.",
     "toast": {
       "bridgeRejected": "Bridge rejected",
-      "bridgeRejectedError": "Failed to reject bridge"
+      "bridgeRejectedError": "Failed to reject bridge",
+      "primarySet": "Primary bridge set successfully",
+      "primarySetError": "Failed to set primary bridge"
     }
   },
   "personList": {
@@ -609,7 +614,45 @@
     "noMembersDesc": "Start building your family tree by adding the first person.",
     "addFirstPerson": "Add First Person",
     "peopleAcross": "people across",
-    "selectedPersonTitle": "Selected Person"
+    "selectedPersonTitle": "Selected Person",
+    "viewModes": {
+      "network": "Network View - See all connected branches",
+      "networkShort": "Network",
+      "pedigree": "Pedigree View - Show ancestors",
+      "pedigreeShort": "Ancestors",
+      "descendants": "Descendant View - Show descendants",
+      "descendantsShort": "Descendants",
+      "hourglass": "Hourglass View - Show ancestors and descendants",
+      "hourglassShort": "Hourglass"
+    },
+    "filters": {
+      "title": "Filters",
+      "toggle": "Toggle Filters",
+      "clearAll": "Clear all",
+      "generation": "Generation",
+      "lifeStatus": "Life Status",
+      "livingOnly": "Living only",
+      "deceasedOnly": "Deceased only",
+      "location": "Location",
+      "locationComingSoon": "Geographic filtering coming soon...",
+      "active": "Active Filters",
+      "living": "Living",
+      "deceased": "Deceased"
+    },
+    "search": {
+      "placeholder": "Search people...",
+      "noResults": "No people found"
+    },
+    "legend": {
+      "toggle": "Toggle Legend"
+    },
+    "stats": {
+      "showing": "Showing",
+      "of": "of",
+      "people": "people",
+      "branches": "branches",
+      "focusOn": "Focus:"
+    }
   },
   "validation": {
     "required": "This field is required",

@@ -12,6 +12,7 @@ interface EditBranchModalProps {
 
 export default function EditBranchModal({ branch, open, onClose, onSave }: EditBranchModalProps) {
   const { t } = useTranslation();
+  const [surname, setSurname] = useState(branch.surname);
   const [description, setDescription] = useState(branch.description ?? '');
   const [visibility, setVisibility] = useState<'public' | 'family_only' | 'private'>(branch.visibility);
   const [selectedCityId, setSelectedCityId] = useState<string>(branch.geoCityId ?? '');
@@ -22,6 +23,7 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
     if (!open) {
       return;
     }
+    setSurname(branch.surname);
     setDescription(branch.description ?? '');
     setVisibility(branch.visibility);
     setSelectedCityId(branch.geoCityId ?? '');
@@ -47,6 +49,17 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
     setError('');
 
     const payload: UpdateBranchInput = {};
+    const normalizedSurname = surname.trim();
+
+    if (normalizedSurname.length < 2) {
+      setError(t('createBranch.surnameRequired'));
+      return;
+    }
+
+    if (normalizedSurname !== branch.surname) {
+      payload.surname = normalizedSurname;
+    }
+
     const normalizedDescription = description.trim();
     const initialDescription = branch.description ?? '';
 
@@ -112,6 +125,26 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
         {/* Scrollable Form Content */}
         <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
           <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              {t('createBranch.surname')}
+            </label>
+            <input
+              type="text"
+              value={surname}
+              onChange={(event) => setSurname(event.target.value)}
+              className="mt-1 block w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-base"
+              required
+              minLength={2}
+              maxLength={100}
+              placeholder={t('createBranch.surnamePlaceholder')}
+              disabled={saving}
+            />
+            <p className="mt-1 text-xs text-gray-400">
+              {t('branchDetail.edit.surnameHelp')}
+            </p>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               {t('branchDetail.edit.descriptionLabel')}

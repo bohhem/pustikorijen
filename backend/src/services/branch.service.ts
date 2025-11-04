@@ -162,6 +162,7 @@ interface CreateBranchInput {
 }
 
 interface UpdateBranchInput {
+  surname?: string;
   description?: string | null;
   visibility?: 'public' | 'family_only' | 'private';
   geoCityId?: string;
@@ -312,9 +313,10 @@ export async function updateBranch(branchId: string, input: UpdateBranchInput, a
     }
   }
 
-  const { description, visibility, geoCityId } = input;
+  const { surname, description, visibility, geoCityId } = input;
 
   if (
+    surname === undefined &&
     description === undefined &&
     visibility === undefined &&
     geoCityId === undefined
@@ -325,6 +327,11 @@ export async function updateBranch(branchId: string, input: UpdateBranchInput, a
   const updateData: Record<string, unknown> = {
     updated_at: new Date(),
   };
+
+  if (surname !== undefined) {
+    updateData.surname = surname;
+    updateData.surname_normalized = surname.toUpperCase();
+  }
 
   if (description !== undefined) {
     updateData.description = description ?? null;
@@ -425,7 +432,7 @@ export async function getBranches(params: {
       skip,
       take: limit,
       orderBy: {
-        created_at: 'desc',
+        updated_at: 'desc',
       },
       include: {
         users: {
@@ -1258,32 +1265,9 @@ export async function getMultiBranchTree(branchId: string) {
     },
   });
 
-  // Get all approved person links to find connected branches
-  const approvedLinks = await prisma.branchPersonLink.findMany({
-    where: {
-      OR: [
-        { branch_id: branchId, status: 'approved' },
-        { source_branch_id: branchId, status: 'approved' },
-      ],
-    },
-    select: {
-      link_id: true,
-      person_id: true,
-      branch_id: true,
-      source_branch_id: true,
-      status: true,
-      display_name: true,
-      target_approved_at: true,
-      source_approved_at: true,
-      is_primary_bridge: true,
-      primary_set_at: true,
-      display_generation_override: true,
-    },
-  });
-
-  // Build map of connected branch IDs
+  // Recursively find all connected branches (transitive closure)
   const connectedBranchIds = new Set<string>();
-  const bridgeLinks: Array<{
+  const allBridgeLinks: Array<{
     linkId: string;
     personId: string;
     sourceBranchId: string;
@@ -1295,23 +1279,70 @@ export async function getMultiBranchTree(branchId: string) {
     displayGenerationOverride: number | null;
   }> = [];
 
-  for (const link of approvedLinks) {
-    const isTarget = link.branch_id === branchId;
-    const otherBranchId = isTarget ? link.source_branch_id : link.branch_id;
+  const visitedBranches = new Set<string>();
+  const toVisit = [branchId];
 
-    connectedBranchIds.add(otherBranchId);
-    bridgeLinks.push({
-      linkId: link.link_id,
-      personId: link.person_id,
-      sourceBranchId: link.source_branch_id,
-      targetBranchId: link.branch_id,
-      displayName: link.display_name,
-      approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
-      isPrimary: link.is_primary_bridge,
-      primaryAssignedAt: link.primary_set_at,
-      displayGenerationOverride: link.display_generation_override,
+  while (toVisit.length > 0) {
+    const currentBranchId = toVisit.pop()!;
+    if (visitedBranches.has(currentBranchId)) continue;
+    visitedBranches.add(currentBranchId);
+
+    // Get all approved links for this branch
+    const approvedLinks = await prisma.branchPersonLink.findMany({
+      where: {
+        OR: [
+          { branch_id: currentBranchId, status: 'approved' },
+          { source_branch_id: currentBranchId, status: 'approved' },
+        ],
+      },
+      select: {
+        link_id: true,
+        person_id: true,
+        branch_id: true,
+        source_branch_id: true,
+        status: true,
+        display_name: true,
+        target_approved_at: true,
+        source_approved_at: true,
+        is_primary_bridge: true,
+        primary_set_at: true,
+        display_generation_override: true,
+      },
     });
+
+    for (const link of approvedLinks) {
+      const isTarget = link.branch_id === currentBranchId;
+      const otherBranchId = isTarget ? link.source_branch_id : link.branch_id;
+
+      // Add to connected branches (excluding the main branch)
+      if (otherBranchId !== branchId) {
+        connectedBranchIds.add(otherBranchId);
+      }
+
+      // Add to visit queue if not visited yet
+      if (!visitedBranches.has(otherBranchId)) {
+        toVisit.push(otherBranchId);
+      }
+
+      // Store bridge link (avoid duplicates)
+      const linkExists = allBridgeLinks.some(bl => bl.linkId === link.link_id);
+      if (!linkExists) {
+        allBridgeLinks.push({
+          linkId: link.link_id,
+          personId: link.person_id,
+          sourceBranchId: link.source_branch_id,
+          targetBranchId: link.branch_id,
+          displayName: link.display_name,
+          approvedAt: isTarget ? link.target_approved_at : link.source_approved_at,
+          isPrimary: link.is_primary_bridge,
+          primaryAssignedAt: link.primary_set_at,
+          displayGenerationOverride: link.display_generation_override,
+        });
+      }
+    }
   }
+
+  const bridgeLinks = allBridgeLinks;
 
   // Fetch data for each connected branch
   const connectedBranches = await Promise.all(
@@ -1351,20 +1382,44 @@ export async function getMultiBranchTree(branchId: string) {
           totalPeople: branch.totalPeople,
           totalGenerations: branch.totalGenerations,
         },
-        persons: persons.map((p) => ({
-          id: p.id,
-          fullName: p.fullName,
-          givenName: p.givenName,
-          surname: p.surname,
-          maidenName: p.maidenName,
-          generation: p.generation,
-          generationNumber: p.generationNumber,
-          fatherId: p.fatherId,
-          motherId: p.motherId,
-          birthDate: p.birthDate,
-          deathDate: p.deathDate,
-          profilePhotoUrl: p.profilePhotoUrl,
-        })),
+        persons: persons.map((p) => {
+          // Calculate generation for bridge persons based on parent's generation in this branch
+          let calculatedGeneration = p.generationNumber;
+          const bridgeInfo = bridgesForThisBranch.find(bl => bl.personId === p.id);
+
+          if (bridgeInfo && !bridgeInfo.displayGenerationOverride) {
+            // This is a bridge person - calculate generation from parent if possible
+            if (p.fatherId) {
+              const father = persons.find(person => person.id === p.fatherId);
+              if (father) {
+                calculatedGeneration = (father.generationNumber || 1) + 1;
+              }
+            } else if (p.motherId) {
+              const mother = persons.find(person => person.id === p.motherId);
+              if (mother) {
+                calculatedGeneration = (mother.generationNumber || 1) + 1;
+              }
+            }
+          } else if (bridgeInfo?.displayGenerationOverride) {
+            // Use manual override if set
+            calculatedGeneration = bridgeInfo.displayGenerationOverride;
+          }
+
+          return {
+            id: p.id,
+            fullName: p.fullName,
+            givenName: p.givenName,
+            surname: p.surname,
+            maidenName: p.maidenName,
+            generation: `G${calculatedGeneration}`,
+            generationNumber: calculatedGeneration,
+            fatherId: p.fatherId,
+            motherId: p.motherId,
+            birthDate: p.birthDate,
+            deathDate: p.deathDate,
+            profilePhotoUrl: p.profilePhotoUrl,
+          };
+        }),
         partnerships: partnerships.map((p: {
           partnership_id: string;
           branch_id: string;

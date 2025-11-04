@@ -165,14 +165,22 @@ export default function PersonList() {
             <span className="mx-2">/</span>
             <span className="text-gray-900">{t('navigation.people')}</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h1 className="text-3xl font-bold text-gray-900">{t('persons.title')}</h1>
-            <Link
-              to={`/branches/${branchId}/persons/create`}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              {t('persons.create')}
-            </Link>
+            <div className="flex gap-2 flex-wrap">
+              <Link
+                to={`/branches/${branchId}/tree`}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                🌳 {t('tree.viewTree')}
+              </Link>
+              <Link
+                to={`/branches/${branchId}/persons/create`}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+              >
+                {t('persons.create')}
+              </Link>
+            </div>
           </div>
         </div>
 

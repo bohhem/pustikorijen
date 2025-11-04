@@ -17,6 +17,7 @@ export type CreateBranchInput = z.infer<typeof createBranchSchema>;
  */
 export const updateBranchSchema = z
   .object({
+    surname: z.string().min(2, 'Surname must be at least 2 characters').max(100).optional(),
     description: z.string().max(5000).optional().nullable(),
     visibility: z.enum(['public', 'family_only', 'private']).optional(),
     geoCityId: z.string().min(1, 'City selection is required').optional(),

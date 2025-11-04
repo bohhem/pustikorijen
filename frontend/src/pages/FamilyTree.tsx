@@ -8,8 +8,9 @@ import { useToast } from '../contexts/ToastContext';
 import Layout from '../components/layout/Layout';
 import FamilyTreeView from '../components/tree/FamilyTreeView';
 import MultiBranchTreeView from '../components/tree/MultiBranchTreeView';
+import EnhancedTreeView from '../components/tree/EnhancedTreeView';
 import type { Person } from '../types/person';
-import type { Branch, MultiBranchTreeResponse } from '../types/branch';
+import type { Branch, MultiBranchTreeResponse, MultiBranchTreePerson } from '../types/branch';
 import type { Partnership } from '../types/partnership';
 import { orderPersonsByPartnerPairing } from '../utils/personOrdering';
 
@@ -27,6 +28,7 @@ export default function FamilyTree() {
   const [loadingMultiBranch, setLoadingMultiBranch] = useState(false);
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [selectedLoading, setSelectedLoading] = useState(false);
+  const [useEnhancedView, setUseEnhancedView] = useState(false);
 
   const orderedPartnerData = useMemo(
     () => orderPersonsByPartnerPairing(persons, partnerships),
@@ -75,9 +77,19 @@ export default function FamilyTree() {
       await loadMultiBranchData();
     }
     setMultiBranchView(!multiBranchView);
+    // If switching to multi-branch and enhanced view is on, keep it
+    // Enhanced view works with both single and multi-branch data
   };
 
-  const handlePersonSelect = async (person: Person | any) => {
+  const handleToggleEnhancedView = async () => {
+    // If switching to enhanced view and we don't have multi-branch data yet, load it
+    if (!useEnhancedView && !multiBranchData) {
+      await loadMultiBranchData();
+    }
+    setUseEnhancedView(!useEnhancedView);
+  };
+
+  const handlePersonSelect = async (person: Person | MultiBranchTreePerson | any) => {
     if (!branchId) return;
     setSelectedLoading(true);
     try {
@@ -340,9 +352,13 @@ export default function FamilyTree() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <button
-                onClick={handleToggleMultiBranch}
+                onClick={handleToggleEnhancedView}
                 disabled={loadingMultiBranch}
-                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation"
+                className={`inline-flex items-center justify-center px-3 sm:px-4 py-2 border text-xs sm:text-sm font-medium rounded-md disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation ${
+                  useEnhancedView
+                    ? 'border-indigo-600 text-indigo-700 bg-indigo-50 hover:bg-indigo-100'
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                }`}
               >
                 {loadingMultiBranch ? (
                   <>
@@ -351,11 +367,30 @@ export default function FamilyTree() {
                   </>
                 ) : (
                   <>
-                    <span className="hidden sm:inline">{multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}</span>
-                    <span className="sm:hidden">{multiBranchView ? '🌳 Single' : '🌐 Multi'}</span>
+                    <span className="hidden sm:inline">{useEnhancedView ? '✨ Enhanced View' : '📊 Classic View'}</span>
+                    <span className="sm:hidden">{useEnhancedView ? '✨' : '📊'}</span>
                   </>
                 )}
               </button>
+              {!useEnhancedView && (
+                <button
+                  onClick={handleToggleMultiBranch}
+                  disabled={loadingMultiBranch}
+                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation"
+                >
+                  {loadingMultiBranch ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
+                      <span className="hidden sm:inline">Loading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="hidden sm:inline">{multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}</span>
+                      <span className="sm:hidden">{multiBranchView ? '🌳 Single' : '🌐 Multi'}</span>
+                    </>
+                  )}
+                </button>
+              )}
               <Link
                 to={`/branches/${branchId}/persons`}
                 className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 flex-1 sm:flex-none min-w-[100px] touch-manipulation"
@@ -391,7 +426,14 @@ export default function FamilyTree() {
           </div>
         ) : (
           <div className="space-y-6">
-            {multiBranchView && multiBranchData ? (
+            {useEnhancedView && multiBranchData ? (
+              <div className="h-[800px]">
+                <EnhancedTreeView
+                  treeData={multiBranchData}
+                  onPersonSelect={handlePersonSelect}
+                />
+              </div>
+            ) : multiBranchView && multiBranchData ? (
               <MultiBranchTreeView
                 treeData={multiBranchData}
                 onPersonSelect={handlePersonSelect}

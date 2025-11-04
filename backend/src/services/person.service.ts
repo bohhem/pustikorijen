@@ -333,6 +333,7 @@ export class PersonService {
       link_id: string;
       status: string;
       display_name: string | null;
+      display_generation_override: number | null;
       persons: PersonRecord;
     }>;
 
@@ -351,8 +352,15 @@ export class PersonService {
       })
     );
 
-    const linkedDtos = linkRecords.map((link) =>
-      mapPerson(link.persons as PersonRecord, {
+    const linkedDtos = linkRecords.map((link) => {
+      // Use display_generation_override for bridge persons if set
+      const personRecord = link.persons as PersonRecord;
+      if (link.display_generation_override) {
+        personRecord.generation_number = link.display_generation_override;
+        personRecord.generation = `G${link.display_generation_override}`;
+      }
+
+      return mapPerson(personRecord, {
         isLinked: true,
         linkId: link.link_id,
         linkedFromBranch: link.persons.family_branches
@@ -366,8 +374,8 @@ export class PersonService {
         linkDisplayName: link.display_name,
         canBeClaimed: false,
         claimStatus: undefined,
-      })
-    );
+      });
+    });
 
     return [...canonicalDtos, ...linkedDtos];
   }

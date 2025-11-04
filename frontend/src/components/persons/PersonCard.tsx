@@ -85,8 +85,8 @@ export default function PersonCard({ person, branchId, partners, onClaim, claimi
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h4 className="font-semibold text-gray-900 truncate">
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-gray-900 break-words">
                 {displayName}
                 {person.maidenName && (
                   <span className="text-sm text-gray-500 ml-1">
@@ -105,8 +105,8 @@ export default function PersonCard({ person, branchId, partners, onClaim, claimi
                 </p>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:self-start">
-              {person.canBeClaimed && onClaim && (
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end sm:self-start flex-shrink-0">
+              {person.canBeClaimed && isAlive && onClaim && (
                 <button
                   type="button"
                   onClick={(event) => {
@@ -115,13 +115,13 @@ export default function PersonCard({ person, branchId, partners, onClaim, claimi
                     onClaim(person);
                   }}
                   disabled={claiming}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-200 disabled:opacity-60"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 border border-emerald-200 disabled:opacity-60 touch-manipulation whitespace-nowrap"
                 >
                   <span>{claiming ? '⏳' : '⭐'}</span>
                   <span>{claiming ? t('common.loading') : t('personDetail.claimButton')}</span>
                 </button>
               )}
-              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800 whitespace-nowrap">
                 {person.generation || `Gen ${person.generationNumber || 1}`}
               </span>
             </div>
