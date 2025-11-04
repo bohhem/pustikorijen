@@ -1,12 +1,12 @@
 # Pustikorijen
 
-> **Connecting Bosnian families across generations and borders**
+> **Connecting families across generations and borders**
 
-Pustikorijen (meaning "roots" in Bosnian) is a family genealogy platform designed to connect Bosnian diaspora with their homeland through collaborative family trees, stories, and cultural preservation.
+Pustikorijen (meaning "roots" in Bosnian/Serbian/Croatian) is a family genealogy platform designed to help families worldwide preserve their heritage through collaborative family trees, stories, and cultural preservation.
 
 ## 🌳 Project Vision
 
-A platform where Bosnian families can:
+A platform where families can:
 - Build and maintain collaborative family trees
 - Connect with relatives across the globe
 - Preserve family stories and cultural heritage

@@ -2,7 +2,7 @@
   "name": "pustikorijen",
   "version": "0.1.0",
   "private": true,
-  "description": "Connecting Bosnian families across generations and borders",
+  "description": "Connecting families across generations and borders",
   "workspaces": [
     "backend",
     "frontend"
