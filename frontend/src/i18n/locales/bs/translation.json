@@ -15,7 +15,13 @@
     "confirm": "Potvrdi",
     "yes": "Da",
     "no": "Ne",
-    "you": "vi"
+    "you": "vi",
+    "active": "Aktivan",
+    "inactive": "Neaktivan",
+    "never": "Nikada",
+    "previous": "Prethodni",
+    "next": "Sljedeći",
+    "pageOf": "Stranica {{current}} od {{total}}"
   },
   "auth": {
     "login": "Prijava",
@@ -75,11 +81,11 @@
     "manageProfile": "Upravljajte svojim profilom i adresama",
     "pendingRequests": {
       "title": "Zahtjevi na čekanju",
-    "noPending": "Nema zahtjeva na čekanju",
-    "joinRequest": "Zahtjev za pridruživanje",
-    "linkRequest": "Zahtjev za povezivanje",
-    "claimRequest": "Zahtjev za prepoznavanje",
-    "yourRequest": "Vaš zahtjev",
+      "noPending": "Nema zahtjeva na čekanju",
+      "joinRequest": "Zahtjev za pridruživanje",
+      "linkRequest": "Zahtjev za povezivanje",
+      "claimRequest": "Zahtjev za prepoznavanje",
+      "yourRequest": "Vaš zahtjev",
       "branch": "grana",
       "from": "Od",
       "person": "Osoba",
@@ -304,7 +310,12 @@
     "noEntities": "Nema dostupnih entiteta",
     "noCantons": "Prvo odaberite entitet",
     "noCities": "Nema dostupnih gradova",
-    "loading": "Učitavanje..."
+    "loading": "Učitavanje...",
+    "regionLevel2": "Regija (nivo 2)",
+    "regionLevel3": "Regija (nivo 3)",
+    "selectRegionLevel2": "Odaberite regiju",
+    "selectRegionLevel3": "Odaberite podregiju",
+    "noRegions": "Nema dostupnih regija"
   },
   "pagination": {
     "previous": "Prethodna",
@@ -479,7 +490,11 @@
       "saveSuccess": "Adresa je sačuvana",
       "locationRequired": "Molimo odaberite grad",
       "deleteSuccess": "Adresa je obrisana",
-      "deleteConfirm": "Obrisati ovu adresu?"
+      "deleteConfirm": "Obrisati ovu adresu?",
+      "updateSuccess": "Poslovna adresa ažurirana",
+      "deleteError": "Brisanje poslovne adrese nije uspjelo",
+      "primarySet": "Aktuelna poslovna adresa ažurirana",
+      "primaryError": "Postavljanje aktuelne adresе nije uspjelo"
     },
     "person": {
       "title": "Poslovne adrese",
@@ -492,6 +507,22 @@
       "markPrimary": "Postavi kao primarnu",
       "notes": "Bilješke",
       "empty": "Još nema poslovnih adresa."
+    },
+    "currentLocation": "Trenutna lokacija",
+    "addTitle": "Dodaj adresu",
+    "editTitle": "Uredi adresu",
+    "modalSubtitle": "Mapa i kontakt informacije",
+    "addAddress": "Dodaj adresu",
+    "empty": "Još nema sačuvanih poslovnih adresa.",
+    "defaultLabel": "Poslovna adresa",
+    "currentBadge": "Aktuelna",
+    "primaryToggle": "Postavi kao aktuelnu",
+    "visibility": {
+      "public": "Javno",
+      "private": "Privatno"
+    },
+    "actions": {
+      "setPrimary": "Postavi kao aktuelnu"
     }
   },
   "placeholders": {
@@ -663,6 +694,10 @@
     "notFound": "Traženi resurs nije pronađen.",
     "serverError": "Greška servera. Pokušajte kasnije."
   },
+  "roles": {
+    "user": "Korisnik",
+    "superGuru": "SuperGuru"
+  },
   "admin": {
     "title": "SuperGuru konzola",
     "subtitle": "Pratite dodijeljene regione, koordinirajte podršku granama i održavajte porodice povezanim.",
@@ -758,26 +793,117 @@
       "status": "Status",
       "notes": "Napomene",
       "actions": "Akcije",
-    "pendingBadge": "Na čekanju",
-    "approvedBadge": "Odobreno",
-    "generationColumn": "Generacija",
-    "homeGeneration": "Matična: G{{number}}",
-    "overrideLabel": "Override",
-    "overrideHint": "Postavi kako ova grana treba prikazati mostovsku osobu.",
-    "overridePlaceholder": "npr. 3",
-    "saveOverride": "Sačuvaj override",
-    "clearOverride": "Ukloni override",
-    "overrideRequired": "Unesi generaciju prije snimanja.",
-    "overrideOutOfRange": "Generacija mora biti između 1 i 30.",
-    "generationUpdated": "Generacija mosta je ažurirana",
-    "generationCleared": "Generacija mosta je uklonjena",
-    "rejectBridge": "Odbij most",
-    "rejectBridgeConfirm": "Ukloniti ovaj most? Možeš ga ponovo kreirati kasnije.",
-    "toast": {
-      "bridgeRejected": "Most je odbijen",
-      "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
+      "pendingBadge": "Na čekanju",
+      "approvedBadge": "Odobreno",
+      "generationColumn": "Generacija",
+      "homeGeneration": "Matična: G{{number}}",
+      "overrideLabel": "Override",
+      "overrideHint": "Postavi kako ova grana treba prikazati mostovsku osobu.",
+      "overridePlaceholder": "npr. 3",
+      "saveOverride": "Sačuvaj override",
+      "clearOverride": "Ukloni override",
+      "overrideRequired": "Unesi generaciju prije snimanja.",
+      "overrideOutOfRange": "Generacija mora biti između 1 i 30.",
+      "generationUpdated": "Generacija mosta je ažurirana",
+      "generationCleared": "Generacija mosta je uklonjena",
+      "rejectBridge": "Odbij most",
+      "rejectBridgeConfirm": "Ukloniti ovaj most? Možeš ga ponovo kreirati kasnije.",
+      "toast": {
+        "bridgeRejected": "Most je odbijen",
+        "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
+      }
+    },
+    "users": {
+      "title": "Upravljanje korisnicima",
+      "subtitle": "Upravljajte korisnicima platforme, ulogama i dozvolama",
+      "searchPlaceholder": "Pretraži po imenu ili emailu...",
+      "noUsers": "Nije pronađen nijedan korisnik",
+      "viewDetails": "Pogledaj detalje",
+      "lastLogin": "Posljednja prijava",
+      "joined": "Pridružio/la se",
+      "stats": {
+        "totalUsers": "Ukupno korisnika",
+        "activeUsers": "Aktivnih korisnika",
+        "superGurus": "SuperGuru",
+        "newUsers30d": "Novih korisnika (30d)"
+      },
+      "filters": {
+        "allRoles": "Sve uloge",
+        "users": "Korisnici",
+        "superGurus": "SuperGuru",
+        "allStatuses": "Svi statusi",
+        "active": "Aktivni",
+        "inactive": "Neaktivni"
+      },
+      "tabs": {
+        "overview": "Pregled",
+        "branches": "Grane",
+        "activity": "Aktivnost"
+      },
+      "detail": {
+        "profile": "Informacije o profilu",
+        "role": "Uloga",
+        "status": "Status",
+        "emailVerified": "Email verifikovan",
+        "twoFactor": "Dvofaktorska autentifikacija",
+        "birthYear": "Godina rođenja",
+        "location": "Lokacija",
+        "statistics": "Statistike korisnika",
+        "totalBranches": "Ukupno grana",
+        "contributions": "Doprinosi",
+        "stories": "Priče",
+        "persons": "Kreiranih osoba",
+        "actions": "Akcije",
+        "noBranches": "Nema članstava u granama",
+        "branchRole": "Uloga",
+        "joinedAt": "Pridružio/la se",
+        "noActivity": "Nema zabilježene aktivnosti",
+        "performedBy": "Izvršio/la"
+      },
+      "actions": {
+        "changeRole": "Promijeni ulogu",
+        "deactivate": "Deaktiviraj račun",
+        "reactivate": "Reaktiviraj račun",
+        "sendNotification": "Pošalji obavijest"
+      },
+      "dialogs": {
+        "changeRole": {
+          "title": "Promijeni ulogu korisnika",
+          "currentRole": "Trenutna uloga",
+          "newRole": "Nova uloga",
+          "reason": "Razlog (opciono)",
+          "reasonPlaceholder": "Zašto mijenjate ulogu ovog korisnika?"
+        },
+        "deactivate": {
+          "title": "Deaktiviraj korisnički račun",
+          "warning": "Ovo će spriječiti korisnika da se prijavi i pristupi platformi.",
+          "reason": "Razlog",
+          "reasonPlaceholder": "Zašto deaktivirate ovaj račun?",
+          "minLength": "Potrebno je najmanje 10 karaktera"
+        },
+        "notification": {
+          "title": "Pošalji obavijest",
+          "subject": "Naslov",
+          "subjectPlaceholder": "Naslov obavijesti",
+          "message": "Poruka",
+          "messagePlaceholder": "Unesite vašu poruku ovdje...",
+          "priority": "Prioritet",
+          "priorityLow": "Nizak",
+          "priorityNormal": "Normalan",
+          "priorityHigh": "Visok",
+          "priorityUrgent": "Hitan",
+          "actionUrl": "URL akcije (opciono)",
+          "actionUrlPlaceholder": "https://example.com/action",
+          "send": "Pošalji obavijest"
+        }
+      },
+      "messages": {
+        "roleUpdated": "Uloga korisnika je uspješno ažurirana",
+        "userDeactivated": "Korisnički račun je deaktiviran",
+        "userReactivated": "Korisnički račun je reaktiviran",
+        "notificationSent": "Obavijest je uspješno poslata"
+      }
     }
-  }
   },
   "profile": {
     "title": "Moj profil",

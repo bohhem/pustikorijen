@@ -15,7 +15,13 @@
     "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
-    "you": "you"
+    "you": "you",
+    "active": "Active",
+    "inactive": "Inactive",
+    "never": "Never",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{current}} of {{total}}"
   },
   "auth": {
     "login": "Login",
@@ -75,11 +81,11 @@
     "manageProfile": "Manage your profile and addresses",
     "pendingRequests": {
       "title": "Pending Requests",
-    "noPending": "No pending requests",
-    "joinRequest": "Join Request",
-    "linkRequest": "Link Request",
-    "claimRequest": "Identity Claim",
-    "yourRequest": "Your Request",
+      "noPending": "No pending requests",
+      "joinRequest": "Join Request",
+      "linkRequest": "Link Request",
+      "claimRequest": "Identity Claim",
+      "yourRequest": "Your Request",
       "branch": "Branch",
       "from": "From",
       "person": "Person",
@@ -304,7 +310,12 @@
     "noEntities": "No entities available",
     "noCantons": "Select an entity first",
     "noCities": "No cities available",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "regionLevel2": "Region (Level 2)",
+    "regionLevel3": "Region (Level 3)",
+    "selectRegionLevel2": "Select a region",
+    "selectRegionLevel3": "Select a subregion",
+    "noRegions": "No regions available"
   },
   "pagination": {
     "previous": "Previous",
@@ -479,7 +490,11 @@
       "saveSuccess": "Business address saved",
       "locationRequired": "Please select a city",
       "deleteSuccess": "Business address removed",
-      "deleteConfirm": "Delete this business address?"
+      "deleteConfirm": "Delete this business address?",
+      "updateSuccess": "Business address updated",
+      "deleteError": "Failed to delete business address",
+      "primarySet": "Primary business address updated",
+      "primaryError": "Failed to set primary business address"
     },
     "person": {
       "title": "Business addresses",
@@ -492,6 +507,22 @@
       "markPrimary": "Mark as primary",
       "notes": "Notes",
       "empty": "No business addresses recorded yet."
+    },
+    "currentLocation": "Current location",
+    "addTitle": "Add business address",
+    "editTitle": "Edit business address",
+    "modalSubtitle": "Maps & contact information",
+    "addAddress": "Add address",
+    "empty": "No business addresses recorded yet.",
+    "defaultLabel": "Business address",
+    "currentBadge": "Current",
+    "primaryToggle": "Set as current",
+    "visibility": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "actions": {
+      "setPrimary": "Set as current"
     }
   },
   "placeholders": {
@@ -669,6 +700,10 @@
     "notFound": "The requested resource was not found.",
     "serverError": "Server error. Please try again later."
   },
+  "roles": {
+    "user": "User",
+    "superGuru": "SuperGuru"
+  },
   "admin": {
     "title": "SuperGuru Console",
     "subtitle": "Monitor assigned regions, coordinate branch support, and keep families growing.",
@@ -764,20 +799,111 @@
       "status": "Status",
       "notes": "Notes",
       "actions": "Actions",
-    "pendingBadge": "Pending",
-    "approvedBadge": "Approved",
-    "generationColumn": "Generation",
-    "homeGeneration": "Home: G{{number}}",
-    "overrideLabel": "Override",
-    "overrideHint": "Set how this branch should display the bridge person.",
-    "overridePlaceholder": "e.g. 3",
-    "saveOverride": "Save override",
-    "clearOverride": "Clear override",
-    "overrideRequired": "Enter a generation before saving.",
-    "overrideOutOfRange": "Generation must be between 1 and 30.",
-    "generationUpdated": "Bridge generation updated",
-    "generationCleared": "Bridge generation cleared"
-  }
+      "pendingBadge": "Pending",
+      "approvedBadge": "Approved",
+      "generationColumn": "Generation",
+      "homeGeneration": "Home: G{{number}}",
+      "overrideLabel": "Override",
+      "overrideHint": "Set how this branch should display the bridge person.",
+      "overridePlaceholder": "e.g. 3",
+      "saveOverride": "Save override",
+      "clearOverride": "Clear override",
+      "overrideRequired": "Enter a generation before saving.",
+      "overrideOutOfRange": "Generation must be between 1 and 30.",
+      "generationUpdated": "Bridge generation updated",
+      "generationCleared": "Bridge generation cleared"
+    },
+    "users": {
+      "title": "User Management",
+      "subtitle": "Manage platform users, roles, and permissions",
+      "searchPlaceholder": "Search by name or email...",
+      "noUsers": "No users found",
+      "viewDetails": "View Details",
+      "lastLogin": "Last login",
+      "joined": "Joined",
+      "stats": {
+        "totalUsers": "Total Users",
+        "activeUsers": "Active Users",
+        "superGurus": "SuperGurus",
+        "newUsers30d": "New Users (30d)"
+      },
+      "filters": {
+        "allRoles": "All Roles",
+        "users": "Users",
+        "superGurus": "SuperGurus",
+        "allStatuses": "All Statuses",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "branches": "Branches",
+        "activity": "Activity"
+      },
+      "detail": {
+        "profile": "Profile Information",
+        "role": "Role",
+        "status": "Status",
+        "emailVerified": "Email Verified",
+        "twoFactor": "Two-Factor Auth",
+        "birthYear": "Birth Year",
+        "location": "Location",
+        "statistics": "User Statistics",
+        "totalBranches": "Total Branches",
+        "contributions": "Contributions",
+        "stories": "Stories",
+        "persons": "Persons Created",
+        "actions": "Actions",
+        "noBranches": "No branch memberships",
+        "branchRole": "Role",
+        "joinedAt": "Joined",
+        "noActivity": "No activity recorded",
+        "performedBy": "Performed by"
+      },
+      "actions": {
+        "changeRole": "Change Role",
+        "deactivate": "Deactivate Account",
+        "reactivate": "Reactivate Account",
+        "sendNotification": "Send Notification"
+      },
+      "dialogs": {
+        "changeRole": {
+          "title": "Change User Role",
+          "currentRole": "Current Role",
+          "newRole": "New Role",
+          "reason": "Reason (optional)",
+          "reasonPlaceholder": "Why are you changing this user's role?"
+        },
+        "deactivate": {
+          "title": "Deactivate User Account",
+          "warning": "This will prevent the user from logging in and accessing the platform.",
+          "reason": "Reason",
+          "reasonPlaceholder": "Why are you deactivating this account?",
+          "minLength": "Minimum 10 characters required"
+        },
+        "notification": {
+          "title": "Send Notification",
+          "subject": "Subject",
+          "subjectPlaceholder": "Notification subject",
+          "message": "Message",
+          "messagePlaceholder": "Enter your message here...",
+          "priority": "Priority",
+          "priorityLow": "Low",
+          "priorityNormal": "Normal",
+          "priorityHigh": "High",
+          "priorityUrgent": "Urgent",
+          "actionUrl": "Action URL (optional)",
+          "actionUrlPlaceholder": "https://example.com/action",
+          "send": "Send Notification"
+        }
+      },
+      "messages": {
+        "roleUpdated": "User role updated successfully",
+        "userDeactivated": "User account deactivated",
+        "userReactivated": "User account reactivated",
+        "notificationSent": "Notification sent successfully"
+      }
+    }
   },
   "profile": {
     "title": "My Profile",

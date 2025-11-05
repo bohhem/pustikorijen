@@ -37,7 +37,7 @@ export default function AdminLayout({ title, description, children }: AdminLayou
       to: '/admin/users',
       label: t('admin.sections.users'),
       icon: '👥',
-      enabled: false,
+      enabled: true,
     },
     {
       to: '/admin/backups',

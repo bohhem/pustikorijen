@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminRegions from './pages/admin/AdminRegions';
 import AdminBridgeIssues from './pages/admin/AdminBridgeIssues';
+import AdminUsers from './pages/admin/AdminUsers';
 import Branches from './pages/Branches';
 import BranchDetail from './pages/BranchDetail';
 import CreateBranch from './pages/CreateBranch';
@@ -65,6 +66,14 @@ function App() {
               element={
                 <SuperGuruRoute>
                   <AdminBridgeIssues />
+                </SuperGuruRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <SuperGuruRoute>
+                  <AdminUsers />
                 </SuperGuruRoute>
               }
             />

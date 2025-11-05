@@ -15,7 +15,13 @@
     "confirm": "Bestätigen",
     "yes": "Ja",
     "no": "Nein",
-    "you": "Sie"
+    "you": "Sie",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "never": "Nie",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pageOf": "Seite {{current}} von {{total}}"
   },
   "auth": {
     "login": "Anmelden",
@@ -75,11 +81,11 @@
     "manageProfile": "Verwalten Sie Ihr Profil und Ihre Adressen",
     "pendingRequests": {
       "title": "Ausstehende Anfragen",
-    "noPending": "Keine ausstehenden Anfragen",
-    "joinRequest": "Beitrittsanfrage",
-    "linkRequest": "Verknüpfungsanfrage",
-    "claimRequest": "Identitätsanfrage",
-    "yourRequest": "Ihre Anfrage",
+      "noPending": "Keine ausstehenden Anfragen",
+      "joinRequest": "Beitrittsanfrage",
+      "linkRequest": "Verknüpfungsanfrage",
+      "claimRequest": "Identitätsanfrage",
+      "yourRequest": "Ihre Anfrage",
       "branch": "Zweig",
       "from": "Von",
       "person": "Person",
@@ -557,7 +563,12 @@
     "noEntities": "Keine Entitäten verfügbar",
     "noCantons": "Wählen Sie zuerst eine Entität",
     "noCities": "Keine Städte verfügbar",
-    "loading": "Lädt..."
+    "loading": "Lädt...",
+    "regionLevel2": "Region (Ebene 2)",
+    "regionLevel3": "Region (Ebene 3)",
+    "selectRegionLevel2": "Region wählen",
+    "selectRegionLevel3": "Unterregion wählen",
+    "noRegions": "Keine Regionen verfügbar"
   },
   "businessAddresses": {
     "guruTitle": "Geschäftspräsenz",
@@ -585,7 +596,11 @@
       "saveSuccess": "Geschäftsadresse gespeichert",
       "locationRequired": "Bitte wählen Sie eine Stadt",
       "deleteSuccess": "Geschäftsadresse entfernt",
-      "deleteConfirm": "Diese Geschäftsadresse löschen?"
+      "deleteConfirm": "Diese Geschäftsadresse löschen?",
+      "updateSuccess": "Geschäftsadresse aktualisiert",
+      "deleteError": "Geschäftsadresse konnte nicht gelöscht werden",
+      "primarySet": "Aktuelle Geschäftsadresse aktualisiert",
+      "primaryError": "Aktuelle Geschäftsadresse konnte nicht aktualisiert werden"
     },
     "person": {
       "title": "Geschäftsadressen",
@@ -598,6 +613,22 @@
       "markPrimary": "Als primär markieren",
       "notes": "Notizen",
       "empty": "Noch keine Geschäftsadressen erfasst."
+    },
+    "currentLocation": "Aktueller Standort",
+    "addTitle": "Adresse hinzufügen",
+    "editTitle": "Adresse bearbeiten",
+    "modalSubtitle": "Karten- und Kontaktinformationen",
+    "addAddress": "Adresse hinzufügen",
+    "empty": "Noch keine Geschäftsadresse hinterlegt.",
+    "defaultLabel": "Geschäftsadresse",
+    "currentBadge": "Aktuell",
+    "primaryToggle": "Als aktuell markieren",
+    "visibility": {
+      "public": "Öffentlich",
+      "private": "Privat"
+    },
+    "actions": {
+      "setPrimary": "Als aktuell setzen"
     }
   },
   "placeholders": {
@@ -662,6 +693,10 @@
     "unauthorized": "Sie sind nicht berechtigt, diese Aktion durchzuführen.",
     "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
     "serverError": "Serverfehler. Bitte versuchen Sie es später erneut."
+  },
+  "roles": {
+    "user": "Benutzer",
+    "superGuru": "SuperGuru"
   },
   "admin": {
     "title": "SuperGuru-Konsole",
@@ -758,7 +793,7 @@
       "status": "Status",
       "notes": "Notizen",
       "actions": "Aktionen",
-    "pendingBadge": "Ausstehend",
+      "pendingBadge": "Ausstehend",
       "approvedBadge": "Genehmigt",
       "generationColumn": "Generation",
       "homeGeneration": "Heimat: G{{number}}",
@@ -776,6 +811,97 @@
       "toast": {
         "bridgeRejected": "Brücke abgelehnt",
         "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden"
+      }
+    },
+    "users": {
+      "title": "Benutzerverwaltung",
+      "subtitle": "Plattformbenutzer, Rollen und Berechtigungen verwalten",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen...",
+      "noUsers": "Keine Benutzer gefunden",
+      "viewDetails": "Details anzeigen",
+      "lastLogin": "Letzte Anmeldung",
+      "joined": "Beigetreten",
+      "stats": {
+        "totalUsers": "Benutzer gesamt",
+        "activeUsers": "Aktive Benutzer",
+        "superGurus": "SuperGurus",
+        "newUsers30d": "Neue Benutzer (30T)"
+      },
+      "filters": {
+        "allRoles": "Alle Rollen",
+        "users": "Benutzer",
+        "superGurus": "SuperGurus",
+        "allStatuses": "Alle Status",
+        "active": "Aktiv",
+        "inactive": "Inaktiv"
+      },
+      "tabs": {
+        "overview": "Übersicht",
+        "branches": "Zweige",
+        "activity": "Aktivität"
+      },
+      "detail": {
+        "profile": "Profilinformationen",
+        "role": "Rolle",
+        "status": "Status",
+        "emailVerified": "E-Mail verifiziert",
+        "twoFactor": "Zwei-Faktor-Authentifizierung",
+        "birthYear": "Geburtsjahr",
+        "location": "Standort",
+        "statistics": "Benutzerstatistiken",
+        "totalBranches": "Zweige gesamt",
+        "contributions": "Beiträge",
+        "stories": "Geschichten",
+        "persons": "Erstellte Personen",
+        "actions": "Aktionen",
+        "noBranches": "Keine Zweigmitgliedschaften",
+        "branchRole": "Rolle",
+        "joinedAt": "Beigetreten",
+        "noActivity": "Keine Aktivität aufgezeichnet",
+        "performedBy": "Durchgeführt von"
+      },
+      "actions": {
+        "changeRole": "Rolle ändern",
+        "deactivate": "Konto deaktivieren",
+        "reactivate": "Konto reaktivieren",
+        "sendNotification": "Benachrichtigung senden"
+      },
+      "dialogs": {
+        "changeRole": {
+          "title": "Benutzerrolle ändern",
+          "currentRole": "Aktuelle Rolle",
+          "newRole": "Neue Rolle",
+          "reason": "Grund (optional)",
+          "reasonPlaceholder": "Warum ändern Sie die Rolle dieses Benutzers?"
+        },
+        "deactivate": {
+          "title": "Benutzerkonto deaktivieren",
+          "warning": "Dies verhindert, dass sich der Benutzer anmelden und auf die Plattform zugreifen kann.",
+          "reason": "Grund",
+          "reasonPlaceholder": "Warum deaktivieren Sie dieses Konto?",
+          "minLength": "Mindestens 10 Zeichen erforderlich"
+        },
+        "notification": {
+          "title": "Benachrichtigung senden",
+          "subject": "Betreff",
+          "subjectPlaceholder": "Benachrichtigungsbetreff",
+          "message": "Nachricht",
+          "messagePlaceholder": "Geben Sie Ihre Nachricht hier ein...",
+          "priority": "Priorität",
+          "priorityLow": "Niedrig",
+          "priorityNormal": "Normal",
+          "priorityHigh": "Hoch",
+          "priorityUrgent": "Dringend",
+          "actionUrl": "Aktions-URL (optional)",
+          "actionUrlPlaceholder": "https://example.com/action",
+          "send": "Benachrichtigung senden"
+        }
+      },
+      "messages": {
+        "roleUpdated": "Benutzerrolle erfolgreich aktualisiert",
+        "userDeactivated": "Benutzerkonto deaktiviert",
+        "userReactivated": "Benutzerkonto reaktiviert",
+        "notificationSent": "Benachrichtigung erfolgreich gesendet"
       }
     }
   },
