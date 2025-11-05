@@ -241,7 +241,25 @@ function PersonBusinessAddressModal({ mode, initialData, onClose, onSave }: Pers
       setValue('geoCityId', '', { shouldValidate: true });
       return;
     }
-    await onSave({ ...payload, geoCityId: selectedCityId }, initialData?.id);
+    const normalizeNumber = (value: number | null | undefined) =>
+      typeof value === 'number' && Number.isNaN(value) ? undefined : value ?? undefined;
+
+    await onSave(
+      {
+        ...payload,
+        geoCityId: selectedCityId,
+        addressLine1: payload.addressLine1.trim(),
+        addressLine2: payload.addressLine2?.trim() || undefined,
+        label: payload.label?.trim() || undefined,
+        postalCode: payload.postalCode?.trim() || undefined,
+        notes: payload.notes?.trim() || undefined,
+        latitude: normalizeNumber(payload.latitude),
+        longitude: normalizeNumber(payload.longitude),
+        googleMapsPlaceId: payload.googleMapsPlaceId?.trim() || undefined,
+        googleMapsUrl: payload.googleMapsUrl?.trim() || undefined,
+      },
+      initialData?.id,
+    );
   });
 
   return (

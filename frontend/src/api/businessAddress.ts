@@ -6,14 +6,32 @@ import type {
   PersonBusinessAddressPayload,
 } from '../types/businessAddress';
 
-export async function getGuruBusinessAddress(): Promise<GuruBusinessAddress | null> {
+export async function listGuruBusinessAddresses(): Promise<GuruBusinessAddress[]> {
   const response = await api.get('/business-address/guru');
-  return response.data.address ?? null;
+  return response.data.addresses ?? [];
 }
 
-export async function saveGuruBusinessAddress(payload: UpsertGuruBusinessAddressPayload): Promise<GuruBusinessAddress> {
-  const response = await api.put('/business-address/guru', payload);
+export async function createGuruBusinessAddress(
+  payload: UpsertGuruBusinessAddressPayload,
+): Promise<GuruBusinessAddress> {
+  const response = await api.post('/business-address/guru', payload);
   return response.data.address;
+}
+
+export async function updateGuruBusinessAddress(
+  addressId: string,
+  payload: UpsertGuruBusinessAddressPayload,
+): Promise<GuruBusinessAddress> {
+  const response = await api.put(`/business-address/guru/${addressId}`, payload);
+  return response.data.address;
+}
+
+export async function deleteGuruBusinessAddress(addressId: string): Promise<void> {
+  await api.delete(`/business-address/guru/${addressId}`);
+}
+
+export async function setPrimaryGuruBusinessAddress(addressId: string): Promise<void> {
+  await api.patch(`/business-address/guru/${addressId}/primary`);
 }
 
 export async function getPersonBusinessAddresses(branchId: string, personId: string): Promise<PersonBusinessAddress[]> {

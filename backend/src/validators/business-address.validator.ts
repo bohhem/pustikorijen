@@ -8,13 +8,42 @@ const optionalNumber = (min: number, max: number) =>
       if (value === undefined || value === null || value === '') {
         return undefined;
       }
-      const parsed = Number(value);
-      if (Number.isNaN(parsed)) {
+
+      if (typeof value === 'number' && Number.isNaN(value)) {
+        return undefined;
+      }
+
+      const parsed = typeof value === 'string' ? Number(value) : value;
+      if (typeof parsed !== 'number' || Number.isNaN(parsed)) {
         return value;
       }
       return parsed;
     }, z.number().min(min).max(max))
     .optional();
+
+const optionalBoolean = z
+  .preprocess((value) => {
+    if (value === undefined || value === null || value === '') {
+      return undefined;
+    }
+
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (['true', '1', 'yes', 'on'].includes(normalized)) {
+        return true;
+      }
+      if (['false', '0', 'no', 'off'].includes(normalized)) {
+        return false;
+      }
+    }
+
+    return value;
+  }, z.boolean())
+  .optional();
 
 const baseAddressSchema = z.object({
   geoCityId: z.string().min(1, 'City selection is required'),
@@ -36,14 +65,21 @@ const baseAddressSchema = z.object({
     ),
 });
 
-export const upsertGuruBusinessAddressSchema = baseAddressSchema.extend({
-  isPublic: z.boolean().optional(),
+export const createGuruBusinessAddressSchema = baseAddressSchema.extend({
+  isPublic: optionalBoolean,
+  isPrimary: optionalBoolean,
 });
 
-export type UpsertGuruBusinessAddressInput = z.infer<typeof upsertGuruBusinessAddressSchema>;
+export type CreateGuruBusinessAddressInput = z.infer<typeof createGuruBusinessAddressSchema>;
+
+export const updateGuruBusinessAddressSchema = createGuruBusinessAddressSchema
+  .partial()
+  .refine((value) => Object.values(value).some((v) => v !== undefined), 'At least one field must be provided');
+
+export type UpdateGuruBusinessAddressInput = z.infer<typeof updateGuruBusinessAddressSchema>;
 
 export const createPersonBusinessAddressSchema = baseAddressSchema.extend({
-  isPrimary: z.boolean().optional(),
+  isPrimary: optionalBoolean,
   notes: z.string().max(1000).optional().nullable(),
 });
 

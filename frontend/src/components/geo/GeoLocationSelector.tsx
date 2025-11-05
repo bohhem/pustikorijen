@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getGeoStates, getGeoRegions, getCitiesByRegion, getGeoCity } from '../../api/geo';
-import type { GeoState, GeoRegion, GeoCity } from '../../types/geo';
+import {
+  getGeoStates,
+  getGeoRegions,
+  getCitiesByRegion,
+  getCitiesByState,
+  getGeoCity,
+} from '../../api/geo';
+import type { GeoCity, GeoRegion, GeoState } from '../../types/geo';
 
 interface GeoLocationSelectorProps {
   value?: string;
@@ -33,42 +39,46 @@ export default function GeoLocationSelector({
 }: GeoLocationSelectorProps) {
   const { t } = useTranslation();
 
-  // Data lists
   const [states, setStates] = useState<GeoState[]>([]);
   const [regions, setRegions] = useState<GeoRegion[]>([]);
   const [cities, setCities] = useState<GeoCity[]>([]);
 
-  // User selections
   const [selectedStateId, setSelectedStateId] = useState<string>('');
   const [selectedEntityId, setSelectedEntityId] = useState<string>('');
   const [selectedCantonId, setSelectedCantonId] = useState<string>('');
+  const [selectedRegionLevel2Id, setSelectedRegionLevel2Id] = useState<string>('');
+  const [selectedRegionLevel3Id, setSelectedRegionLevel3Id] = useState<string>('');
   const [selectedCityId, setSelectedCityId] = useState<string>('');
 
-  // Loading states
   const [loading, setLoading] = useState<LoadingState>({ states: false, regions: false, cities: false });
-
-  // Initial value handling
   const [initialLoadDone, setInitialLoadDone] = useState(false);
 
-  // Computed options
-  const entityOptions = regions.filter(region => region.type === 'entity' || region.type === 'district');
-  const cantonOptions = regions.filter(region => region.type === 'canton');
-  const requiresCanton = selectedEntityId === ENTITY_FBIH_ID;
+  const isBosnia = selectedStateId === STATE_BIH_ID;
 
-  // Load states on mount
+  const entityOptions = isBosnia
+    ? regions.filter((region) => region.type === 'entity' || region.type === 'district')
+    : [];
+  const cantonOptions = isBosnia ? regions.filter((region) => region.type === 'canton') : [];
+  const requiresCanton = isBosnia && selectedEntityId === ENTITY_FBIH_ID;
+
+  const level2Options = !isBosnia ? regions.filter((region) => region.type === 'nuts2') : [];
+  const level3Options = !isBosnia
+    ? regions.filter(
+        (region) =>
+          region.type === 'nuts3' &&
+          (!selectedRegionLevel2Id || region.parentRegionId === selectedRegionLevel2Id),
+      )
+    : [];
+
   useEffect(() => {
     let ignore = false;
+
     const loadStates = async () => {
       setLoading((prev) => ({ ...prev, states: true }));
       try {
         const data = await getGeoStates();
         if (!ignore) {
           setStates(data);
-          // Auto-select BiH if available
-          const bih = data.find(s => s.id === STATE_BIH_ID);
-          if (bih && !selectedStateId) {
-            setSelectedStateId(bih.id);
-          }
         }
       } catch (err) {
         console.error('Failed to load states', err);
@@ -78,13 +88,13 @@ export default function GeoLocationSelector({
         }
       }
     };
+
     loadStates();
     return () => {
       ignore = true;
     };
   }, []);
 
-  // Load initial value if provided
   useEffect(() => {
     if (!value || initialLoadDone) return;
 
@@ -93,10 +103,22 @@ export default function GeoLocationSelector({
       try {
         const city = await getGeoCity(value);
         if (!ignore && city) {
-          // Set selections based on city data
           if (city.state?.id) setSelectedStateId(city.state.id);
-          if (city.entity?.id) setSelectedEntityId(city.entity.id);
-          if (city.region?.id && city.region.type === 'canton') setSelectedCantonId(city.region.id);
+
+          if (city.state?.id === STATE_BIH_ID) {
+            if (city.entity?.id) setSelectedEntityId(city.entity.id);
+            if (city.region?.id && city.region.type === 'canton') setSelectedCantonId(city.region.id);
+          } else {
+            if (city.region?.type === 'nuts3') {
+              setSelectedRegionLevel3Id(city.region.id);
+              if (city.region.parentRegionId) {
+                setSelectedRegionLevel2Id(city.region.parentRegionId);
+              }
+            } else if (city.region?.type === 'nuts2') {
+              setSelectedRegionLevel2Id(city.region.id);
+            }
+          }
+
           setSelectedCityId(city.id);
           setInitialLoadDone(true);
         }
@@ -104,21 +126,22 @@ export default function GeoLocationSelector({
         console.error('Failed to load initial city', err);
       }
     };
-    loadInitialCity();
 
+    loadInitialCity();
     return () => {
       ignore = true;
     };
   }, [value, initialLoadDone]);
 
-  // Load regions when state changes
   useEffect(() => {
     if (!selectedStateId) {
       setRegions([]);
+      setCities([]);
       return;
     }
 
     let ignore = false;
+
     const loadRegions = async () => {
       setLoading((prev) => ({ ...prev, regions: true }));
       try {
@@ -134,6 +157,7 @@ export default function GeoLocationSelector({
         }
       }
     };
+
     loadRegions();
 
     return () => {
@@ -141,16 +165,15 @@ export default function GeoLocationSelector({
     };
   }, [selectedStateId]);
 
-  // Load cities when entity/canton is selected
   useEffect(() => {
-    // Determine which region to load cities from
-    let regionId: string | null = null;
+    if (!isBosnia) {
+      return;
+    }
 
+    let regionId: string | null = null;
     if (requiresCanton) {
-      // FBiH requires canton selection
       regionId = selectedCantonId || null;
     } else if (selectedEntityId) {
-      // RS, BD load directly from entity
       regionId = selectedEntityId;
     }
 
@@ -163,7 +186,7 @@ export default function GeoLocationSelector({
     const loadCities = async () => {
       setLoading((prev) => ({ ...prev, cities: true }));
       try {
-        const data = await getCitiesByRegion(regionId);
+        const data = await getCitiesByRegion(regionId!);
         if (!ignore) {
           setCities(data);
         }
@@ -175,33 +198,75 @@ export default function GeoLocationSelector({
         }
       }
     };
-    loadCities();
 
+    loadCities();
     return () => {
       ignore = true;
     };
-  }, [selectedEntityId, selectedCantonId, requiresCanton]);
+  }, [isBosnia, requiresCanton, selectedCantonId, selectedEntityId]);
 
-  // Call onChange when selectedCityId changes
+  useEffect(() => {
+    if (!selectedStateId || isBosnia) {
+      return;
+    }
+
+    let ignore = false;
+
+    const loadCities = async () => {
+      setLoading((prev) => ({ ...prev, cities: true }));
+      try {
+        let data;
+        if (selectedRegionLevel3Id) {
+          data = await getCitiesByRegion(selectedRegionLevel3Id);
+        } else {
+          data = await getCitiesByState(selectedStateId);
+          if (selectedRegionLevel2Id) {
+            data = data.filter(
+              (city) =>
+                city.region?.parentRegionId === selectedRegionLevel2Id ||
+                city.region?.id === selectedRegionLevel2Id,
+            );
+          }
+        }
+
+        if (!ignore) {
+          setCities(data);
+        }
+      } catch (err) {
+        console.error('Failed to load cities', err);
+      } finally {
+        if (!ignore) {
+          setLoading((prev) => ({ ...prev, cities: false }));
+        }
+      }
+    };
+
+    loadCities();
+    return () => {
+      ignore = true;
+    };
+  }, [isBosnia, selectedRegionLevel2Id, selectedRegionLevel3Id, selectedStateId]);
+
   useEffect(() => {
     if (!selectedCityId) {
       onChange(null);
       return;
     }
+
     const city = cities.find((item) => item.id === selectedCityId);
     onChange(selectedCityId, { city });
-  }, [selectedCityId, cities, onChange]);
+  }, [cities, onChange, selectedCityId]);
 
-  // Handle state change - cascade clear
   const handleStateChange = (stateId: string) => {
     setSelectedStateId(stateId);
     setSelectedEntityId('');
     setSelectedCantonId('');
+    setSelectedRegionLevel2Id('');
+    setSelectedRegionLevel3Id('');
     setSelectedCityId('');
     setCities([]);
   };
 
-  // Handle entity change - cascade clear
   const handleEntityChange = (entityId: string) => {
     setSelectedEntityId(entityId);
     setSelectedCantonId('');
@@ -209,13 +274,22 @@ export default function GeoLocationSelector({
     setCities([]);
   };
 
-  // Handle canton change - cascade clear
   const handleCantonChange = (cantonId: string) => {
     setSelectedCantonId(cantonId);
     setSelectedCityId('');
   };
 
-  // Handle city change
+  const handleRegionLevel2Change = (regionId: string) => {
+    setSelectedRegionLevel2Id(regionId);
+    setSelectedRegionLevel3Id('');
+    setSelectedCityId('');
+  };
+
+  const handleRegionLevel3Change = (regionId: string) => {
+    setSelectedRegionLevel3Id(regionId);
+    setSelectedCityId('');
+  };
+
   const handleCityChange = (cityId: string) => {
     setSelectedCityId(cityId);
   };
@@ -251,7 +325,7 @@ export default function GeoLocationSelector({
         </select>
       </div>
     ),
-    [t]
+    [t],
   );
 
   const stateOptions = states.map((state) => ({ value: state.id, label: state.name }));
@@ -260,6 +334,14 @@ export default function GeoLocationSelector({
     label: entity.name,
   }));
   const cantonSelectOptions = cantonOptions.map((region) => ({
+    value: region.id,
+    label: region.name,
+  }));
+  const level2SelectOptions = level2Options.map((region) => ({
+    value: region.id,
+    label: region.name,
+  }));
+  const level3SelectOptions = level3Options.map((region) => ({
     value: region.id,
     label: region.name,
   }));
@@ -293,16 +375,31 @@ export default function GeoLocationSelector({
           disabled: disabled,
         })}
 
-        {renderSelect({
-          id: 'geo-entity',
-          label: t('geoSelector.entity'),
-          value: selectedEntityId,
-          onChange: handleEntityChange,
-          options: entitySelectOptions,
-          loading: loading.regions,
-          disabled: disabled || !selectedStateId || entitySelectOptions.length === 0,
-          placeholder: entitySelectOptions.length ? t('geoSelector.selectEntity') : t('geoSelector.noEntities'),
-        })}
+        {isBosnia
+          ? renderSelect({
+              id: 'geo-entity',
+              label: t('geoSelector.entity'),
+              value: selectedEntityId,
+              onChange: handleEntityChange,
+              options: entitySelectOptions,
+              loading: loading.regions,
+              disabled: disabled || !selectedStateId || entitySelectOptions.length === 0,
+              placeholder: entitySelectOptions.length
+                ? t('geoSelector.selectEntity')
+                : t('geoSelector.noEntities'),
+            })
+          : renderSelect({
+              id: 'geo-region-l2',
+              label: t('geoSelector.regionLevel2'),
+              value: selectedRegionLevel2Id,
+              onChange: handleRegionLevel2Change,
+              options: level2SelectOptions,
+              loading: loading.regions,
+              disabled: disabled || !selectedStateId || level2SelectOptions.length === 0,
+              placeholder: level2SelectOptions.length
+                ? t('geoSelector.selectRegionLevel2')
+                : t('geoSelector.noRegions'),
+            })}
       </div>
 
       {requiresCanton && (
@@ -316,6 +413,23 @@ export default function GeoLocationSelector({
             loading: loading.regions,
             disabled: disabled || !selectedEntityId || cantonSelectOptions.length === 0,
             placeholder: cantonSelectOptions.length ? t('geoSelector.selectCanton') : t('geoSelector.noCantons'),
+          })}
+        </div>
+      )}
+
+      {!isBosnia && level3SelectOptions.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {renderSelect({
+            id: 'geo-region-l3',
+            label: t('geoSelector.regionLevel3'),
+            value: selectedRegionLevel3Id,
+            onChange: handleRegionLevel3Change,
+            options: level3SelectOptions,
+            loading: loading.regions,
+            disabled: disabled || level3SelectOptions.length === 0,
+            placeholder: level3SelectOptions.length
+              ? t('geoSelector.selectRegionLevel3')
+              : t('geoSelector.noRegions'),
           })}
         </div>
       )}

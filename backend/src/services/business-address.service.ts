@@ -3,7 +3,8 @@ import type { JwtPayload } from '../utils/jwt';
 import prisma from '../utils/prisma';
 import { GEO_CITY_INCLUDE, getGeoCityOrThrow, mapGeoCity, type GeoCityRecord } from './geo.service';
 import type {
-  UpsertGuruBusinessAddressInput,
+  CreateGuruBusinessAddressInput,
+  UpdateGuruBusinessAddressInput,
   CreatePersonBusinessAddressInput,
   UpdatePersonBusinessAddressInput,
 } from '../validators/business-address.validator';
@@ -22,6 +23,7 @@ type GuruBusinessAddressRecord = {
   google_maps_place_id: string | null;
   google_maps_url: string | null;
   is_public: boolean;
+  is_primary: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -63,6 +65,7 @@ function mapGuruAddress(record: GuruBusinessAddressRecord) {
     googleMapsPlaceId: record.google_maps_place_id ?? undefined,
     googleMapsUrl: record.google_maps_url ?? undefined,
     isPublic: record.is_public,
+    isPrimary: record.is_primary,
     geoCity: mapGeoCity(record.geo_city),
     createdAt: record.created_at,
     updatedAt: record.updated_at,
@@ -126,52 +129,177 @@ async function ensureBranchGuru(branchId: string, user: JwtPayload) {
   }
 }
 
-export async function getGuruBusinessAddress(userId: string) {
+async function ensureGuruAddressOwnership(addressId: string, userId: string) {
   const address = await prisma.guruBusinessAddress.findUnique({
-    where: { user_id: userId },
+    where: { address_id: addressId },
     include: ADDRESS_INCLUDE,
   });
 
-  if (!address) {
-    return null;
+  if (!address || address.user_id !== userId) {
+    throw new Error('Business address not found');
   }
 
-  return mapGuruAddress(address as GuruBusinessAddressRecord);
+  return address as GuruBusinessAddressRecord;
 }
 
-export async function upsertGuruBusinessAddress(
+async function setPrimaryGuruAddress(userId: string, addressId: string) {
+  await prisma.guruBusinessAddress.updateMany({
+    where: {
+      user_id: userId,
+      address_id: { not: addressId },
+    },
+    data: { is_primary: false },
+  });
+
+  await prisma.guruBusinessAddress.update({
+    where: { address_id: addressId },
+    data: { is_primary: true },
+  });
+}
+
+function normalizeString(value?: string | null) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length ? trimmed : null;
+}
+
+function normalizeNumber(value?: number | null) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  return Number.isNaN(value) ? null : value;
+}
+
+export async function listGuruBusinessAddresses(user: JwtPayload) {
+  await ensureAnyGuru(user);
+
+  const addresses = await prisma.guruBusinessAddress.findMany({
+    where: { user_id: user.userId },
+    include: ADDRESS_INCLUDE,
+    orderBy: [{ is_primary: 'desc' }, { created_at: 'asc' }],
+  });
+
+  return addresses.map((record: any) => mapGuruAddress(record as GuruBusinessAddressRecord));
+}
+
+export async function createGuruBusinessAddress(
   user: JwtPayload,
-  input: UpsertGuruBusinessAddressInput
+  input: CreateGuruBusinessAddressInput
 ) {
   await ensureAnyGuru(user);
   await getGeoCityOrThrow(input.geoCityId);
 
-  const payload = {
-    label: input.label ?? null,
-    address_line1: input.addressLine1,
-    address_line2: input.addressLine2 ?? null,
-    postal_code: input.postalCode ?? null,
-    latitude: input.latitude ?? null,
-    longitude: input.longitude ?? null,
-    google_maps_place_id: input.googleMapsPlaceId ?? null,
-    google_maps_url: input.googleMapsUrl ?? null,
-    is_public: input.isPublic ?? true,
-    geo_city_id: input.geoCityId,
-    updated_at: new Date(),
-  };
-
-  const address = await prisma.guruBusinessAddress.upsert({
+  const existing = (await prisma.guruBusinessAddress.findMany({
     where: { user_id: user.userId },
-    update: payload,
-    create: {
+    select: { address_id: true, is_primary: true },
+  })) as Array<{ address_id: string; is_primary: boolean }>;
+
+  const shouldBePrimary = input.isPrimary ?? existing.every((address) => !address.is_primary);
+
+  const created = (await prisma.guruBusinessAddress.create({
+    data: {
       address_id: randomUUID(),
       user_id: user.userId,
-      ...payload,
+      geo_city_id: input.geoCityId,
+      label: normalizeString(input.label),
+      address_line1: input.addressLine1.trim(),
+      address_line2: normalizeString(input.addressLine2),
+      postal_code: normalizeString(input.postalCode),
+      latitude: normalizeNumber(input.latitude),
+      longitude: normalizeNumber(input.longitude),
+      google_maps_place_id: normalizeString(input.googleMapsPlaceId),
+      google_maps_url: normalizeString(input.googleMapsUrl),
+      is_public: input.isPublic ?? true,
+      is_primary: shouldBePrimary,
     },
     include: ADDRESS_INCLUDE,
+  })) as GuruBusinessAddressRecord;
+
+  if (shouldBePrimary) {
+    await setPrimaryGuruAddress(user.userId, created.address_id);
+  } else if (existing.every((item) => !item.is_primary)) {
+    await setPrimaryGuruAddress(user.userId, created.address_id);
+  }
+
+  return mapGuruAddress(created);
+}
+
+export async function updateGuruBusinessAddress(
+  user: JwtPayload,
+  addressId: string,
+  input: UpdateGuruBusinessAddressInput
+) {
+  await ensureAnyGuru(user);
+
+  const existing = await ensureGuruAddressOwnership(addressId, user.userId);
+
+  if (input.geoCityId) {
+    await getGeoCityOrThrow(input.geoCityId);
+  }
+
+  const updated = (await prisma.guruBusinessAddress.update({
+    where: { address_id: addressId },
+    data: {
+      geo_city_id: input.geoCityId ?? undefined,
+      label: input.label !== undefined ? normalizeString(input.label) : undefined,
+      address_line1: input.addressLine1 ? input.addressLine1.trim() : undefined,
+      address_line2: input.addressLine2 !== undefined ? normalizeString(input.addressLine2) : undefined,
+      postal_code: input.postalCode !== undefined ? normalizeString(input.postalCode) : undefined,
+      latitude: input.latitude !== undefined ? normalizeNumber(input.latitude) : undefined,
+      longitude: input.longitude !== undefined ? normalizeNumber(input.longitude) : undefined,
+      google_maps_place_id:
+        input.googleMapsPlaceId !== undefined ? normalizeString(input.googleMapsPlaceId) : undefined,
+      google_maps_url: input.googleMapsUrl !== undefined ? normalizeString(input.googleMapsUrl) : undefined,
+      is_public: input.isPublic ?? undefined,
+      is_primary: input.isPrimary ?? undefined,
+    },
+    include: ADDRESS_INCLUDE,
+  })) as GuruBusinessAddressRecord;
+
+  if (input.isPrimary) {
+    await setPrimaryGuruAddress(user.userId, addressId);
+  } else if (existing.is_primary && input.isPrimary === false) {
+    const [nextAddress] = (await prisma.guruBusinessAddress.findMany({
+      where: { user_id: user.userId, address_id: { not: addressId } },
+      orderBy: { created_at: 'asc' },
+      select: { address_id: true },
+    })) as Array<{ address_id: string }>;
+    if (nextAddress) {
+      await setPrimaryGuruAddress(user.userId, nextAddress.address_id);
+    }
+  }
+
+  return mapGuruAddress(updated);
+}
+
+export async function deleteGuruBusinessAddress(user: JwtPayload, addressId: string) {
+  await ensureAnyGuru(user);
+
+  const existing = await ensureGuruAddressOwnership(addressId, user.userId);
+
+  await prisma.guruBusinessAddress.delete({
+    where: { address_id: addressId },
   });
 
-  return mapGuruAddress(address as GuruBusinessAddressRecord);
+  if (existing.is_primary) {
+    const replacement = (await prisma.guruBusinessAddress.findFirst({
+      where: { user_id: user.userId },
+      orderBy: { created_at: 'asc' },
+      select: { address_id: true },
+    })) as { address_id: string } | null;
+
+    if (replacement) {
+      await setPrimaryGuruAddress(user.userId, replacement.address_id);
+    }
+  }
+}
+
+export async function setPrimaryGuruBusinessAddress(user: JwtPayload, addressId: string) {
+  await ensureAnyGuru(user);
+  await ensureGuruAddressOwnership(addressId, user.userId);
+  await setPrimaryGuruAddress(user.userId, addressId);
 }
 
 async function getPersonWithBranch(branchId: string, personId: string) {

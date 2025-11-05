@@ -1,41 +1,45 @@
 import { Request, Response } from 'express';
 import {
-  getGuruBusinessAddress as getGuruBusinessAddressService,
-  upsertGuruBusinessAddress as upsertGuruBusinessAddressService,
+  listGuruBusinessAddresses as listGuruBusinessAddressesService,
+  createGuruBusinessAddress as createGuruBusinessAddressService,
+  updateGuruBusinessAddress as updateGuruBusinessAddressService,
+  deleteGuruBusinessAddress as deleteGuruBusinessAddressService,
+  setPrimaryGuruBusinessAddress as setPrimaryGuruBusinessAddressService,
   listPersonBusinessAddresses as listPersonBusinessAddressesService,
   createPersonBusinessAddress as createPersonBusinessAddressService,
   updatePersonBusinessAddress as updatePersonBusinessAddressService,
   deletePersonBusinessAddress as deletePersonBusinessAddressService,
 } from '../services/business-address.service';
 import {
-  upsertGuruBusinessAddressSchema,
+  createGuruBusinessAddressSchema,
+  updateGuruBusinessAddressSchema,
   createPersonBusinessAddressSchema,
   updatePersonBusinessAddressSchema,
 } from '../validators/business-address.validator';
 import { getErrorMessage, isZodError } from '../utils/error.util';
 
-export async function getGuruBusinessAddress(req: Request, res: Response) {
+export async function listGuruBusinessAddresses(req: Request, res: Response) {
   if (!req.user) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
 
-  const address = await getGuruBusinessAddressService(req.user.userId);
-  res.json({ address });
+  const addresses = await listGuruBusinessAddressesService(req.user);
+  res.json({ addresses });
 }
 
-export async function upsertGuruBusinessAddress(req: Request, res: Response) {
+export async function createGuruBusinessAddress(req: Request, res: Response) {
   try {
     if (!req.user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
 
-    const payload = upsertGuruBusinessAddressSchema.parse(req.body);
-    const address = await upsertGuruBusinessAddressService(req.user, payload);
+    const payload = createGuruBusinessAddressSchema.parse(req.body);
+    const address = await createGuruBusinessAddressService(req.user, payload);
 
-    res.json({
-      message: 'Business address saved',
+    res.status(201).json({
+      message: 'Business address created',
       address,
     });
   } catch (error: unknown) {
@@ -44,7 +48,65 @@ export async function upsertGuruBusinessAddress(req: Request, res: Response) {
       return;
     }
 
-    const message = getErrorMessage(error) || 'Failed to save business address';
+    const message = getErrorMessage(error) || 'Failed to create business address';
+    res.status(400).json({ error: message });
+  }
+}
+
+export async function updateGuruBusinessAddress(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { addressId } = req.params;
+    const payload = updateGuruBusinessAddressSchema.parse(req.body);
+    const address = await updateGuruBusinessAddressService(req.user, addressId, payload);
+
+    res.json({
+      message: 'Business address updated',
+      address,
+    });
+  } catch (error: unknown) {
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation error', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error) || 'Failed to update business address';
+    res.status(400).json({ error: message });
+  }
+}
+
+export async function deleteGuruBusinessAddress(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { addressId } = req.params;
+    await deleteGuruBusinessAddressService(req.user, addressId);
+    res.json({ message: 'Business address removed' });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error) || 'Failed to remove business address';
+    res.status(400).json({ error: message });
+  }
+}
+
+export async function setPrimaryGuruBusinessAddress(req: Request, res: Response) {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { addressId } = req.params;
+    await setPrimaryGuruBusinessAddressService(req.user, addressId);
+    res.json({ message: 'Primary business address updated' });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error) || 'Failed to set primary business address';
     res.status(400).json({ error: message });
   }
 }

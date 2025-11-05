@@ -17,6 +17,7 @@ export interface BusinessAddressBase {
 
 export interface GuruBusinessAddress extends BusinessAddressBase {
   isPublic: boolean;
+  isPrimary: boolean;
 }
 
 export interface PersonBusinessAddress extends BusinessAddressBase {
@@ -36,6 +37,7 @@ export interface UpsertGuruBusinessAddressPayload {
   googleMapsPlaceId?: string | null;
   googleMapsUrl?: string | null;
   isPublic?: boolean;
+  isPrimary?: boolean;
 }
 
 export interface PersonBusinessAddressPayload {

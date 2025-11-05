@@ -5,6 +5,7 @@ export type GeoRegionRecord = {
   name: string;
   code: string | null;
   type: string;
+  parent_region_id?: string | null;
 };
 
 export type GeoCityRecord = {
@@ -43,6 +44,7 @@ const GEO_CITY_INCLUDE_BASE = {
       name: true,
       code: true,
       type: true,
+      parent_region_id: true,
     },
   },
   entity_region: {
@@ -51,6 +53,7 @@ const GEO_CITY_INCLUDE_BASE = {
       name: true,
       code: true,
       type: true,
+      parent_region_id: true,
     },
   },
 } as const;
@@ -76,6 +79,7 @@ export function mapGeoRegion(record?: GeoRegionRecord | null) {
     name: record.name,
     code: record.code ?? undefined,
     type: record.type,
+    parentRegionId: record.parent_region_id ?? undefined,
   };
 }
 

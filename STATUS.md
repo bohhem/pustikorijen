@@ -117,6 +117,12 @@ Phase 5: Member Management    ████████████████�
 - ✅ Real-time role updates
 - ✅ Multi-language support
 
+### **9. Business Address Management** (100%) 🆕
+- ✅ Multiple labeled business addresses per guru
+- ✅ “Current” address badge with quick set-as-primary action
+- ✅ Address cards showing full geo hierarchy and map links
+- ✅ Create, edit, and delete flows with validation and toasts
+
 ---
 
 ## 🚧 In Progress

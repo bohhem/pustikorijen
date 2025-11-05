@@ -18,6 +18,7 @@ A platform where families can:
 ### **✅ Implemented Features**
 - **🏘️ Family Branches** - Create and manage family branches with geographic disambiguation
 - **👥 Member Management** - Guru-based governance with role promotion system 🆕
+- **🏢 Business Addresses** - Store multiple labeled branch addresses and pick a current one 🆕
 - **🌳 Interactive Family Tree** - Visual tree with zoom, pan, and generation filtering
 - **💑 Partnership Visualization** - See marriages and relationships in the tree 🆕
 - **👤 Person Profiles** - Detailed person pages with life information and family connections

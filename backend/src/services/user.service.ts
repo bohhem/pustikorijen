@@ -152,10 +152,12 @@ function mapActivityLog(log: any): ActivityLogEntry {
     oldValue: log.old_value,
     newValue: log.new_value,
     createdAt: log.created_at.toISOString(),
-    performedBy: log.audit_log_user_idTousers ? {
-      id: log.audit_log_user_idTousers.user_id,
-      fullName: log.audit_log_user_idTousers.full_name,
-    } : null,
+    performedBy: log.users_audit_log_user_idTousers
+      ? {
+          id: log.users_audit_log_user_idTousers.user_id,
+          fullName: log.users_audit_log_user_idTousers.full_name,
+        }
+      : null,
   };
 }
 
@@ -344,7 +346,7 @@ export async function getUserById(userId: string): Promise<UserDetail> {
     prisma.documents.count({
       where: {
         uploaded_by: userId,
-        doc_type: 'photo',
+        document_type: 'photo',
       },
     }),
     prisma.persons.count({
@@ -434,7 +436,7 @@ export async function getUserActivity(userId: string, limit: number = 50): Promi
     },
     take: limit,
     include: {
-      audit_log_user_idTousers: {
+      users_audit_log_user_idTousers: {
         select: {
           user_id: true,
           full_name: true,
@@ -802,7 +804,7 @@ export async function getPlatformUserStats(): Promise<PlatformUserStats> {
     SUPER_GURU: 0,
   };
 
-  usersByRole.forEach((item) => {
+  usersByRole.forEach((item: { global_role: string; _count: { global_role: number } }) => {
     if (item.global_role === 'USER' || item.global_role === 'SUPER_GURU') {
       roleMap[item.global_role] = item._count.global_role;
     }
@@ -811,7 +813,7 @@ export async function getPlatformUserStats(): Promise<PlatformUserStats> {
   // Build growth trend (group by day for last 180 days)
   const growthMap = new Map<string, number>();
 
-  recentUsers.forEach((user) => {
+  recentUsers.forEach((user: { created_at: Date }) => {
     const dateStr = user.created_at.toISOString().split('T')[0];
     growthMap.set(dateStr, (growthMap.get(dateStr) || 0) + 1);
   });

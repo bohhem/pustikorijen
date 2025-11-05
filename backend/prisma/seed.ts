@@ -5,161 +5,136 @@ import path from 'path';
 
 const prisma = new PrismaClient();
 
+type GeoSeedState = {
+  state_id: string;
+  name: string;
+  iso2: string;
+  iso3?: string | null;
+  nuts_id?: string | null;
+  capital?: string | null;
+};
+
 type GeoSeedRegion = {
   region_id: string;
   state_id: string;
-  parent_region_id?: string | null;
   name: string;
-  code?: string | null;
+  nuts_id: string;
+  nuts_level: number;
+  code: string;
   type: string;
-  seat?: string | null;
-  wikidata_id?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  parent_region_id?: string | null;
 };
 
 type GeoSeedCity = {
   city_id: string;
-  code: string;
   name: string;
   slug: string;
-  wikidata_id?: string | null;
+  city_code: string;
+  state_id: string;
+  region_id?: string | null;
+  country_code: string;
   is_official_city: boolean;
-  coordinates?: { latitude?: number | null; longitude?: number | null } | null;
-  metrics: {
-    num_settlements?: number | null;
-    population_2013?: number | null;
-    density_per_km2?: number | null;
-    area_km2?: number | null;
-  };
-  municipality: { wikidata_id: string; name: string };
-  region?: { region_id: string; name: string; code?: string | null; type: string } | null;
-  entity?: { region_id: string; name: string; code?: string | null; type: string } | null;
-  state_id?: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  area_km2?: number | null;
+  nuts3_id?: string | null;
+  nuts2_id?: string | null;
+  functional_area_code?: string | null;
 };
 
-type GeoSeedPayload = {
-  state: {
-    state_id: string;
-    name: string;
-    iso2?: string | null;
-    iso3?: string | null;
-    wikidata_id?: string | null;
-    latitude?: number | null;
-    longitude?: number | null;
-  };
+type GeoSeedDataset = {
+  metadata: Record<string, unknown>;
+  states: GeoSeedState[];
   regions: GeoSeedRegion[];
   cities: GeoSeedCity[];
 };
 
-function loadGeoData(): GeoSeedPayload {
-  const dataPath = path.resolve(__dirname, '../../data/geo/bih_locations.json');
+function loadGeoData(): GeoSeedDataset {
+  const dataPath = path.resolve(__dirname, '../../data/geo/eu_locations.json');
   const file = fs.readFileSync(dataPath, 'utf-8');
-  return JSON.parse(file) as GeoSeedPayload;
+  return JSON.parse(file) as GeoSeedDataset;
 }
 
-async function seedGeoLov(data: GeoSeedPayload) {
-  console.log('➡️  Seeding geography tables...');
+async function seedGeoLov(data: GeoSeedDataset) {
+  console.log('➡️  Resetting geography tables...');
 
-  await prisma.geo_states.upsert({
-    where: { state_id: data.state.state_id },
-    update: {
-      name: data.state.name,
-      iso2: data.state.iso2 ?? null,
-      iso3: data.state.iso3 ?? null,
-      wikidata_id: data.state.wikidata_id ?? null,
-      latitude: data.state.latitude ?? null,
-      longitude: data.state.longitude ?? null,
-    },
-    create: {
-      state_id: data.state.state_id,
-      name: data.state.name,
-      iso2: data.state.iso2 ?? null,
-      iso3: data.state.iso3 ?? null,
-      wikidata_id: data.state.wikidata_id ?? null,
-      latitude: data.state.latitude ?? null,
-      longitude: data.state.longitude ?? null,
-    },
-  });
+  await prisma.geo_cities.deleteMany({});
+  await prisma.geo_regions.deleteMany({});
+  await prisma.geo_states.deleteMany({});
 
-  for (const region of data.regions) {
-    await prisma.geo_regions.upsert({
-      where: { region_id: region.region_id },
-      update: {
-        state_id: region.state_id,
-        parent_region_id: region.parent_region_id ?? null,
-        name: region.name,
-        code: region.code ?? null,
-        type: region.type,
-        seat: region.seat ?? null,
-        wikidata_id: region.wikidata_id ?? null,
-        latitude: region.latitude ?? null,
-        longitude: region.longitude ?? null,
-      },
-      create: {
-        region_id: region.region_id,
-        state_id: region.state_id,
-        parent_region_id: region.parent_region_id ?? null,
-        name: region.name,
-        code: region.code ?? null,
-        type: region.type,
-        seat: region.seat ?? null,
-        wikidata_id: region.wikidata_id ?? null,
-        latitude: region.latitude ?? null,
-        longitude: region.longitude ?? null,
-      },
+  console.log('➡️  Seeding geo_states...');
+  if (data.states.length) {
+    await prisma.geo_states.createMany({
+      data: data.states.map((state) => ({
+        state_id: state.state_id,
+        name: state.name,
+        iso2: state.iso2 ?? null,
+        iso3: state.iso3 ?? null,
+        wikidata_id: null,
+        latitude: null,
+        longitude: null,
+      })),
     });
   }
 
-  for (const city of data.cities) {
-    await prisma.geo_cities.upsert({
-      where: { city_id: city.city_id },
-      update: {
-        state_id: city.state_id ?? data.state.state_id,
-        region_id: city.region?.region_id ?? null,
-        entity_region_id: city.entity?.region_id ?? null,
-        name: city.name,
-        slug: city.slug,
-        city_code: city.code,
-        wikidata_id: city.wikidata_id ?? null,
-        is_official_city: city.is_official_city,
-        latitude: city.coordinates?.latitude ?? null,
-        longitude: city.coordinates?.longitude ?? null,
-        population_2013: city.metrics.population_2013 ?? null,
-        num_settlements: city.metrics.num_settlements ?? null,
-        density_per_km2: city.metrics.density_per_km2 ?? null,
-        area_km2: city.metrics.area_km2 ?? null,
-      },
-      create: {
-        city_id: city.city_id,
-        state_id: city.state_id ?? data.state.state_id,
-        region_id: city.region?.region_id ?? null,
-        entity_region_id: city.entity?.region_id ?? null,
-        name: city.name,
-        slug: city.slug,
-        city_code: city.code,
-        wikidata_id: city.wikidata_id ?? null,
-        is_official_city: city.is_official_city,
-        latitude: city.coordinates?.latitude ?? null,
-        longitude: city.coordinates?.longitude ?? null,
-        population_2013: city.metrics.population_2013 ?? null,
-        num_settlements: city.metrics.num_settlements ?? null,
-        density_per_km2: city.metrics.density_per_km2 ?? null,
-        area_km2: city.metrics.area_km2 ?? null,
-      },
-    });
+  console.log('➡️  Seeding geo_regions...');
+  if (data.regions.length) {
+    const chunkSize = 500;
+    for (let i = 0; i < data.regions.length; i += chunkSize) {
+      const chunk = data.regions.slice(i, i + chunkSize);
+      await prisma.geo_regions.createMany({
+        data: chunk.map((region) => ({
+          region_id: region.region_id,
+          state_id: region.state_id,
+          parent_region_id: region.parent_region_id ?? null,
+          name: region.name,
+          name_native: null,
+          code: region.code ?? null,
+          type: region.type,
+          seat: null,
+          wikidata_id: null,
+          latitude: null,
+          longitude: null,
+        })),
+      });
+    }
   }
 
-  console.log(`✅ Seeded ${data.regions.length} regions and ${data.cities.length} cities`);
+  console.log('➡️  Seeding geo_cities...');
+  if (data.cities.length) {
+    const chunkSize = 500;
+    for (let i = 0; i < data.cities.length; i += chunkSize) {
+      const chunk = data.cities.slice(i, i + chunkSize);
+      await prisma.geo_cities.createMany({
+        data: chunk.map((city) => ({
+          city_id: city.city_id,
+          state_id: city.state_id,
+          region_id: city.region_id ?? null,
+          entity_region_id: null,
+          name: city.name,
+          slug: city.slug,
+          city_code: city.city_code,
+          wikidata_id: null,
+          is_official_city: city.is_official_city,
+          latitude: city.latitude ?? null,
+          longitude: city.longitude ?? null,
+          population_2013: null,
+          num_settlements: null,
+          density_per_km2: null,
+          area_km2: city.area_km2 ?? null,
+        })),
+      });
+    }
+  }
+
+  console.log(
+    `✅ Seeded ${data.states.length} states, ${data.regions.length} regions and ${data.cities.length} cities`,
+  );
 }
 
-async function main() {
-  console.log('🌱 Starting database seed...');
+async function ensureBaselineUsers() {
+  console.log('➡️  Ensuring baseline users...');
 
-  const geoData = loadGeoData();
-  await seedGeoLov(geoData);
-
-  // Create baseline users
   const testUser = await prisma.users.upsert({
     where: { email: 'test@pustikorijen.ba' },
     update: {
@@ -198,29 +173,32 @@ async function main() {
   });
 
   console.log('✅ Users ready:', testUser.email, superGuruUser.email);
+  return { testUser, superGuruUser };
+}
 
-  const sarajevoRegion = await prisma.admin_regions.upsert({
-    where: { code: 'BA-SAR' },
+async function ensureAdminRegion(superGuruUserId: string) {
+  const region = await prisma.admin_regions.upsert({
+    where: { code: 'DE-BER' },
     update: {
+      name: 'Berlin Region',
+      country: 'Germany',
       updated_at: new Date(),
     },
     create: {
-      region_id: 'BA-SAR',
-      name: 'Sarajevo Canton',
-      code: 'BA-SAR',
-      country: 'Bosnia and Herzegovina',
-      description: 'Administrative region covering Sarajevo and surrounding municipalities.',
+      region_id: 'DE-BER',
+      name: 'Berlin Region',
+      code: 'DE-BER',
+      country: 'Germany',
+      description: 'Administrative region covering Berlin and surrounding metropolitan area.',
       updated_at: new Date(),
     },
   });
 
-  console.log('✅ Admin region ready:', sarajevoRegion.name);
-
   await prisma.super_guru_assignments.upsert({
     where: {
       user_id_region_id: {
-        user_id: superGuruUser.user_id,
-        region_id: sarajevoRegion.region_id,
+        user_id: superGuruUserId,
+        region_id: region.region_id,
       },
     },
     update: {
@@ -228,50 +206,83 @@ async function main() {
     },
     create: {
       assignment_id: randomUUID(),
-      user_id: superGuruUser.user_id,
-      region_id: sarajevoRegion.region_id,
+      user_id: superGuruUserId,
+      region_id: region.region_id,
       is_primary: true,
-      created_by: superGuruUser.user_id,
+      created_by: superGuruUserId,
     },
   });
 
-  const sarajevoCity = geoData.cities.find((city) => city.name === 'Sarajevo');
-  if (!sarajevoCity) {
-    throw new Error('Sarajevo city not found in geo dataset');
+  console.log('✅ Admin region ready:', region.name);
+  return region;
+}
+
+async function ensureSampleBranch(
+  dataset: GeoSeedDataset,
+  adminRegionId: string,
+  testUserId: string,
+) {
+  const berlinCity = dataset.cities.find((city) => city.name === 'Berlin');
+  if (!berlinCity) {
+    throw new Error('Berlin city not found in geo dataset');
   }
 
-const sampleBranch = await prisma.family_branches.upsert({
-  where: { branch_id: 'FB-SA-HODZIC-001' },
-  update: {
-    admin_region_id: sarajevoRegion.region_id,
-    geo_city_id: sarajevoCity.city_id,
-    updated_at: new Date(),
-  },
-  create: {
-    branch_id: 'FB-SA-HODZIC-001',
-    surname: 'Hodžić',
-    surname_normalized: 'HODZIC',
-      city_code: sarajevoCity.code,
-      city_name: sarajevoCity.name,
-      region: sarajevoCity.region?.name ?? sarajevoCity.entity?.name ?? null,
-      admin_region_id: sarajevoRegion.region_id,
-      country: 'Bosnia and Herzegovina',
-      description: 'Hodžić family from Sarajevo',
-    founded_by: testUser.user_id,
-    visibility: 'public',
-    geo_city_id: sarajevoCity.city_id,
-    updated_at: new Date(),
-  },
-});
+  const berlinRegion = berlinCity.region_id
+    ? dataset.regions.find((region) => region.region_id === berlinCity.region_id)
+    : undefined;
 
-  console.log('✅ Created sample family branch:', sampleBranch.branch_id);
+  const branch = await prisma.family_branches.upsert({
+    where: { branch_id: 'FB-DE-BERLIN-001' },
+    update: {
+      surname: 'Müller',
+      surname_normalized: 'MULLER',
+      admin_region_id: adminRegionId,
+      geo_city_id: berlinCity.city_id,
+      city_code: berlinCity.city_code,
+      city_name: berlinCity.name,
+      region: berlinRegion?.name ?? null,
+      country: 'Germany',
+      description: 'Müller family rooted in Berlin',
+      founded_by: testUserId,
+      visibility: 'public',
+      updated_at: new Date(),
+    },
+    create: {
+      branch_id: 'FB-DE-BERLIN-001',
+      surname: 'Müller',
+      surname_normalized: 'MULLER',
+      city_code: berlinCity.city_code,
+      city_name: berlinCity.name,
+      region: berlinRegion?.name ?? null,
+      country: 'Germany',
+      description: 'Müller family rooted in Berlin',
+      founded_by: testUserId,
+      visibility: 'public',
+      admin_region_id: adminRegionId,
+      geo_city_id: berlinCity.city_id,
+      updated_at: new Date(),
+    },
+  });
+
+  console.log('✅ Sample family branch ready:', branch.branch_id);
+}
+
+async function main() {
+  console.log('🌱 Starting database seed...');
+
+  const geoData = loadGeoData();
+  await seedGeoLov(geoData);
+
+  const { testUser, superGuruUser } = await ensureBaselineUsers();
+  const adminRegion = await ensureAdminRegion(superGuruUser.user_id);
+  await ensureSampleBranch(geoData, adminRegion.region_id, testUser.user_id);
 
   console.log('🎉 Database seed completed!');
 }
 
 main()
-  .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+  .catch((error) => {
+    console.error('❌ Error seeding database:', error);
     process.exit(1);
   })
   .finally(async () => {
