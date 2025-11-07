@@ -11,7 +11,16 @@ import { getErrorMessage } from '../utils/error.util';
 const WORKER_ENABLED = (process.env.BACKUP_WORKER_ENABLED ?? 'true').toLowerCase() !== 'false';
 const POLL_INTERVAL_MS = Number(process.env.BACKUP_WORKER_POLL_MS ?? '5000');
 const STORAGE_ROOT = path.resolve(process.env.BACKUP_STORAGE_DIR ?? path.join(process.cwd(), '..', 'backups'));
-const DATABASE_URL = process.env.DATABASE_URL;
+
+function normalizeDatabaseUrl(url?: string | null): string | null {
+  if (!url) {
+    return null;
+  }
+  const [base] = url.split('?');
+  return base ?? null;
+}
+
+const BACKUP_DATABASE_URL = normalizeDatabaseUrl(process.env.BACKUP_DATABASE_URL ?? process.env.DATABASE_URL);
 
 let isProcessing = false;
 let intervalId: NodeJS.Timeout | null = null;
@@ -31,8 +40,8 @@ async function hashFile(filePath: string): Promise<string> {
 }
 
 async function createDatabaseArchive(snapshotId: string) {
-  if (!DATABASE_URL) {
-    throw new Error('DATABASE_URL is not configured');
+  if (!BACKUP_DATABASE_URL) {
+    throw new Error('BACKUP_DATABASE_URL is not configured');
   }
 
   await ensureStorageRoot();
@@ -43,7 +52,7 @@ async function createDatabaseArchive(snapshotId: string) {
   await fsPromises.rm(gzipPath, { force: true });
 
   let stderrBuffer = '';
-  const dumpProcess = spawn('pg_dump', ['--no-owner', '--no-acl', `--dbname=${DATABASE_URL}`], {
+  const dumpProcess = spawn('pg_dump', ['--no-owner', '--no-acl', `--dbname=${BACKUP_DATABASE_URL}`], {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
@@ -205,8 +214,8 @@ export function startBackupWorker(): void {
     return;
   }
 
-  if (!DATABASE_URL) {
-    console.warn('[BackupWorker] DATABASE_URL missing. Worker will not start.');
+  if (!BACKUP_DATABASE_URL) {
+    console.warn('[BackupWorker] BACKUP_DATABASE_URL missing. Worker will not start.');
     return;
   }
 

@@ -101,6 +101,7 @@ Jobs run through BullMQ queue `admin-backups`; worker ensures sequential restore
 - Map each backup to the environment it came from (`sourceEnv`) and require that restores target either the same environment or a compatible lower environment (e.g., prod → staging for incident drills). Cross-environment restores (dev ↔ prod) demand explicit confirmation plus `ALLOW_PROD_RESTORE`.
 - Dev/staging restores run under a non-privileged restore account that lacks production data-plane rights, preventing accidental overwrite of live systems.
 - Local dev worker implementation: use `pg_dump` to stream the configured `DATABASE_URL` into a compressed artifact under `BACKUP_STORAGE_DIR` (default `../backups`), record SHA-256 checksum + byte size, and store that information inside the manifest JSON. If media backup is requested in dev, capture a placeholder manifest note until the real media pipeline is wired in.
+- Local dev worker implementation: use `pg_dump` to stream the configured `BACKUP_DATABASE_URL` (falls back to `DATABASE_URL` minus query params) into a compressed artifact under `BACKUP_STORAGE_DIR` (default `../backups`), record SHA-256 checksum + byte size, and store that information inside the manifest JSON. If media backup is requested in dev, capture a placeholder manifest note until the real media pipeline is wired in.
 
 ## Frontend Implementation Notes
 - Place page at `frontend/src/pages/admin/AdminBackups.tsx`; register route in `App.tsx` and enable nav item once ready.

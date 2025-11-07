@@ -50,6 +50,7 @@ backend/.env
 *.tmp
 *.temp
 .cache/
+backups/
 
 # Logs
 logs/
