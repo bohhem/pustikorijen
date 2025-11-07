@@ -5,10 +5,12 @@ const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || 'your-refre
 const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '15m') as jwt.SignOptions['expiresIn'];
 const JWT_REFRESH_EXPIRES_IN = (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as jwt.SignOptions['expiresIn'];
 
+export type GlobalRole = 'USER' | 'REGIONAL_GURU' | 'SUPER_GURU' | 'ADMIN';
+
 export interface JwtPayload {
   userId: string;
   email: string;
-  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  globalRole: GlobalRole;
   regionIds: string[];
 }
 

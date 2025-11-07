@@ -3,15 +3,25 @@ import type {
   AdminRegionsResponse,
   AdminRegionOverview,
   AssignSuperGuruPayload,
+  AdminBranchListItem,
+  AdminBranchListResponse,
+  AdminBranchStatusFilter,
   BridgeIssueMutationResponse,
   BridgeIssuesResponse,
   BridgeIssueSummary,
   CreateAdminRegionPayload,
   UpdateAssignmentPayload,
+  UpdateBranchRegionPayload,
+  AdminRegionTreeNode,
 } from '../types/admin';
 
 export async function getAdminRegionsOverview(): Promise<AdminRegionOverview[]> {
   const response = await api.get<AdminRegionsResponse>('/admin/regions');
+  return response.data.regions;
+}
+
+export async function getAdminRegionTree(): Promise<AdminRegionTreeNode[]> {
+  const response = await api.get<{ regions: AdminRegionTreeNode[] }>('/admin/regions/tree');
   return response.data.regions;
 }
 
@@ -71,4 +81,56 @@ export async function updateBridgeGeneration(linkId: string, generationNumber: n
     generationNumber,
   });
   return response.data.issues;
+}
+
+export async function getAdminBranches(params: {
+  page?: number;
+  limit?: number;
+  status?: AdminBranchStatusFilter;
+  search?: string;
+  regionId?: string;
+}): Promise<AdminBranchListResponse> {
+  const query: Record<string, string | number | undefined> = {};
+
+  if (params.page) query.page = params.page;
+  if (params.limit) query.limit = params.limit;
+  if (params.status) query.status = params.status;
+  if (params.search) query.search = params.search;
+  if (params.regionId) query.regionId = params.regionId;
+
+  const response = await api.get<AdminBranchListResponse>('/admin/branches', {
+    params: query,
+  });
+
+  return response.data;
+}
+
+export async function archiveAdminBranch(branchId: string, reason?: string | null): Promise<AdminBranchListItem> {
+  const response = await api.post<{ message: string; branch: AdminBranchListItem }>(
+    `/admin/branches/${branchId}/archive`,
+    reason ? { reason } : {},
+  );
+  return response.data.branch;
+}
+
+export async function unarchiveAdminBranch(branchId: string): Promise<AdminBranchListItem> {
+  const response = await api.post<{ message: string; branch: AdminBranchListItem }>(
+    `/admin/branches/${branchId}/unarchive`,
+  );
+  return response.data.branch;
+}
+
+export async function hardDeleteAdminBranch(branchId: string): Promise<void> {
+  await api.delete(`/admin/branches/${branchId}`);
+}
+
+export async function updateAdminBranchRegion(
+  branchId: string,
+  payload: UpdateBranchRegionPayload
+): Promise<AdminBranchListItem> {
+  const response = await api.post<{ message: string; branch: AdminBranchListItem }>(
+    `/admin/branches/${branchId}/region`,
+    payload
+  );
+  return response.data.branch;
 }

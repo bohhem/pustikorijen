@@ -101,7 +101,9 @@ export interface PlatformUserStats {
   newUsersLast30Days: number;
   usersByRole: {
     USER: number;
+    REGIONAL_GURU: number;
     SUPER_GURU: number;
+    ADMIN: number;
   };
   userGrowthTrend: Array<{
     date: string;
@@ -767,7 +769,7 @@ export async function getPlatformUserStats(): Promise<PlatformUserStats> {
     }),
     prisma.users.count({
       where: {
-        global_role: 'USER',
+        global_role: 'REGIONAL_GURU',
       },
     }),
     prisma.users.count({
@@ -801,11 +803,13 @@ export async function getPlatformUserStats(): Promise<PlatformUserStats> {
   // Build usersByRole map
   const roleMap: Record<string, number> = {
     USER: 0,
+    REGIONAL_GURU: 0,
     SUPER_GURU: 0,
+    ADMIN: 0,
   };
 
   usersByRole.forEach((item: { global_role: string; _count: { global_role: number } }) => {
-    if (item.global_role === 'USER' || item.global_role === 'SUPER_GURU') {
+    if (item.global_role in roleMap) {
       roleMap[item.global_role] = item._count.global_role;
     }
   });
@@ -846,7 +850,9 @@ export async function getPlatformUserStats(): Promise<PlatformUserStats> {
     newUsersLast30Days,
     usersByRole: {
       USER: roleMap.USER,
+      REGIONAL_GURU: roleMap.REGIONAL_GURU,
       SUPER_GURU: roleMap.SUPER_GURU,
+      ADMIN: roleMap.ADMIN,
     },
     userGrowthTrend,
   };

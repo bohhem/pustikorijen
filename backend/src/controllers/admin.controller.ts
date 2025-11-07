@@ -2,8 +2,14 @@ import { Request, Response } from 'express';
 import {
   assignSuperGuruToRegion,
   createAdminRegion,
+  archiveBranchForAdmin,
   getSuperGuruRegionsOverview,
+  getAdminRegionHierarchy,
+  updateBranchRegionAssignment,
+  hardDeleteBranch,
+  listBranchesForAdmin,
   removeSuperGuruAssignment,
+  unarchiveBranchForAdmin,
   updateSuperGuruAssignment,
 } from '../services/admin.service';
 import {
@@ -15,7 +21,10 @@ import {
 } from '../services/person-link.service';
 import {
   assignGuruSchema,
+  archiveBranchSchema,
+  adminBranchListQuerySchema,
   createRegionSchema,
+  updateBranchRegionSchema,
   updateAssignmentSchema,
 } from '../schemas/admin.schema';
 import { getErrorMessage, isZodError } from '../utils/error.util';
@@ -31,11 +40,31 @@ export async function getAdminRegions(req: Request, res: Response): Promise<void
       return;
     }
 
-    const regions = await getSuperGuruRegionsOverview(req.user.userId);
+    const scope = req.user.globalRole === 'REGIONAL_GURU' ? 'ASSIGNED' : 'ALL';
+    const regions = await getSuperGuruRegionsOverview({
+      userId: req.user.userId,
+      scope,
+      regionIds: req.user.regionIds,
+    });
 
     res.status(200).json({ regions });
   } catch (error: unknown) {
     console.error('Failed to load admin regions:', error);
+    res.status(500).json({ error: 'Failed to load admin regions' });
+  }
+}
+
+export async function getAdminRegionTree(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const regions = await getAdminRegionHierarchy();
+    res.status(200).json({ regions });
+  } catch (error) {
+    console.error('Failed to load admin region hierarchy:', error);
     res.status(500).json({ error: 'Failed to load admin regions' });
   }
 }
@@ -51,7 +80,12 @@ export async function createRegion(req: Request, res: Response): Promise<void> {
 
     await createAdminRegion(validated);
 
-    const regions = await getSuperGuruRegionsOverview(req.user.userId);
+    const scope = req.user.globalRole === 'REGIONAL_GURU' ? 'ASSIGNED' : 'ALL';
+    const regions = await getSuperGuruRegionsOverview({
+      userId: req.user.userId,
+      scope,
+      regionIds: req.user.regionIds,
+    });
     res.status(201).json({ message: 'Region created', regions });
   } catch (error: unknown) {
     if (isZodError(error)) {
@@ -87,7 +121,12 @@ export async function assignRegionGuru(req: Request, res: Response): Promise<voi
       requestedByUserId: req.user.userId,
     });
 
-    const regions = await getSuperGuruRegionsOverview(req.user.userId);
+    const scope = req.user.globalRole === 'REGIONAL_GURU' ? 'ASSIGNED' : 'ALL';
+    const regions = await getSuperGuruRegionsOverview({
+      userId: req.user.userId,
+      scope,
+      regionIds: req.user.regionIds,
+    });
     res.status(200).json({ message: 'SuperGuru assigned', regions });
   } catch (error: unknown) {
     if (isZodError(error)) {
@@ -123,7 +162,12 @@ export async function updateRegionAssignment(req: Request, res: Response): Promi
       data: validated,
     });
 
-    const regions = await getSuperGuruRegionsOverview(req.user.userId);
+    const scope = req.user.globalRole === 'REGIONAL_GURU' ? 'ASSIGNED' : 'ALL';
+    const regions = await getSuperGuruRegionsOverview({
+      userId: req.user.userId,
+      scope,
+      regionIds: req.user.regionIds,
+    });
     res.status(200).json({ message: 'Assignment updated', regions });
   } catch (error: unknown) {
     if (isZodError(error)) {
@@ -154,7 +198,12 @@ export async function deleteRegionAssignment(req: Request, res: Response): Promi
 
     await removeSuperGuruAssignment({ regionId, assignmentId });
 
-    const regions = await getSuperGuruRegionsOverview(req.user.userId);
+    const scope = req.user.globalRole === 'REGIONAL_GURU' ? 'ASSIGNED' : 'ALL';
+    const regions = await getSuperGuruRegionsOverview({
+      userId: req.user.userId,
+      scope,
+      regionIds: req.user.regionIds,
+    });
     res.status(200).json({ message: 'Assignment removed', regions });
   } catch (error: unknown) {
     const message = getErrorMessage(error);
@@ -170,6 +219,173 @@ export async function deleteRegionAssignment(req: Request, res: Response): Promi
 
     console.error('Failed to remove SuperGuru assignment:', error);
     res.status(500).json({ error: 'Failed to remove assignment' });
+  }
+}
+
+export async function listAdminBranches(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const query = adminBranchListQuerySchema.parse(req.query);
+    const result = await listBranchesForAdmin(query, req.user);
+    res.status(200).json(result);
+  } catch (error: unknown) {
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation failed', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error);
+    if (message === 'Region access denied') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to load admin branches:', error);
+    res.status(500).json({ error: 'Failed to load branches' });
+  }
+}
+
+export async function archiveBranchAdmin(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { branchId } = req.params;
+    const payload = archiveBranchSchema.parse(req.body);
+    const branch = await archiveBranchForAdmin(branchId, {
+      reason: payload.reason,
+      actor: req.user,
+    });
+
+    res.status(200).json({ message: 'Branch archived', branch });
+  } catch (error: unknown) {
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation failed', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error);
+    if (message === 'Branch not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+    if (message === 'Branch already archived') {
+      res.status(400).json({ error: message });
+      return;
+    }
+    if (message === 'Branch access denied') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to archive branch:', error);
+    res.status(500).json({ error: 'Failed to archive branch' });
+  }
+}
+
+export async function updateBranchRegion(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { branchId } = req.params;
+    const payload = updateBranchRegionSchema.parse(req.body);
+    const branch = await updateBranchRegionAssignment({
+      branchId,
+      regionId: payload.regionId,
+      actor: req.user,
+    });
+
+    res.status(200).json({ message: 'Branch region updated', branch });
+  } catch (error) {
+    const message = getErrorMessage(error);
+
+    if (message === 'Branch not found' || message === 'Region not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message === 'Branch access denied' || message === 'Region access denied') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to update branch region:', error);
+    res.status(500).json({ error: 'Failed to update branch region' });
+  }
+}
+
+export async function unarchiveBranchAdmin(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { branchId } = req.params;
+    const branch = await unarchiveBranchForAdmin(branchId, req.user);
+
+    res.status(200).json({ message: 'Branch restored', branch });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    if (message === 'Branch not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message === 'Branch is not archived') {
+      res.status(400).json({ error: message });
+      return;
+    }
+    if (message === 'Branch access denied') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to unarchive branch:', error);
+    res.status(500).json({ error: 'Failed to unarchive branch' });
+  }
+}
+
+export async function hardDeleteBranchAdmin(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { branchId } = req.params;
+    await hardDeleteBranch(branchId, req.user);
+
+    res.status(200).json({ message: 'Branch permanently deleted' });
+  } catch (error: unknown) {
+    const message = getErrorMessage(error);
+
+    if (message === 'Branch not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    if (message === 'Branch must be archived before hard deletion') {
+      res.status(400).json({ error: message });
+      return;
+    }
+    if (message === 'Branch access denied') {
+      res.status(403).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to hard delete branch:', error);
+    res.status(500).json({ error: 'Failed to delete branch' });
   }
 }
 

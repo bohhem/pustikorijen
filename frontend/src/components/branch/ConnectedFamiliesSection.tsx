@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { ConnectedFamily } from '../../types/branch';
 import { getConnectedFamilies, rejectBridgeLink, setBridgePrimary } from '../../api/branch';
 import { useToast } from '../../contexts/ToastContext';
+import { formatRegionPath } from '../../utils/location';
 
 interface ConnectedFamiliesSectionProps {
   branchId: string;
@@ -277,8 +278,18 @@ function ConnectedFamiliesGraph({ families, selectedId, onSelect, onShowPendingL
             </div>
           </div>
           <p className="text-sm text-indigo-700">
-            {selectedFamily.branch.cityName}
-            {selectedFamily.branch.region ? `, ${selectedFamily.branch.region}` : ''}
+            {selectedFamily.branch.cityName
+              ? [
+                  selectedFamily.branch.cityName,
+                  selectedFamily.branch.adminRegionPath && selectedFamily.branch.adminRegionPath.length > 0
+                    ? formatRegionPath(selectedFamily.branch.adminRegionPath)
+                    : selectedFamily.branch.country ?? '',
+                ]
+                  .filter(Boolean)
+                  .join(' • ')
+              : selectedFamily.branch.adminRegionPath && selectedFamily.branch.adminRegionPath.length > 0
+              ? formatRegionPath(selectedFamily.branch.adminRegionPath)
+              : selectedFamily.branch.country ?? t('connectedFamilies.locationUnknown')}
           </p>
           {selectedFamily.stats.pendingLinks > 0 && onShowPendingLinks && (
             <button
@@ -313,13 +324,17 @@ function ConnectedFamilyCard({
   const { t } = useTranslation();
 
   const location = useMemo(() => {
-    if (family.branch.cityName && family.branch.region) {
-      return `${family.branch.cityName}, ${family.branch.region}`;
+    const regionTrail =
+      family.branch.adminRegionPath && family.branch.adminRegionPath.length > 0
+        ? formatRegionPath(family.branch.adminRegionPath)
+        : family.branch.adminRegion?.name ?? family.branch.country ?? '';
+    if (family.branch.cityName && regionTrail) {
+      return `${family.branch.cityName}, ${regionTrail}`;
     }
     if (family.branch.cityName) {
       return family.branch.cityName;
     }
-    return family.branch.country ?? '';
+    return regionTrail || t('connectedFamilies.locationUnknown');
   }, [family.branch]);
 
   const statusChips = [

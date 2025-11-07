@@ -38,7 +38,10 @@ export default function BranchDetail() {
   const [joining, setJoining] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
+  const isSuperGuru = useMemo(
+    () => (user?.globalRole ? ['SUPER_GURU', 'ADMIN', 'REGIONAL_GURU'].includes(user.globalRole) : false),
+    [user?.globalRole]
+  );
   const isMember = useMemo(() => members.some(m => m.userId === user?.id && m.status === 'active'), [members, user?.id]);
   const isGuru = useMemo(
     () => members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active'),

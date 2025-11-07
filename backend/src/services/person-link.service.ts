@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto';
 import type { branch_person_links as BranchPersonLink } from '@prisma/client';
 import prisma from '../utils/prisma';
+import { ensureBranchIsActive } from '../utils/branch.guard';
 import type { JwtPayload } from '../utils/jwt';
 
 type ActingUser = Pick<JwtPayload, 'userId' | 'globalRole'>;
@@ -90,6 +91,8 @@ function formatLink(link: {
 }
 
 async function ensureGuru(branchId: string, userId: string): Promise<void> {
+  await ensureBranchIsActive(branchId);
+
   const membership = await prisma.branchMember.findUnique({
     where: {
       branch_id_user_id: {
@@ -109,6 +112,8 @@ async function ensureGuru(branchId: string, userId: string): Promise<void> {
 }
 
 export async function searchPersonsForLink(branchId: string, query?: string, limit = 20) {
+  await ensureBranchIsActive(branchId);
+
   const targetBranch = await prisma.familyBranch.findUnique({
     where: { branch_id: branchId },
     select: {
@@ -206,6 +211,8 @@ export async function requestPersonLink(params: {
   notes?: string | null;
 }) {
   const { branchId, personId, requestedBy, displayName, notes } = params;
+
+  await ensureBranchIsActive(branchId);
 
   const [targetBranch, person] = await Promise.all([
     prisma.familyBranch.findUnique({
@@ -328,6 +335,8 @@ export async function requestPersonLink(params: {
 
 export async function listPersonLinks(params: { branchId: string; status?: string | null; includeSource?: boolean }) {
   const { branchId, status } = params;
+
+  await ensureBranchIsActive(branchId);
 
   const links = (await prisma.branchPersonLink.findMany({
     where: {
@@ -620,14 +629,22 @@ export interface BridgeIssueSummary {
     id: string;
     surname: string;
     cityName: string | null;
-    region: string | null;
+    adminRegion: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
     country: string | null;
   };
   branchB: {
     id: string;
     surname: string;
     cityName: string | null;
-    region: string | null;
+    adminRegion: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
     country: string | null;
   };
   totalLinks: number;
@@ -678,23 +695,37 @@ export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
       branch_id: true,
       surname: true,
       city_name: true,
-      region: true,
       country: true,
+      admin_regions: {
+        select: {
+          region_id: true,
+          name: true,
+          code: true,
+        },
+      },
     },
   })) as Array<{
     branch_id: string;
     surname: string;
     city_name: string | null;
-    region: string | null;
     country: string | null;
+    admin_regions: {
+      region_id: string;
+      name: string;
+      code: string;
+    } | null;
   }>;
 
   const branchMeta = new Map<string, {
     id: string;
     surname: string;
     cityName: string | null;
-    region: string | null;
     country: string | null;
+    adminRegion: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
   }>(
     branches.map((branch) => [
       branch.branch_id,
@@ -702,7 +733,13 @@ export async function getBridgeIssues(): Promise<BridgeIssueSummary[]> {
         id: branch.branch_id,
         surname: branch.surname,
         cityName: branch.city_name,
-        region: branch.region,
+        adminRegion: branch.admin_regions
+          ? {
+              id: branch.admin_regions.region_id,
+              name: branch.admin_regions.name,
+              code: branch.admin_regions.code,
+            }
+          : null,
         country: branch.country,
       },
     ])

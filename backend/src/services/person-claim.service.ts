@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import prisma from '../utils/prisma';
+import { ensureBranchIsActive } from '../utils/branch.guard';
 import type { JwtPayload } from '../utils/jwt';
 
 export type PersonClaimStatus = 'pending' | 'approved' | 'rejected';
@@ -52,6 +53,8 @@ function isElevated(actor: JwtPayload | undefined | null) {
 }
 
 async function ensureGuru(branchId: string, actor: JwtPayload) {
+  await ensureBranchIsActive(branchId);
+
   if (isElevated(actor)) {
     return;
   }
@@ -103,6 +106,8 @@ export async function submitPersonClaim(params: {
   message?: string | null;
 }): Promise<PersonClaimDto> {
   const { branchId, personId, actor, message } = params;
+
+  await ensureBranchIsActive(branchId);
 
   const person = await prisma.person.findFirst({
     where: {

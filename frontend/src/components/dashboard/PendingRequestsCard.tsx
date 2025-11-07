@@ -41,7 +41,7 @@ export default function PendingRequestsCard() {
 
           // If user is Guru, fetch pending join requests and person link requests
           const isGuru = userMembership?.role === 'guru';
-          const isSuperGuru = user.globalRole === 'SUPER_GURU' || user.globalRole === 'ADMIN';
+          const isSuperGuru = ['SUPER_GURU', 'ADMIN', 'REGIONAL_GURU'].includes(user.globalRole);
 
           if (isGuru || isSuperGuru) {
             // Fetch pending join requests

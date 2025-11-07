@@ -34,11 +34,12 @@ export default function EditBranchModal({ branch, open, onClose, onSave }: EditB
     if (!branch.cityName) {
       return t('branchDetail.edit.locationUnknown');
     }
-    if (branch.region) {
-      return `${branch.cityName}, ${branch.region}`;
+    const regionLabel = branch.adminRegion?.name ?? branch.location?.state?.name ?? branch.country;
+    if (regionLabel) {
+      return `${branch.cityName}, ${regionLabel}`;
     }
     return branch.cityName;
-  }, [branch.cityName, branch.region, t]);
+  }, [branch.cityName, branch.adminRegion?.name, branch.location?.state?.name, branch.country, t]);
 
   if (!open) {
     return null;

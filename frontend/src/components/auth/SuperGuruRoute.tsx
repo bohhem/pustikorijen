@@ -1,12 +1,18 @@
 import { type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import type { GlobalRole } from '../../types/auth';
+
+type UserRole = GlobalRole;
 
 interface SuperGuruRouteProps {
   children: ReactNode;
+  allowedRoles?: UserRole[];
 }
 
-export default function SuperGuruRoute({ children }: SuperGuruRouteProps) {
+const DEFAULT_ALLOWED_ROLES: UserRole[] = ['SUPER_GURU', 'ADMIN', 'REGIONAL_GURU'];
+
+export default function SuperGuruRoute({ children, allowedRoles = DEFAULT_ALLOWED_ROLES }: SuperGuruRouteProps) {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -24,13 +30,9 @@ export default function SuperGuruRoute({ children }: SuperGuruRouteProps) {
     return <Navigate to="/login" replace />;
   }
 
-  const allowedRoles: Array<UserRole> = ['SUPER_GURU', 'ADMIN'];
-
   if (!allowedRoles.includes(user.globalRole)) {
     return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
 }
-
-type UserRole = 'USER' | 'SUPER_GURU' | 'ADMIN';

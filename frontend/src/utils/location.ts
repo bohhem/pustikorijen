@@ -5,8 +5,9 @@ export function formatBranchLocation(branch: Branch): string {
   const regionName =
     branch.location?.region?.name ??
     branch.location?.entity?.name ??
-    branch.region ??
-    branch.location?.state?.name;
+    branch.adminRegion?.name ??
+    branch.location?.state?.name ??
+    branch.country;
   const country = branch.location?.state?.name ?? branch.country;
 
   if (regionName) {
@@ -18,4 +19,14 @@ export function formatBranchLocation(branch: Branch): string {
   }
 
   return city;
+}
+
+export function formatRegionPath(
+  path: Array<{ name: string }> | undefined,
+  delimiter = ' → '
+): string {
+  if (!path || path.length === 0) {
+    return '';
+  }
+  return path.map((crumb) => crumb.name).join(delimiter);
 }

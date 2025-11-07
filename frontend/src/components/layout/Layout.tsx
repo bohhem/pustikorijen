@@ -15,7 +15,8 @@ export default function Layout({ children }: LayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSuperGuru = user && (user.globalRole === 'SUPER_GURU' || user.globalRole === 'ADMIN');
+  const hasAdminAccess =
+    !!user && (user.globalRole === 'SUPER_GURU' || user.globalRole === 'ADMIN' || user.globalRole === 'REGIONAL_GURU');
 
   const handleLogout = () => {
     logout();
@@ -61,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   {t('navigation.branches')}
                 </Link>
-                {isSuperGuru && (
+                {hasAdminAccess && (
                   <Link
                     to="/admin"
                     className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -108,7 +109,7 @@ export default function Layout({ children }: LayoutProps) {
               >
                 {t('navigation.branches')}
               </Link>
-              {isSuperGuru && (
+              {hasAdminAccess && (
                 <Link
                   to="/admin"
                   className={`px-3 py-1.5 rounded-md text-sm font-medium whitespace-nowrap transition-colors ${

@@ -233,6 +233,7 @@
     "lastUpdated": "Updated {{date}}",
     "bridgesHeading": "Bridge relatives",
     "noBridges": "No bridge people to show yet.",
+    "locationUnknown": "Location unknown",
     "primaryBridge": "Primary bridge",
     "homeBranch": "Home branch: {{branch}}",
     "displayAs": "Displayed as {{name}}",
@@ -702,7 +703,9 @@
   },
   "roles": {
     "user": "User",
-    "superGuru": "SuperGuru"
+    "regionalGuru": "Regional Guru",
+    "superGuru": "SuperGuru",
+    "admin": "Admin"
   },
   "admin": {
     "title": "SuperGuru Console",
@@ -719,7 +722,8 @@
     "assignedSince": "Assigned since {{date}}",
     "manageRegions": {
       "title": "Manage regions",
-      "subtitle": "Create regions and coordinate which SuperGuru is responsible for them."
+      "subtitle": "Create regions and coordinate which SuperGuru is responsible for them.",
+      "guruSectionTitle": "Assigned SuperGurus"
     },
     "actions": {
       "addRegion": "Add region",
@@ -751,6 +755,7 @@
     "sections": {
       "overview": "Overview",
       "regions": "Regions",
+      "branches": "Branches",
       "bridgeIssues": "Bridge issues",
       "users": "Users",
       "backups": "Backups",
@@ -813,6 +818,87 @@
       "generationUpdated": "Bridge generation updated",
       "generationCleared": "Bridge generation cleared"
     },
+    "branches": {
+      "title": "Branch Management",
+      "subtitle": "Archive or permanently delete family branches when necessary.",
+      "status": {
+        "active": "Active",
+        "archived": "Archived",
+        "all": "All"
+      },
+      "searchPlaceholder": "Search by surname, branch ID, or city...",
+      "searchAction": "Search",
+    "resultsSummary": "Total {{total}} branches • Page {{page}} of {{totalPages}}",
+    "selectionSummary": "{{count}} selected",
+    "selectionActions": {
+      "selectAll": "Select page",
+      "clear": "Clear"
+    },
+    "filters": {
+      "regionLabel": "Region",
+      "allRegions": "All regions",
+      "unassignedRegion": "Unassigned",
+      "regionPlaceholder": "Pick a country, entity, canton…",
+      "activeRegion": "Filtering by {{path}}"
+    },
+    "regionTreeError": "Unable to load region hierarchy. Please try again.",
+    "loadRegionsError": "Failed to load regions for filtering.",
+    "loadError": "Failed to load branches.",
+      "archiveConfirm": "Archive this branch? Members will no longer be able to access it until it is restored.",
+      "archiveReasonPrompt": "Add an archive reason (optional):",
+      "archiveSuccess": "Branch archived.",
+      "archiveError": "Failed to archive branch.",
+      "unarchiveConfirm": "Restore this branch and make it visible again?",
+      "unarchiveSuccess": "Branch restored.",
+      "unarchiveError": "Failed to restore branch.",
+      "deleteConfirm": "This will permanently delete the branch and all related data. This action cannot be undone. Continue?",
+      "deleteSuccess": "Branch permanently deleted.",
+      "deleteError": "Failed to permanently delete branch.",
+      "table": {
+        "branch": "Branch",
+        "people": "People",
+        "visibility": "Visibility",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "noResults": "No branches match your filters.",
+      "loading": "Loading branches...",
+      "verifiedBadge": "Verified",
+      "archivedBadge": "Archived",
+    "unknownLocation": "Location unknown",
+    "regionLabel": "Assigned region: {{region}}",
+    "regionPathLabel": "Hierarchy: {{path}}",
+      "archivedMeta": "Archived on {{date}} by {{by}}",
+      "archivedUnknownUser": "unknown user",
+      "archivedUnknownDate": "Archived (date unknown)",
+      "archivedReasonLabel": "Reason: {{reason}}",
+      "personCount": "{{count}} people",
+      "memberCount": "{{count}} members",
+      "actions": {
+        "archive": "Archive",
+        "unarchive": "Restore",
+        "delete": "Delete",
+        "assignRegion": "Assign region"
+      },
+    "assignRegion": {
+      "title": "Assign region",
+      "subtitle": "Selected {{count}} branches",
+      "selectLabel": "Choose a region",
+      "noSelection": "Select at least one branch before applying.",
+      "selectRegion": "Select a region first.",
+      "noRegionsAvailable": "No regions available for this action.",
+      "modeRegion": "Select region",
+      "modeUnassigned": "Mark as unassigned",
+      "selectedPath": "Selected: {{path}}",
+      "unassignedDescription": "Branches marked as unassigned will not appear in any regional dashboards.",
+      "unassignedNotAllowed": "Only SuperGurus can clear a branch region.",
+      "success": "{{count}} branches updated",
+      "submit": "Apply"
+    },
+      "paginationSummary": "Showing {{start}}–{{end}} of {{total}} branches",
+      "paginationPrev": "Previous",
+      "paginationNext": "Next"
+    },
     "users": {
       "title": "User Management",
       "subtitle": "Manage platform users, roles, and permissions",
@@ -830,7 +916,9 @@
       "filters": {
         "allRoles": "All Roles",
         "users": "Users",
+        "regionalGurus": "Regional Gurus",
         "superGurus": "SuperGurus",
+        "admins": "Admins",
         "allStatuses": "All Statuses",
         "active": "Active",
         "inactive": "Inactive"

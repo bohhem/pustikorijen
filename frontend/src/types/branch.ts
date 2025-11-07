@@ -1,14 +1,28 @@
 import type { GeoCity } from './geo';
 
+export interface RegionBreadcrumb {
+  id: string;
+  name: string;
+  code: string;
+  level: number;
+}
+
 export interface Branch {
   id: string;
   surname: string;
   surnameNormalized: string;
   cityCode: string;
   cityName: string;
-  region: string | null;
   country: string;
   geoCityId?: string | null;
+  adminRegion?: {
+    id: string;
+    name: string;
+    code: string;
+    level?: number;
+    kind?: string;
+  };
+  adminRegionPath?: RegionBreadcrumb[];
   rootPersonId: string | null;
   oldestAncestorYear: number | null;
   totalPeople: number;
@@ -22,6 +36,12 @@ export interface Branch {
   lastMajorUpdate: string | null;
   createdAt: string;
   updatedAt: string;
+  archivedAt?: string | null;
+  archivedReason?: string | null;
+  archivedBy?: {
+    id: string;
+    fullName?: string | null;
+  } | null;
   foundedBy?: {
     id: string;
     fullName: string;
@@ -178,7 +198,12 @@ export interface ConnectedFamily {
     id: string;
     surname: string;
     cityName?: string | null;
-    region?: string | null;
+    adminRegion?: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
+    adminRegionPath?: RegionBreadcrumb[];
     country?: string | null;
     visibility: string;
     isVerified: boolean;
@@ -303,7 +328,12 @@ export interface MultiBranchTreeBranchInfo {
   id: string;
   surname: string;
   cityName: string;
-  region?: string | null;
+  adminRegion?: {
+    id: string;
+    name: string;
+    code: string;
+  } | null;
+  adminRegionPath?: RegionBreadcrumb[];
   country: string;
   totalPeople: number;
   totalGenerations: number;

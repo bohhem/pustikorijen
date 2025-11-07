@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client';
 import prisma from '../utils/prisma';
+import { ensureBranchIsActive } from '../utils/branch.guard';
 import type { JwtPayload } from '../utils/jwt';
 
 interface MovePersonParams {
@@ -16,6 +17,7 @@ export async function movePersonToBranch({ sourceBranchId, targetBranchId, perso
   }
 
   await ensureCanModerate(sourceBranchId, actor);
+  await ensureBranchIsActive(targetBranchId);
 
   const targetBranchGuruCount = await prisma.branchMember.count({
     where: {
@@ -81,6 +83,8 @@ export async function movePersonToBranch({ sourceBranchId, targetBranchId, perso
 }
 
 async function ensureCanModerate(branchId: string, actor: JwtPayload) {
+  await ensureBranchIsActive(branchId);
+
   if (actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN') {
     return;
   }

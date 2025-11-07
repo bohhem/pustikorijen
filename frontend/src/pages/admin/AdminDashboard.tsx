@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { formatRegionPath } from '../../utils/location';
 import {
   assignSuperGuru,
   createAdminRegion,
@@ -498,31 +499,37 @@ export default function AdminDashboard() {
                             {t('admin.recentBranches.empty')}
                           </div>
                         )}
-                        {region.recentBranches.map((branch) => (
-                          <div key={branch.id} className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm">
-                            <div className="flex items-start justify-between gap-3">
-                              <div>
-                                <p className="text-base font-semibold text-slate-900">{branch.surname}</p>
-                                <p className="text-sm text-slate-500">
-                                  {branch.cityName}
-                                  {branch.region && `, ${branch.region}`}
-                                  {!branch.region && branch.country && `, ${branch.country}`}
-                                </p>
+                        {region.recentBranches.map((branch) => {
+                          const regionTrail =
+                            branch.adminRegionPath && branch.adminRegionPath.length > 0
+                              ? formatRegionPath(branch.adminRegionPath)
+                              : branch.adminRegion?.name ?? branch.country ?? '';
+                          const locationLine = branch.cityName
+                            ? [branch.cityName, regionTrail].filter(Boolean).join(' • ')
+                            : regionTrail;
+
+                          return (
+                            <div key={branch.id} className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm">
+                              <div className="flex items-start justify-between gap-3">
+                                <div>
+                                  <p className="text-base font-semibold text-slate-900">{branch.surname}</p>
+                                  <p className="text-sm text-slate-500">{locationLine}</p>
+                                </div>
+                                <span className="text-xs uppercase tracking-wide text-slate-400">
+                                  {new Date(branch.createdAt).toLocaleDateString()}
+                                </span>
                               </div>
-                              <span className="text-xs uppercase tracking-wide text-slate-400">
-                                {new Date(branch.createdAt).toLocaleDateString()}
-                              </span>
+                              <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
+                                <span>
+                                  {t('admin.recentBranches.visibility')}: {branch.visibility}
+                                </span>
+                                <span>
+                                  {t('admin.recentBranches.people', { count: branch.totalPeople })}
+                                </span>
+                              </div>
                             </div>
-                            <div className="mt-3 flex items-center gap-4 text-xs text-slate-500">
-                              <span>
-                                {t('admin.recentBranches.visibility')}: {branch.visibility}
-                              </span>
-                              <span>
-                                {t('admin.recentBranches.people', { count: branch.totalPeople })}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </div>

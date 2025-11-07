@@ -60,7 +60,9 @@ export default function CreatePerson() {
         (member) =>
           member.userId === user?.id && member.role === 'guru' && member.status === 'active'
       );
-      const isElevated = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
+      const isElevated = !!(
+        user?.globalRole && ['SUPER_GURU', 'ADMIN', 'REGIONAL_GURU'].includes(user.globalRole)
+      );
       const canManage = isBranchGuru || isElevated;
       setCanShareLedger(canManage);
       setCanSetGeneration(canManage);

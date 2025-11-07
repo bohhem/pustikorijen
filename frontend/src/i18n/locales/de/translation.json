@@ -233,6 +233,7 @@
     "lastUpdated": "Aktualisiert {{date}}",
     "bridgesHeading": "Brückenpersonen",
     "noBridges": "Noch keine Brückenpersonen.",
+    "locationUnknown": "Unbekannter Ort",
     "primaryBridge": "Primäre Brücke",
     "homeBranch": "Heimatzweig: {{branch}}",
     "displayAs": "Angezeigt als {{name}}",
@@ -696,7 +697,9 @@
   },
   "roles": {
     "user": "Benutzer",
-    "superGuru": "SuperGuru"
+    "regionalGuru": "Regionaler Guru",
+    "superGuru": "SuperGuru",
+    "admin": "Administrator"
   },
   "admin": {
     "title": "SuperGuru-Konsole",
@@ -713,7 +716,8 @@
     "assignedSince": "Zugewiesen seit {{date}}",
     "manageRegions": {
       "title": "Regionen verwalten",
-      "subtitle": "Erstellen Sie Regionen und legen Sie fest, welcher SuperGuru verantwortlich ist."
+      "subtitle": "Erstellen Sie Regionen und legen Sie fest, welcher SuperGuru verantwortlich ist.",
+      "guruSectionTitle": "Zugewiesene SuperGurus"
     },
     "actions": {
       "addRegion": "Region hinzufügen",
@@ -745,6 +749,7 @@
     "sections": {
       "overview": "Übersicht",
       "regions": "Regionen",
+      "branches": "Zweige",
       "bridgeIssues": "Brücken",
       "users": "Benutzer",
       "backups": "Backups",
@@ -813,6 +818,87 @@
         "bridgeRejectedError": "Brücke konnte nicht abgelehnt werden"
       }
     },
+    "branches": {
+      "title": "Zweigverwaltung",
+      "subtitle": "Archiviere oder lösche Familienzweige dauerhaft, wenn es notwendig ist.",
+      "status": {
+        "active": "Aktiv",
+        "archived": "Archiviert",
+        "all": "Alle"
+      },
+      "searchPlaceholder": "Nach Nachnamen, Zweig-ID oder Stadt suchen...",
+      "searchAction": "Suchen",
+    "resultsSummary": "Insgesamt {{total}} Zweige • Seite {{page}} von {{totalPages}}",
+    "selectionSummary": "{{count}} ausgewählt",
+    "selectionActions": {
+      "selectAll": "Seite auswählen",
+      "clear": "Auswahl löschen"
+    },
+    "filters": {
+      "regionLabel": "Region",
+      "allRegions": "Alle Regionen",
+      "unassignedRegion": "Ohne Region",
+      "regionPlaceholder": "Land, Entität, Kanton wählen...",
+      "activeRegion": "Filter: {{path}}"
+    },
+    "regionTreeError": "Regionhierarchie konnte nicht geladen werden.",
+      "loadRegionsError": "Regionsfilter konnten nicht geladen werden.",
+      "loadError": "Zweige konnten nicht geladen werden.",
+      "archiveConfirm": "Diesen Zweig archivieren? Mitglieder können ihn erst nach Wiederherstellung sehen.",
+      "archiveReasonPrompt": "Archivierungsgrund hinzufügen (optional):",
+      "archiveSuccess": "Zweig archiviert.",
+      "archiveError": "Archivierung fehlgeschlagen.",
+      "unarchiveConfirm": "Diesen Zweig wiederherstellen und sichtbar machen?",
+      "unarchiveSuccess": "Zweig wiederhergestellt.",
+      "unarchiveError": "Wiederherstellung fehlgeschlagen.",
+      "deleteConfirm": "Dieser Vorgang entfernt den Zweig und alle zugehörigen Daten dauerhaft. Fortfahren?",
+      "deleteSuccess": "Zweig dauerhaft gelöscht.",
+      "deleteError": "Permanentes Löschen fehlgeschlagen.",
+      "table": {
+        "branch": "Zweig",
+        "people": "Personen",
+        "visibility": "Sichtbarkeit",
+        "updated": "Aktualisiert",
+        "actions": "Aktionen"
+      },
+      "noResults": "Keine Zweige entsprechen den Filtern.",
+      "loading": "Zweige werden geladen...",
+      "verifiedBadge": "Verifiziert",
+      "archivedBadge": "Archiviert",
+    "unknownLocation": "Unbekannter Ort",
+    "regionLabel": "Zugeordnete Region: {{region}}",
+    "regionPathLabel": "Hierarchie: {{path}}",
+      "archivedMeta": "Archiviert am {{date}} von {{by}}",
+      "archivedUnknownUser": "unbekannte Person",
+      "archivedUnknownDate": "Archiviert (Datum unbekannt)",
+      "archivedReasonLabel": "Grund: {{reason}}",
+      "personCount": "{{count}} Personen",
+      "memberCount": "{{count}} Mitglieder",
+      "actions": {
+        "archive": "Archivieren",
+        "unarchive": "Wiederherstellen",
+        "delete": "Löschen",
+        "assignRegion": "Region zuweisen"
+      },
+    "assignRegion": {
+      "title": "Region zuweisen",
+      "subtitle": "{{count}} Zweige ausgewählt",
+      "selectLabel": "Region auswählen",
+      "noSelection": "Wählen Sie mindestens einen Zweig aus, bevor Sie fortfahren.",
+      "selectRegion": "Bitte zuerst eine Region auswählen.",
+      "noRegionsAvailable": "Keine Regionen für diese Aktion verfügbar.",
+      "modeRegion": "Region auswählen",
+      "modeUnassigned": "Als ohne Region markieren",
+      "selectedPath": "Ausgewählt: {{path}}",
+      "unassignedDescription": "Zweige ohne Region erscheinen nicht in regionalen Übersichten.",
+      "unassignedNotAllowed": "Nur SuperGurus können eine Region entfernen.",
+      "success": "{{count}} Zweige aktualisiert",
+      "submit": "Übernehmen"
+    },
+      "paginationSummary": "{{start}}–{{end}} von {{total}} Zweigen",
+      "paginationPrev": "Zurück",
+      "paginationNext": "Weiter"
+    },
     "users": {
       "title": "Benutzerverwaltung",
       "subtitle": "Plattformbenutzer, Rollen und Berechtigungen verwalten",
@@ -830,7 +916,9 @@
       "filters": {
         "allRoles": "Alle Rollen",
         "users": "Benutzer",
+        "regionalGurus": "Regionale Gurus",
         "superGurus": "SuperGurus",
+        "admins": "Administratoren",
         "allStatuses": "Alle Status",
         "active": "Aktiv",
         "inactive": "Inaktiv"

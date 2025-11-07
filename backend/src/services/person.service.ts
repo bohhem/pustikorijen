@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import prisma from '../utils/prisma';
+import { ensureBranchIsActive } from '../utils/branch.guard';
 import type { CreatePersonInput, UpdatePersonInput } from '../validators/person.validator';
 import type { JwtPayload } from '../utils/jwt';
 import type { PersonClaimStatus } from './person-claim.service';
@@ -727,6 +728,8 @@ export class PersonService {
 
   // Get family tree for a branch
   async getFamilyTree(branchId: string) {
+    await ensureBranchIsActive(branchId);
+
     const persons = await prisma.person.findMany({
       where: { branch_id: branchId },
       orderBy: [
@@ -740,6 +743,8 @@ export class PersonService {
 
   // Update branch statistics
   private async updateBranchStatistics(branchId: string) {
+    await ensureBranchIsActive(branchId);
+
     const persons = await prisma.person.findMany({
       where: { branch_id: branchId },
       select: { generation_number: true },
@@ -765,6 +770,8 @@ export class PersonService {
    * Uses depth-first search from root ancestors and adjusts spouses
    */
   async recalculateGenerations(branchId: string) {
+    await ensureBranchIsActive(branchId);
+
     type GenerationPerson = {
       person_id: string;
       father_id: string | null;

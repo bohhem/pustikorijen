@@ -11,7 +11,19 @@ export interface AdminRegionBranch {
   id: string;
   surname: string;
   cityName: string;
-  region: string | null;
+  adminRegion?: {
+    id: string;
+    name: string;
+    code: string;
+    level?: number;
+    kind?: string;
+  } | null;
+  adminRegionPath?: Array<{
+    id: string;
+    name: string;
+    code: string;
+    level: number;
+  }>;
   country: string | null;
   visibility: string;
   totalPeople: number;
@@ -36,6 +48,16 @@ export interface AdminRegionOverview {
 
 export interface AdminRegionsResponse {
   regions: AdminRegionOverview[];
+}
+
+export interface AdminRegionTreeNode {
+  id: string;
+  name: string;
+  code: string;
+  level: number;
+  kind?: string | null;
+  country?: string | null;
+  children: AdminRegionTreeNode[];
 }
 
 export interface CreateAdminRegionPayload {
@@ -79,14 +101,22 @@ export interface BridgeIssueSummary {
     id: string;
     surname: string;
     cityName?: string | null;
-    region?: string | null;
+    adminRegion?: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
     country?: string | null;
   };
   branchB: {
     id: string;
     surname: string;
     cityName?: string | null;
-    region?: string | null;
+    adminRegion?: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
     country?: string | null;
   };
   totalLinks: number;
@@ -102,4 +132,64 @@ export interface BridgeIssuesResponse {
 export interface BridgeIssueMutationResponse {
   message: string;
   issues: BridgeIssueSummary[];
+}
+
+export type AdminBranchStatusFilter = 'active' | 'archived' | 'all';
+
+export interface AdminBranchListItem {
+  id: string;
+  surname: string;
+  surnameNormalized: string;
+  cityCode: string;
+  cityName: string;
+  country: string;
+  visibility: string;
+  totalPeople: number;
+  totalGenerations: number;
+  memberCount: number;
+  personCount: number;
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  archivedAt: string | null;
+  archivedReason: string | null;
+  archivedBy?: {
+    id: string;
+    fullName?: string | null;
+  } | null;
+  adminRegion?: {
+    id: string;
+    name: string;
+    code: string;
+    level?: number;
+    kind?: string;
+  } | null;
+  adminRegionPath?: Array<{
+    id: string;
+    name: string;
+    code: string;
+    level: number;
+  }>;
+  founder?: {
+    id: string;
+    fullName: string;
+  } | null;
+}
+
+export interface AdminBranchListResponse {
+  branches: AdminBranchListItem[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  totals: {
+    active: number;
+    archived: number;
+  };
+}
+
+export interface UpdateBranchRegionPayload {
+  regionId?: string | null;
 }

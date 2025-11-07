@@ -233,6 +233,7 @@
     "lastUpdated": "Ažurirano {{date}}",
     "bridgesHeading": "Mostovi",
     "noBridges": "Još nema mostova.",
+    "locationUnknown": "Nepoznata lokacija",
     "primaryBridge": "Primarni most",
     "homeBranch": "Matična grana: {{branch}}",
     "displayAs": "Prikazano kao {{name}}",
@@ -696,7 +697,9 @@
   },
   "roles": {
     "user": "Korisnik",
-    "superGuru": "SuperGuru"
+    "regionalGuru": "Regionalni Guru",
+    "superGuru": "SuperGuru",
+    "admin": "Administrator"
   },
   "admin": {
     "title": "SuperGuru konzola",
@@ -713,7 +716,8 @@
     "assignedSince": "Dodijeljen od {{date}}",
     "manageRegions": {
       "title": "Upravljaj regionima",
-      "subtitle": "Kreiraj regione i odredi koji SuperGuru je zadužen za njih."
+      "subtitle": "Kreiraj regione i odredi koji SuperGuru je zadužen za njih.",
+      "guruSectionTitle": "Dodijeljeni SuperGurui"
     },
     "actions": {
       "addRegion": "Dodaj region",
@@ -745,6 +749,7 @@
     "sections": {
       "overview": "Pregled",
       "regions": "Regioni",
+      "branches": "Grane",
       "bridgeIssues": "Mostovi",
       "users": "Korisnici",
       "backups": "Backupi",
@@ -813,6 +818,87 @@
         "bridgeRejectedError": "Odbijanje mosta nije uspjelo"
       }
     },
+    "branches": {
+      "title": "Upravljanje granama",
+      "subtitle": "Arhiviraj ili trajno briši grane kada je potrebno.",
+      "status": {
+        "active": "Aktivne",
+        "archived": "Arhivirane",
+        "all": "Sve"
+      },
+      "searchPlaceholder": "Pretraži po prezimenu, ID-u grane ili gradu...",
+      "searchAction": "Pretraži",
+    "resultsSummary": "Ukupno {{total}} grana • Stranica {{page}} od {{totalPages}}",
+    "selectionSummary": "Odabrano: {{count}}",
+    "selectionActions": {
+      "selectAll": "Označi stranicu",
+      "clear": "Poništi"
+    },
+    "filters": {
+      "regionLabel": "Region",
+      "allRegions": "Svi regioni",
+      "unassignedRegion": "Bez regiona",
+      "regionPlaceholder": "Odaberi državu, entitet, kanton...",
+      "activeRegion": "Filter: {{path}}"
+    },
+    "regionTreeError": "Hijerarhiju regiona trenutno nije moguće učitati.",
+      "loadRegionsError": "Nije moguće učitati regione za filtriranje.",
+      "loadError": "Neuspješno učitavanje grana.",
+      "archiveConfirm": "Arhivirati ovu granu? Članovi joj neće moći pristupiti dok se ne vrati.",
+      "archiveReasonPrompt": "Dodaj razlog arhiviranja (opcionalno):",
+      "archiveSuccess": "Grana je arhivirana.",
+      "archiveError": "Neuspješno arhiviranje grane.",
+      "unarchiveConfirm": "Vratiti ovu granu i ponovo je učiniti vidljivom?",
+      "unarchiveSuccess": "Grana je vraćena.",
+      "unarchiveError": "Neuspješno vraćanje grane.",
+      "deleteConfirm": "Ovo trajno briše granu i sve povezane podatke. Ova akcija se ne može poništiti. Nastaviti?",
+      "deleteSuccess": "Grana je trajno obrisana.",
+      "deleteError": "Neuspješno trajno brisanje grane.",
+      "table": {
+        "branch": "Grana",
+        "people": "Osobe",
+        "visibility": "Vidljivost",
+        "updated": "Ažurirano",
+        "actions": "Akcije"
+      },
+      "noResults": "Nijedna grana ne odgovara filterima.",
+      "loading": "Učitavanje grana...",
+      "verifiedBadge": "Verifikovana",
+      "archivedBadge": "Arhivirana",
+    "unknownLocation": "Nepoznata lokacija",
+    "regionLabel": "Dodijeljeni region: {{region}}",
+    "regionPathLabel": "Hijerarhija: {{path}}",
+      "archivedMeta": "Arhivirano {{date}} od strane {{by}}",
+      "archivedUnknownUser": "nepoznat korisnik",
+      "archivedUnknownDate": "Arhivirano (datum nepoznat)",
+      "archivedReasonLabel": "Razlog: {{reason}}",
+      "personCount": "{{count}} osoba",
+      "memberCount": "{{count}} članova",
+      "actions": {
+        "archive": "Arhiviraj",
+        "unarchive": "Vrati",
+        "delete": "Obriši",
+        "assignRegion": "Dodijeli region"
+      },
+    "assignRegion": {
+      "title": "Dodijeli region",
+      "subtitle": "Odabrano {{count}} grana",
+      "selectLabel": "Odaberi region",
+      "noSelection": "Odaberite barem jednu granu prije primjene.",
+      "selectRegion": "Prvo odaberite region.",
+      "noRegionsAvailable": "Nema dostupnih regiona za ovu akciju.",
+      "modeRegion": "Odaberi region",
+      "modeUnassigned": "Označi kao bez regiona",
+      "selectedPath": "Odabrano: {{path}}",
+      "unassignedDescription": "Grane bez regiona neće se prikazivati na regionalnim pregledima.",
+      "unassignedNotAllowed": "Samo SuperGuru može ukloniti region sa grane.",
+      "success": "Ažurirano {{count}} grana",
+      "submit": "Primijeni"
+    },
+      "paginationSummary": "Prikazano {{start}}–{{end}} od {{total}} grana",
+      "paginationPrev": "Prethodna",
+      "paginationNext": "Sljedeća"
+    },
     "users": {
       "title": "Upravljanje korisnicima",
       "subtitle": "Upravljajte korisnicima platforme, ulogama i dozvolama",
@@ -830,7 +916,9 @@
       "filters": {
         "allRoles": "Sve uloge",
         "users": "Korisnici",
-        "superGurus": "SuperGuru",
+        "regionalGurus": "Regionalni Gurui",
+        "superGurus": "SuperGurui",
+        "admins": "Administratori",
         "allStatuses": "Svi statusi",
         "active": "Aktivni",
         "inactive": "Neaktivni"

@@ -4,13 +4,51 @@ import prisma from '../utils/prisma';
 import { GEO_CITY_INCLUDE, mapGeoCity, type GeoCityRecord } from './geo.service';
 type ActingUser = Pick<JwtPayload, 'userId' | 'globalRole'>;
 
+type AdminRegionRecord = {
+  region_id: string;
+  name: string;
+  code: string;
+  level: number;
+  kind: string | null;
+  parent_region_id: string | null;
+  parent?: AdminRegionRecord | null;
+};
+
+const ADMIN_REGION_SELECT = {
+  region_id: true,
+  name: true,
+  code: true,
+  level: true,
+  kind: true,
+  parent_region_id: true,
+  parent: {
+    select: {
+      region_id: true,
+      name: true,
+      code: true,
+      level: true,
+      kind: true,
+      parent_region_id: true,
+      parent: {
+        select: {
+          region_id: true,
+          name: true,
+          code: true,
+          level: true,
+          kind: true,
+          parent_region_id: true,
+        },
+      },
+    },
+  },
+} as const;
+
 type BranchRecord = {
   branch_id: string;
   surname: string;
   surname_normalized: string;
   city_code: string;
   city_name: string;
-  region: string | null;
   country: string;
   geo_city_id: string | null;
   root_person_id: string | null;
@@ -26,11 +64,19 @@ type BranchRecord = {
   last_major_update: Date | null;
   created_at: Date;
   updated_at: Date;
+  archived_at: Date | null;
+  archived_by: string | null;
+  archived_reason: string | null;
+  admin_regions?: AdminRegionRecord | null;
   users?: {
     user_id: string;
     full_name: string;
     email?: string | null;
     last_login?: Date | null;
+  } | null;
+  archived_by_user?: {
+    user_id: string;
+    full_name: string;
   } | null;
   geo_city?: GeoCityRecord | null;
   _count?: {
@@ -71,6 +117,32 @@ type BranchMemberRecord = {
   } | null;
 };
 
+function buildAdminRegionPath(region?: AdminRegionRecord | null) {
+  if (!region) {
+    return [];
+  }
+
+  const path: Array<{ id: string; name: string; code: string; level: number }> = [];
+  let current: AdminRegionRecord | null | undefined = region;
+  while (current) {
+    path.unshift({
+      id: current.region_id,
+      name: current.name,
+      code: current.code,
+      level: current.level,
+    });
+    current = current.parent ?? null;
+  }
+  return path;
+}
+
+function resolveAdminRegionFromCity(city?: GeoCityRecord | null) {
+  if (!city) {
+    return null;
+  }
+  return city.region?.region_id ?? city.entity_region?.region_id ?? city.state?.state_id ?? null;
+}
+
 function mapUser(user?: { user_id: string; full_name: string; email?: string | null; current_location?: string | null } | null) {
   if (!user) {
     return undefined;
@@ -91,7 +163,6 @@ function mapBranch(record: BranchRecord) {
     surnameNormalized: record.surname_normalized,
     cityCode: record.city_code,
     cityName: record.city_name,
-    region: record.region,
     country: record.country,
     geoCityId: record.geo_city_id ?? undefined,
     location: mapGeoCity(record.geo_city),
@@ -108,12 +179,30 @@ function mapBranch(record: BranchRecord) {
     lastMajorUpdate: record.last_major_update,
     createdAt: record.created_at,
     updatedAt: record.updated_at,
+    adminRegion: record.admin_regions
+      ? {
+          id: record.admin_regions.region_id,
+          name: record.admin_regions.name,
+          code: record.admin_regions.code,
+          level: record.admin_regions.level,
+          kind: record.admin_regions.kind ?? undefined,
+        }
+      : undefined,
+    adminRegionPath: buildAdminRegionPath(record.admin_regions),
     foundedBy: record.users
       ? {
           id: record.users.user_id,
           fullName: record.users.full_name,
           email: record.users.email ?? undefined,
           lastLogin: record.users.last_login ?? undefined,
+        }
+      : undefined,
+    archivedAt: record.archived_at ?? null,
+    archivedReason: record.archived_reason ?? null,
+    archivedBy: record.archived_by
+      ? {
+          id: record.archived_by,
+          fullName: record.archived_by_user?.full_name,
         }
       : undefined,
     _count: record._count
@@ -166,6 +255,23 @@ interface UpdateBranchInput {
   description?: string | null;
   visibility?: 'public' | 'family_only' | 'private';
   geoCityId?: string;
+}
+
+async function getActiveBranchOrThrow(branchId: string) {
+  const branch = await prisma.familyBranch.findUnique({
+    where: { branch_id: branchId },
+    select: {
+      branch_id: true,
+      archived_at: true,
+      founded_by: true,
+    },
+  });
+
+  if (!branch || branch.archived_at) {
+    throw new Error('Branch not found');
+  }
+
+  return branch;
 }
 
 /**
@@ -232,8 +338,8 @@ export async function createBranch(data: CreateBranchInput) {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
-  const locationRegion = geoCity.region?.name ?? geoCity.entity_region?.name ?? null;
   const countryName = geoCity.state?.name ?? 'Bosnia and Herzegovina';
+  const adminRegionId = resolveAdminRegionFromCity(geoCity);
 
   // Create branch
   const branch = await prisma.familyBranch.create({
@@ -243,9 +349,9 @@ export async function createBranch(data: CreateBranchInput) {
       surname_normalized: surnameNormalized,
       city_code: geoCity.city_code.toUpperCase(),
       city_name: geoCity.name,
-      region: locationRegion,
       country: countryName,
       geo_city_id: geoCity.city_id,
+      admin_region_id: adminRegionId,
       description: description || null,
       visibility: visibility || 'public',
       founded_by: foundedById,
@@ -258,6 +364,15 @@ export async function createBranch(data: CreateBranchInput) {
           full_name: true,
           email: true,
           last_login: true,
+        },
+      },
+      admin_regions: {
+        select: ADMIN_REGION_SELECT,
+      },
+      archived_by_user: {
+        select: {
+          user_id: true,
+          full_name: true,
         },
       },
       geo_city: {
@@ -288,13 +403,7 @@ export async function createBranch(data: CreateBranchInput) {
  * Update branch details (Guru or elevated role)
  */
 export async function updateBranch(branchId: string, input: UpdateBranchInput, actor: ActingUser) {
-  const branch = await prisma.familyBranch.findUnique({
-    where: { branch_id: branchId },
-  });
-
-  if (!branch) {
-    throw new Error('Branch not found');
-  }
+  await getActiveBranchOrThrow(branchId);
 
   const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
 
@@ -355,8 +464,8 @@ export async function updateBranch(branchId: string, input: UpdateBranchInput, a
     updateData.geo_city_id = geoCity.city_id;
     updateData.city_code = geoCity.city_code.toUpperCase();
     updateData.city_name = geoCity.name;
-    updateData.region = geoCity.region?.name ?? geoCity.entity_region?.name ?? null;
     updateData.country = geoCity.state?.name ?? 'Bosnia and Herzegovina';
+    updateData.admin_region_id = resolveAdminRegionFromCity(geoCity);
   }
 
   const updatedBranch = await prisma.familyBranch.update({
@@ -369,6 +478,12 @@ export async function updateBranch(branchId: string, input: UpdateBranchInput, a
           full_name: true,
           email: true,
           last_login: true,
+        },
+      },
+      archived_by_user: {
+        select: {
+          user_id: true,
+          full_name: true,
         },
       },
       geo_city: {
@@ -405,6 +520,7 @@ export async function getBranches(params: {
   const where: Record<string, unknown> = {
     visibility: 'public', // Only show public branches for now
   };
+  where.archived_at = null;
 
   if (surname) {
     where.surname_normalized = {
@@ -421,7 +537,30 @@ export async function getBranches(params: {
     where.OR = [
       { surname_normalized: { contains: searchUpper } },
       { city_name: { contains: search, mode: 'insensitive' } },
-      { region: { contains: search, mode: 'insensitive' } },
+      {
+        admin_regions: {
+          is: {
+            name: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        },
+      },
+      {
+        geo_city: {
+          is: {
+            state: {
+              is: {
+                name: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        },
+      },
     ];
   }
 
@@ -440,6 +579,15 @@ export async function getBranches(params: {
             user_id: true,
             full_name: true,
             last_login: true,
+          },
+        },
+        admin_regions: {
+          select: ADMIN_REGION_SELECT,
+        },
+        archived_by_user: {
+          select: {
+            user_id: true,
+            full_name: true,
           },
         },
         geo_city: {
@@ -484,6 +632,15 @@ export async function getBranchById(branchId: string) {
           last_login: true,
         },
       },
+        admin_regions: {
+          select: ADMIN_REGION_SELECT,
+        },
+      archived_by_user: {
+        select: {
+          user_id: true,
+          full_name: true,
+        },
+      },
       geo_city: {
         include: GEO_CITY_INCLUDE,
       },
@@ -498,7 +655,7 @@ export async function getBranchById(branchId: string) {
     },
   });
 
-  if (!branch) {
+  if (!branch || branch.archived_at) {
     throw new Error('Branch not found');
   }
 
@@ -510,13 +667,7 @@ export async function getBranchById(branchId: string) {
  */
 export async function getBranchMembers(branchId: string, _userId?: string) {
   // Check if branch exists
-  const branch = await prisma.familyBranch.findUnique({
-    where: { branch_id: branchId },
-  });
-
-  if (!branch) {
-    throw new Error('Branch not found');
-  }
+  const branch = await getActiveBranchOrThrow(branchId);
 
   if (branch.founded_by) {
     const founderMembership = await prisma.branchMember.findUnique({
@@ -610,13 +761,7 @@ export async function getBranchMembers(branchId: string, _userId?: string) {
  */
 export async function requestJoinBranch(branchId: string, userId: string, message?: string) {
   // Check if branch exists
-  const branch = await prisma.familyBranch.findUnique({
-    where: { branch_id: branchId },
-  });
-
-  if (!branch) {
-    throw new Error('Branch not found');
-  }
+  await getActiveBranchOrThrow(branchId);
 
   // Check if already a member
   const existingMember = await prisma.branchMember.findUnique({
@@ -982,7 +1127,17 @@ export interface ConnectedFamily {
     id: string;
     surname: string;
     cityName?: string | null;
-    region?: string | null;
+    adminRegion?: {
+      id: string;
+      name: string;
+      code: string;
+    } | null;
+    adminRegionPath?: Array<{
+      id: string;
+      name: string;
+      code: string;
+      level: number;
+    }>;
     country?: string | null;
     visibility: string;
     isVerified: boolean;
@@ -1024,10 +1179,10 @@ type BranchMetaRecord = {
   branch_id: string;
   surname: string;
   city_name: string | null;
-  region: string | null;
   country: string | null;
   visibility: string;
   is_verified: boolean;
+  admin_regions: AdminRegionRecord | null;
 };
 
 /**
@@ -1037,14 +1192,7 @@ export async function getConnectedFamilies(
   branchId: string,
   actor: ActingUser
 ): Promise<ConnectedFamily[]> {
-  const branch = await prisma.familyBranch.findUnique({
-    where: { branch_id: branchId },
-    select: { branch_id: true },
-  });
-
-  if (!branch) {
-    throw new Error('Branch not found');
-  }
+  await getActiveBranchOrThrow(branchId);
 
   const isElevated = actor.globalRole === 'SUPER_GURU' || actor.globalRole === 'ADMIN';
   if (!isElevated) {
@@ -1108,15 +1256,18 @@ export async function getConnectedFamilies(
       branch_id: {
         in: otherBranchIds,
       },
+      archived_at: null,
     },
     select: {
       branch_id: true,
       surname: true,
       city_name: true,
-      region: true,
       country: true,
       visibility: true,
       is_verified: true,
+      admin_regions: {
+        select: ADMIN_REGION_SELECT,
+      },
     },
   })) as BranchMetaRecord[];
 
@@ -1146,7 +1297,14 @@ export async function getConnectedFamilies(
           id: meta.branch_id,
           surname: meta.surname,
           cityName: meta.city_name,
-          region: meta.region,
+          adminRegion: meta.admin_regions
+            ? {
+                id: meta.admin_regions.region_id,
+                name: meta.admin_regions.name,
+                code: meta.admin_regions.code,
+              }
+            : null,
+          adminRegionPath: buildAdminRegionPath(meta.admin_regions),
           country: meta.country,
           visibility: meta.visibility,
           isVerified: meta.is_verified,
@@ -1377,7 +1535,13 @@ export async function getMultiBranchTree(branchId: string) {
           id: branch.id,
           surname: branch.surname,
           cityName: branch.cityName,
-          region: branch.region,
+          adminRegion: branch.adminRegion
+            ? {
+                id: branch.adminRegion.id,
+                name: branch.adminRegion.name,
+                code: branch.adminRegion.code,
+              }
+            : null,
           country: branch.country,
           totalPeople: branch.totalPeople,
           totalGenerations: branch.totalGenerations,
@@ -1461,7 +1625,13 @@ export async function getMultiBranchTree(branchId: string) {
         id: mainBranch.id,
         surname: mainBranch.surname,
         cityName: mainBranch.cityName,
-        region: mainBranch.region,
+        adminRegion: mainBranch.adminRegion
+          ? {
+              id: mainBranch.adminRegion.id,
+              name: mainBranch.adminRegion.name,
+              code: mainBranch.adminRegion.code,
+            }
+          : null,
         country: mainBranch.country,
         totalPeople: mainBranch.totalPeople,
         totalGenerations: mainBranch.totalGenerations,

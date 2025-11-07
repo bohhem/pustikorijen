@@ -140,6 +140,9 @@ Phase 5: Member Management    ████████████████�
 
 ### **Admin Platform**
 - 🚀 SuperGuru region mapping + authentication payloads 🆕
+- ✅ Branch archiving + permanent deletion workflow (two-step) 🆕
+- ✅ Regional Guru role with scoped admin permissions + contextual assignment tooling 🆕
+- ✅ Canonical EU region hierarchy synced from geo data + leveled selectors in Admin Branches 🆕
 - 🚧 Region management API surface
 - 🚧 Backup/restore, import/export queueing
 

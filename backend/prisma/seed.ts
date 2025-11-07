@@ -132,6 +132,39 @@ async function seedGeoLov(data: GeoSeedDataset) {
   );
 }
 
+async function syncAdminRegionsFromStates() {
+  console.log('➡️  Syncing admin regions from geo_states...');
+  const states = await prisma.geo_states.findMany({
+    select: {
+      state_id: true,
+      name: true,
+      iso2: true,
+    },
+  });
+
+  const now = new Date();
+  for (const state of states) {
+    await prisma.admin_regions.upsert({
+      where: { region_id: state.state_id },
+      update: {
+        name: state.name,
+        code: state.iso2 ?? state.state_id.toUpperCase(),
+        country: state.name,
+        updated_at: now,
+      },
+      create: {
+        region_id: state.state_id,
+        name: state.name,
+        code: state.iso2 ?? state.state_id.toUpperCase(),
+        country: state.name,
+        updated_at: now,
+      },
+    });
+  }
+
+  console.log(`✅ Synced ${states.length} admin regions from geo_states`);
+}
+
 async function ensureBaselineUsers() {
   console.log('➡️  Ensuring baseline users...');
 
@@ -240,7 +273,6 @@ async function ensureSampleBranch(
       geo_city_id: berlinCity.city_id,
       city_code: berlinCity.city_code,
       city_name: berlinCity.name,
-      region: berlinRegion?.name ?? null,
       country: 'Germany',
       description: 'Müller family rooted in Berlin',
       founded_by: testUserId,
@@ -253,7 +285,6 @@ async function ensureSampleBranch(
       surname_normalized: 'MULLER',
       city_code: berlinCity.city_code,
       city_name: berlinCity.name,
-      region: berlinRegion?.name ?? null,
       country: 'Germany',
       description: 'Müller family rooted in Berlin',
       founded_by: testUserId,
@@ -272,6 +303,7 @@ async function main() {
 
   const geoData = loadGeoData();
   await seedGeoLov(geoData);
+  await syncAdminRegionsFromStates();
 
   const { testUser, superGuruUser } = await ensureBaselineUsers();
   const adminRegion = await ensureAdminRegion(superGuruUser.user_id);

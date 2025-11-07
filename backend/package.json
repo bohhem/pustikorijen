@@ -19,7 +19,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "regions:sync": "tsx scripts/sync-admin-regions.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",

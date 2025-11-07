@@ -30,7 +30,10 @@ export default function PersonDetail() {
   const [moveLoading, setMoveLoading] = useState(false);
   const [claimLoading, setClaimLoading] = useState(false);
 
-  const isSuperGuru = useMemo(() => user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN', [user?.globalRole]);
+  const isSuperGuru = useMemo(
+    () => (user?.globalRole ? ['SUPER_GURU', 'ADMIN', 'REGIONAL_GURU'].includes(user.globalRole) : false),
+    [user?.globalRole]
+  );
   const isGuru = useMemo(
     () => members.some(m => m.userId === user?.id && m.role === 'guru' && m.status === 'active'),
     [members, user?.id]

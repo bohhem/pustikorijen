@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import prisma from '../utils/prisma';
+import { ensureBranchIsActive } from '../utils/branch.guard';
 import type { JwtPayload } from '../utils/jwt';
 import type { CreatePlaceholderInput, ResolvePlaceholderInput } from '../schemas/placeholder.schema';
 
@@ -35,6 +36,8 @@ function isElevated(user: JwtPayload) {
 }
 
 async function ensureGuruAccess(branchId: string, actor: JwtPayload) {
+  await ensureBranchIsActive(branchId);
+
   if (isElevated(actor)) {
     return;
   }
@@ -55,6 +58,8 @@ async function ensureGuruAccess(branchId: string, actor: JwtPayload) {
 }
 
 export async function listPlaceholders(branchId: string, actor?: JwtPayload) {
+  await ensureBranchIsActive(branchId);
+
   const isGuru = actor ? isElevated(actor) || (await prisma.branchMember.findUnique({
     where: {
       branch_id_user_id: {
@@ -136,6 +141,8 @@ export async function createPlaceholder(branchId: string, actor: JwtPayload, inp
 }
 
 export async function claimPlaceholder(branchId: string, placeholderId: string, actor: JwtPayload, message?: string | null) {
+  await ensureBranchIsActive(branchId);
+
   const placeholder = await prisma.branchPlaceholder.findUnique({
     where: { placeholder_id: placeholderId },
     select: {

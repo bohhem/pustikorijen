@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { randomUUID } from 'crypto';
-import { generateTokens, verifyRefreshToken, generateAccessToken, type TokenPair, type JwtPayload } from '../utils/jwt';
+import { generateTokens, verifyRefreshToken, generateAccessToken, type TokenPair, type JwtPayload, type GlobalRole } from '../utils/jwt';
 import type { RegisterInput, LoginInput, SocialLoginInput } from '../schemas/auth.schema';
 import prisma from '../utils/prisma';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
@@ -31,7 +31,7 @@ interface SanitizedUser {
   emailVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
-  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  globalRole: GlobalRole;
   superGuruRegions: SuperGuruRegionSummary[];
 }
 

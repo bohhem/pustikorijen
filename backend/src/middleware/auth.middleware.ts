@@ -42,20 +42,39 @@ export function requireSuperGuru(req: Request, res: Response, next: NextFunction
     return;
   }
 
-  const hasElevatedAccess = req.user.globalRole === 'SUPER_GURU' || req.user.globalRole === 'ADMIN';
+  const { globalRole, regionIds } = req.user;
+  const hasElevatedAccess =
+    globalRole === 'SUPER_GURU' || globalRole === 'ADMIN' || globalRole === 'REGIONAL_GURU';
 
   if (!hasElevatedAccess) {
     res.status(403).json({ error: 'SuperGuru access required' });
     return;
   }
 
-  // Ensure SuperGuru assignments exist unless user is platform admin
-  if (req.user.globalRole === 'SUPER_GURU' && (!req.user.regionIds || req.user.regionIds.length === 0)) {
+  // Ensure region assignments exist unless user is platform admin
+  if (
+    (globalRole === 'SUPER_GURU' || globalRole === 'REGIONAL_GURU') &&
+    (!regionIds || regionIds.length === 0)
+  ) {
     res.status(403).json({ error: 'SuperGuru region assignment required' });
     return;
   }
 
   next();
+}
+
+export function requireFullSuperGuru(req: Request, res: Response, next: NextFunction): void {
+  if (!req.user) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  if (req.user.globalRole === 'SUPER_GURU' || req.user.globalRole === 'ADMIN') {
+    next();
+    return;
+  }
+
+  res.status(403).json({ error: 'SuperGuru access required' });
 }
 
 /**

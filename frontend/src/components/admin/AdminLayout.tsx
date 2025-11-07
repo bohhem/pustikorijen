@@ -14,44 +14,68 @@ export default function AdminLayout({ title, description, children }: AdminLayou
   const { t } = useTranslation();
   const { user } = useAuth();
 
+  const isFullAdmin = user?.globalRole === 'SUPER_GURU' || user?.globalRole === 'ADMIN';
   const navItems = [
     {
       to: '/admin',
       label: t('admin.sections.overview'),
       icon: '📊',
       enabled: true,
+      access: 'ALL' as const,
     },
     {
       to: '/admin/regions',
       label: t('admin.sections.regions'),
       icon: '🗺️',
       enabled: true,
+      access: 'ALL' as const,
+    },
+    {
+      to: '/admin/branches',
+      label: t('admin.sections.branches'),
+      icon: '🌿',
+      enabled: true,
+      access: 'ALL' as const,
     },
     {
       to: '/admin/bridge-issues',
       label: t('admin.sections.bridgeIssues'),
       icon: '🌉',
       enabled: true,
+      access: 'FULL' as const,
     },
     {
       to: '/admin/users',
       label: t('admin.sections.users'),
       icon: '👥',
       enabled: true,
+      access: 'FULL' as const,
     },
     {
       to: '/admin/backups',
       label: t('admin.sections.backups'),
       icon: '💾',
       enabled: false,
+      access: 'FULL' as const,
     },
     {
       to: '/admin/activity',
       label: t('admin.sections.activity'),
       icon: '📜',
       enabled: false,
+      access: 'FULL' as const,
     },
   ];
+
+  const filteredNavItems = navItems.filter((item) => item.access === 'ALL' || isFullAdmin);
+
+  const badgeLabel = !user
+    ? ''
+    : user.globalRole === 'REGIONAL_GURU'
+    ? t('roles.regionalGuru')
+    : user.globalRole === 'ADMIN'
+    ? t('roles.admin')
+    : t('admin.superGuruBadge');
 
   return (
     <Layout>
@@ -67,7 +91,7 @@ export default function AdminLayout({ title, description, children }: AdminLayou
               {user && (
                 <div className="text-sm text-slate-600">
                   <p className="font-medium text-slate-800">{user.fullName}</p>
-                  <p>{t('admin.superGuruBadge')}</p>
+                  <p>{badgeLabel}</p>
                 </div>
               )}
             </div>
@@ -76,7 +100,7 @@ export default function AdminLayout({ title, description, children }: AdminLayou
           <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-6">
             <aside className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
               <nav className="space-y-1">
-                {navItems.map((item) => (
+                {filteredNavItems.map((item) => (
                   item.enabled ? (
                     <NavLink
                       key={item.to}

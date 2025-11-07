@@ -19,6 +19,7 @@ import type {
   PlatformUserStats,
   UserDetail,
   ActivityLogEntry,
+  UserRole,
 } from '../../types/user';
 import { useToast } from '../../contexts/ToastContext';
 
@@ -36,7 +37,7 @@ export default function AdminUsers() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'USER' | 'SUPER_GURU'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   // Detail modal state
@@ -51,7 +52,7 @@ export default function AdminUsers() {
   const [actionLoading, setActionLoading] = useState(false);
 
   // Action forms
-  const [roleForm, setRoleForm] = useState<{ role: 'USER' | 'SUPER_GURU'; reason: string }>({
+  const [roleForm, setRoleForm] = useState<{ role: UserRole; reason: string }>({
     role: 'USER',
     reason: '',
   });
@@ -68,6 +69,26 @@ export default function AdminUsers() {
       return (err.response?.data as { error?: string })?.error ?? err.message;
     }
     return t('errors.generic');
+  };
+
+  const getRoleLabel = (role: UserRole) => {
+    switch (role) {
+      case 'SUPER_GURU':
+        return t('roles.superGuru');
+      case 'REGIONAL_GURU':
+        return t('roles.regionalGuru');
+      case 'ADMIN':
+        return t('roles.admin');
+      default:
+        return t('roles.user');
+    }
+  };
+
+  const roleBadgeClasses: Record<UserRole, string> = {
+    USER: 'bg-slate-100 text-slate-700',
+    REGIONAL_GURU: 'bg-amber-100 text-amber-700',
+    SUPER_GURU: 'bg-purple-100 text-purple-700',
+    ADMIN: 'bg-indigo-100 text-indigo-700',
   };
 
   const loadUsers = async () => {
@@ -332,18 +353,20 @@ export default function AdminUsers() {
             />
           </div>
 
-          <select
-            value={roleFilter}
-            onChange={(e) => {
-              setRoleFilter(e.target.value as typeof roleFilter);
-              setCurrentPage(1);
-            }}
-            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="all">{t('admin.users.filters.allRoles')}</option>
-            <option value="USER">{t('admin.users.filters.users')}</option>
-            <option value="SUPER_GURU">{t('admin.users.filters.superGurus')}</option>
-          </select>
+            <select
+              value={roleFilter}
+              onChange={(e) => {
+                setRoleFilter(e.target.value as 'all' | UserRole);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            >
+              <option value="all">{t('admin.users.filters.allRoles')}</option>
+              <option value="USER">{t('admin.users.filters.users')}</option>
+              <option value="REGIONAL_GURU">{t('admin.users.filters.regionalGurus')}</option>
+              <option value="SUPER_GURU">{t('admin.users.filters.superGurus')}</option>
+              <option value="ADMIN">{t('admin.users.filters.admins')}</option>
+            </select>
 
           <select
             value={statusFilter}
@@ -393,13 +416,9 @@ export default function AdminUsers() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-slate-900 truncate">{user.fullName}</h3>
                         <span
-                          className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                            user.globalRole === 'SUPER_GURU'
-                              ? 'bg-purple-100 text-purple-700'
-                              : 'bg-slate-100 text-slate-700'
-                          }`}
+                          className={`px-2 py-0.5 text-xs font-semibold rounded-full ${roleBadgeClasses[user.globalRole]}`}
                         >
-                          {user.globalRole === 'SUPER_GURU' ? t('roles.superGuru') : t('roles.user')}
+                          {getRoleLabel(user.globalRole)}
                         </span>
                         <span
                           className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
@@ -519,7 +538,7 @@ export default function AdminUsers() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-slate-600">{t('admin.users.detail.role')}:</span>
-                        <span className="ml-2 font-medium">{selectedUser.globalRole === 'SUPER_GURU' ? t('roles.superGuru') : t('roles.user')}</span>
+                        <span className="ml-2 font-medium">{getRoleLabel(selectedUser.globalRole)}</span>
                       </div>
                       <div>
                         <span className="text-slate-600">{t('admin.users.detail.status')}:</span>
@@ -691,7 +710,7 @@ export default function AdminUsers() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   {t('admin.users.dialogs.changeRole.currentRole')}
                 </label>
-                <p className="text-sm text-slate-600">{selectedUser.globalRole === 'SUPER_GURU' ? t('roles.superGuru') : t('roles.user')}</p>
+                <p className="text-sm text-slate-600">{getRoleLabel(selectedUser.globalRole)}</p>
               </div>
 
               <div>
@@ -700,10 +719,11 @@ export default function AdminUsers() {
                 </label>
                 <select
                   value={roleForm.role}
-                  onChange={(e) => setRoleForm({ ...roleForm, role: e.target.value as 'USER' | 'SUPER_GURU' })}
+                  onChange={(e) => setRoleForm({ ...roleForm, role: e.target.value as UserRole })}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="USER">{t('roles.user')}</option>
+                  <option value="REGIONAL_GURU">{t('roles.regionalGuru')}</option>
                   <option value="SUPER_GURU">{t('roles.superGuru')}</option>
                 </select>
               </div>

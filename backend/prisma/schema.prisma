@@ -84,12 +84,23 @@ model admin_regions {
   code                   String                   @unique @db.VarChar(50)
   description            String?
   country                String?                  @db.VarChar(100)
+  level                  Int                      @default(1)
+  kind                   String?                  @db.VarChar(50)
+  parent_region_id       String?
+  geo_state_id           String?                  @db.VarChar(20)
+  geo_region_id          String?                  @db.VarChar(50)
   created_at             DateTime                 @default(now())
   updated_at             DateTime
   family_branches        family_branches[]
   super_guru_assignments super_guru_assignments[]
+  parent                 admin_regions?           @relation("AdminRegionHierarchy", fields: [parent_region_id], references: [region_id])
+  children               admin_regions[]          @relation("AdminRegionHierarchy")
 
   @@index([code])
+  @@index([parent_region_id])
+  @@index([level])
+  @@index([geo_state_id])
+  @@index([geo_region_id])
 }
 
 model audit_log {
@@ -266,7 +277,6 @@ model family_branches {
   surname_normalized    String                  @db.VarChar(100)
   city_code             String                  @db.VarChar(10)
   city_name             String                  @db.VarChar(100)
-  region                String?                 @db.VarChar(100)
   country               String                  @default("Bosnia and Herzegovina") @db.VarChar(100)
   geo_city_id           String?                 @db.VarChar(60)
   root_person_id        String?
@@ -283,6 +293,9 @@ model family_branches {
   created_at            DateTime                @default(now())
   updated_at            DateTime
   admin_region_id       String?
+  archived_at           DateTime?
+  archived_by           String?                 @db.VarChar(50)
+  archived_reason       String?                 @db.VarChar(500)
   audit_log             audit_log[]
   branch_members        branch_members[]
   branch_person_links   branch_person_links[]
@@ -297,12 +310,14 @@ model family_branches {
   geo_city              geo_cities?             @relation(fields: [geo_city_id], references: [city_id])
   placeholders          branch_placeholders[]
   person_claims         person_claims[]
+  archived_by_user      users?                  @relation("family_branches_archived_byTousers", fields: [archived_by], references: [user_id])
 
   @@index([admin_region_id])
   @@index([geo_city_id])
   @@index([city_code])
   @@index([surname_normalized])
   @@index([visibility])
+  @@index([archived_at])
 }
 
 model person_claims {
@@ -702,6 +717,7 @@ model users {
   placeholder_claims_resolved                                      branch_placeholder_claims[] @relation("placeholder_claim_resolver")
   person_claims_user                                               person_claims[]          @relation("person_claims_user")
   person_claims_resolved                                           person_claims[]          @relation("person_claims_resolver")
+  archived_branches                                                family_branches[]        @relation("family_branches_archived_byTousers")
 
   @@index([email])
   @@index([is_active])
@@ -709,6 +725,7 @@ model users {
 
 enum UserGlobalRole {
   USER
+  REGIONAL_GURU
   SUPER_GURU
   ADMIN
 }

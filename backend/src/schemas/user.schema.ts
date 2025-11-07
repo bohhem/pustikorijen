@@ -9,7 +9,7 @@ export const listUsersSchema = z.object({
   sortBy: z.enum(['name', 'email', 'role', 'lastLogin', 'createdAt']).optional(),
   sortOrder: z.enum(['asc', 'desc']).optional(),
   search: z.string().optional(),
-  role: z.enum(['USER', 'SUPER_GURU']).optional(),
+  role: z.enum(['USER', 'REGIONAL_GURU', 'SUPER_GURU', 'ADMIN']).optional(),
   isActive: z.coerce.boolean().optional(),
   emailVerified: z.coerce.boolean().optional(),
 });
@@ -20,7 +20,7 @@ export type ListUsersInput = z.infer<typeof listUsersSchema>;
  * Schema for updating user role
  */
 export const updateUserRoleSchema = z.object({
-  globalRole: z.enum(['USER', 'SUPER_GURU']),
+  globalRole: z.enum(['USER', 'REGIONAL_GURU', 'SUPER_GURU']),
   reason: z.string().max(500).optional(),
 });
 

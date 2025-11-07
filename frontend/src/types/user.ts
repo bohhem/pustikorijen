@@ -2,11 +2,13 @@
 // User List & Search Types
 // ============================================================================
 
+export type UserRole = 'USER' | 'REGIONAL_GURU' | 'SUPER_GURU' | 'ADMIN';
+
 export interface UserListItem {
   id: string;
   email: string;
   fullName: string;
-  globalRole: 'USER' | 'SUPER_GURU';
+  globalRole: UserRole;
   isActive: boolean;
   emailVerified: boolean;
   lastLogin: string | null;
@@ -20,7 +22,7 @@ export interface UserListItem {
 
 export interface UserFilters {
   search?: string;
-  role?: 'USER' | 'SUPER_GURU';
+  role?: UserRole;
   isActive?: boolean;
   emailVerified?: boolean;
 }
@@ -82,7 +84,7 @@ export interface UserDetail {
   birthYear: number | null;
   currentLocation: string | null;
   preferredLanguage: string;
-  globalRole: 'USER' | 'SUPER_GURU';
+  globalRole: UserRole;
   isActive: boolean;
   emailVerified: boolean;
   twoFactorEnabled: boolean;
@@ -112,7 +114,9 @@ export interface PlatformUserStats {
   newUsersLast30Days: number;
   usersByRole: {
     USER: number;
+    REGIONAL_GURU: number;
     SUPER_GURU: number;
+    ADMIN: number;
   };
   userGrowthTrend: Array<{
     date: string;
@@ -125,7 +129,7 @@ export interface PlatformUserStats {
 // ============================================================================
 
 export interface UpdateUserRoleInput {
-  globalRole: 'USER' | 'SUPER_GURU';
+  globalRole: UserRole;
   reason?: string;
 }
 

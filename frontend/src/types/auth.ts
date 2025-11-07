@@ -1,3 +1,5 @@
+export type GlobalRole = 'USER' | 'REGIONAL_GURU' | 'SUPER_GURU' | 'ADMIN';
+
 export interface User {
   id: string;
   email: string;
@@ -8,7 +10,7 @@ export interface User {
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;
-  globalRole: 'USER' | 'SUPER_GURU' | 'ADMIN';
+  globalRole: GlobalRole;
   superGuruRegions: SuperGuruRegion[];
 }
 

@@ -24,6 +24,62 @@ export const updateAssignmentSchema = z.object({
   isPrimary: z.boolean(),
 });
 
+export const adminBranchListQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  status: z.enum(['active', 'archived', 'all']).optional(),
+  search: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : undefined;
+    }),
+  regionId: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+      const trimmed = value.trim();
+      if (trimmed.length === 0) {
+        return undefined;
+      }
+      if (trimmed.toLowerCase() === 'all') {
+        return undefined;
+      }
+      return trimmed;
+    }),
+});
+
+export const archiveBranchSchema = z
+  .object({
+    reason: z.string().max(500, 'Reason too long').optional(),
+  })
+  .transform(({ reason }) => ({
+    reason: reason ? (reason.trim().length > 0 ? reason.trim() : null) : null,
+  }));
+
+export const updateBranchRegionSchema = z.object({
+  regionId: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    }),
+});
+
 export type CreateRegionInput = z.infer<typeof createRegionSchema>;
 export type AssignGuruInput = z.infer<typeof assignGuruSchema>;
 export type UpdateAssignmentInput = z.infer<typeof updateAssignmentSchema>;
+export type AdminBranchListQuery = z.infer<typeof adminBranchListQuerySchema>;
+export type ArchiveBranchInput = z.infer<typeof archiveBranchSchema>;
+export type UpdateBranchRegionInput = z.infer<typeof updateBranchRegionSchema>;
