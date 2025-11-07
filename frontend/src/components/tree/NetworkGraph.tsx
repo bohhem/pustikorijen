@@ -2,11 +2,14 @@ import { useEffect } from 'react';
 import ReactFlow, {
   Node,
   Edge,
-  Controls,
   Background,
   useNodesState,
   useEdgesState,
   MarkerType,
+  MiniMap,
+  Panel,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import PersonNode from './PersonNode';
@@ -34,6 +37,68 @@ interface FamilyGroup {
   childrenIds: string[];
   generation: number;
   branchId: string;
+}
+
+function ViewportToolbar() {
+  const instance = useReactFlow();
+
+  return (
+    <div className="flex items-center gap-2 bg-white/90 border border-slate-200 rounded-full px-3 py-1 shadow-sm text-xs font-semibold text-slate-600">
+      <button
+        type="button"
+        onClick={() => instance.zoomIn({ duration: 300 })}
+        className="px-2 py-1 rounded-full hover:bg-slate-100"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        onClick={() => instance.zoomOut({ duration: 300 })}
+        className="px-2 py-1 rounded-full hover:bg-slate-100"
+      >
+        −
+      </button>
+      <button
+        type="button"
+        onClick={() => instance.fitView({ padding: 0.2, duration: 350 })}
+        className="px-2 py-1 rounded-full hover:bg-slate-100"
+      >
+        Fit
+      </button>
+    </div>
+  );
+}
+
+function GraphInner({
+  onNodesChange,
+  onEdgesChange,
+  flowNodes,
+  flowEdges,
+}: {
+  onNodesChange: ReturnType<typeof useNodesState>[2];
+  onEdgesChange: ReturnType<typeof useEdgesState>[2];
+  flowNodes: Node[];
+  flowEdges: Edge[];
+}) {
+  return (
+    <ReactFlow
+      nodes={flowNodes}
+      edges={flowEdges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      nodeTypes={nodeTypes}
+      fitView
+      minZoom={0.1}
+      maxZoom={2}
+      defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
+    >
+      <Background color="#e5e7eb" gap={16} />
+      <MiniMap zoomable pannable className="bg-white/80" />
+      <Panel position="top-right">
+        <ViewportToolbar />
+      </Panel>
+    </ReactFlow>
+  );
 }
 
 export default function NetworkGraph({
@@ -353,21 +418,15 @@ export default function NetworkGraph({
   }, [filteredNodes, treeData, onPersonSelect, focusPersonId]);
 
   return (
-    <div className="w-full h-full">
-      <ReactFlow
-        nodes={flowNodes}
-        edges={flowEdges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
-        fitView
-        minZoom={0.1}
-        maxZoom={2}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.6 }}
-      >
-        <Background color="#e5e7eb" gap={16} />
-        <Controls />
-      </ReactFlow>
+    <div className="w-full h-full relative">
+      <ReactFlowProvider>
+        <GraphInner
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          flowNodes={flowNodes}
+          flowEdges={flowEdges}
+        />
+      </ReactFlowProvider>
     </div>
   );
 }

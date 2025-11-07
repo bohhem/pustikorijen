@@ -10,7 +10,7 @@ import FamilyTreeView from '../components/tree/FamilyTreeView';
 import MultiBranchTreeView from '../components/tree/MultiBranchTreeView';
 import EnhancedTreeView from '../components/tree/EnhancedTreeView';
 import type { Person } from '../types/person';
-import type { Branch, MultiBranchTreeResponse, MultiBranchTreePerson } from '../types/branch';
+import type { Branch, MultiBranchTreeResponse } from '../types/branch';
 import type { Partnership } from '../types/partnership';
 import { orderPersonsByPartnerPairing } from '../utils/personOrdering';
 
@@ -29,6 +29,13 @@ export default function FamilyTree() {
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [selectedLoading, setSelectedLoading] = useState(false);
   const [useEnhancedView, setUseEnhancedView] = useState(false);
+
+  const treeViewOptions: Array<{ id: 'classic' | 'multi' | 'enhanced'; label: string; icon: string }> = [
+    { id: 'classic', label: t('tree.headerViews.classic', 'Classic Tree'), icon: '🌳' },
+    { id: 'multi', label: t('tree.headerViews.multi', 'Connected Families'), icon: '🌐' },
+    { id: 'enhanced', label: t('tree.headerViews.enhanced', 'Enhanced Network'), icon: '✨' },
+  ];
+  const treeViewMode: 'classic' | 'multi' | 'enhanced' = useEnhancedView ? 'enhanced' : multiBranchView ? 'multi' : 'classic';
 
   const orderedPartnerData = useMemo(
     () => orderPersonsByPartnerPairing(persons, partnerships),
@@ -72,24 +79,39 @@ export default function FamilyTree() {
     }
   };
 
-  const handleToggleMultiBranch = async () => {
-    if (!multiBranchView && !multiBranchData) {
+  const ensureMultiBranchReady = async () => {
+    if (!multiBranchData) {
       await loadMultiBranchData();
     }
-    setMultiBranchView(!multiBranchView);
-    // If switching to multi-branch and enhanced view is on, keep it
-    // Enhanced view works with both single and multi-branch data
   };
 
-  const handleToggleEnhancedView = async () => {
-    // If switching to enhanced view and we don't have multi-branch data yet, load it
-    if (!useEnhancedView && !multiBranchData) {
-      await loadMultiBranchData();
+  const handleTreeViewModeChange = async (mode: 'classic' | 'multi' | 'enhanced') => {
+    if (mode === treeViewMode) {
+      return;
     }
-    setUseEnhancedView(!useEnhancedView);
+
+    if (mode === 'classic') {
+      if (!useEnhancedView && !multiBranchView) {
+        return;
+      }
+      setUseEnhancedView(false);
+      setMultiBranchView(false);
+      return;
+    }
+
+    await ensureMultiBranchReady();
+    if (mode === 'multi') {
+      setUseEnhancedView(false);
+      setMultiBranchView(true);
+      return;
+    }
+
+    // Enhanced
+    setMultiBranchView(true);
+    setUseEnhancedView(true);
   };
 
-  const handlePersonSelect = async (person: Person | MultiBranchTreePerson | any) => {
+  const handleClassicPersonSelect = async (person: Person) => {
     if (!branchId) return;
     setSelectedLoading(true);
     try {
@@ -350,59 +372,45 @@ export default function FamilyTree() {
                 {persons.length} {t('tree.peopleAcross')} {Math.max(...persons.map(p => p.generationNumber || 0), 0)} {t('tree.generations')}
               </p>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={handleToggleEnhancedView}
-                disabled={loadingMultiBranch}
-                className={`inline-flex items-center justify-center px-3 sm:px-4 py-2 border text-xs sm:text-sm font-medium rounded-md disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation ${
-                  useEnhancedView
-                    ? 'border-indigo-600 text-indigo-700 bg-indigo-50 hover:bg-indigo-100'
-                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                }`}
-              >
-                {loadingMultiBranch ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
-                    <span className="hidden sm:inline">Loading...</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="hidden sm:inline">{useEnhancedView ? '✨ Enhanced View' : '📊 Classic View'}</span>
-                    <span className="sm:hidden">{useEnhancedView ? '✨' : '📊'}</span>
-                  </>
-                )}
-              </button>
-              {!useEnhancedView && (
-                <button
-                  onClick={handleToggleMultiBranch}
-                  disabled={loadingMultiBranch}
-                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 flex-1 sm:flex-none min-w-[140px] touch-manipulation"
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">{t('tree.headerViews.label', 'View style')}</p>
+                <div className="mt-2 inline-flex rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+                  {treeViewOptions.map((option) => {
+                    const isActive = treeViewMode === option.id;
+                    const requiresMulti = option.id !== 'classic';
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => void handleTreeViewModeChange(option.id)}
+                        disabled={loadingMultiBranch && requiresMulti}
+                        className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition border-r last:border-r-0 ${
+                          isActive ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-50'
+                        } ${loadingMultiBranch && requiresMulti ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        <span className="mr-1">{option.icon}</span>
+                        <span className="hidden sm:inline">{option.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  to={`/branches/${branchId}/persons`}
+                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 flex-1 sm:flex-none min-w-[120px] touch-manipulation"
                 >
-                  {loadingMultiBranch ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
-                      <span className="hidden sm:inline">Loading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="hidden sm:inline">{multiBranchView ? '🌳 Single Branch' : '🌐 Connected Families'}</span>
-                      <span className="sm:hidden">{multiBranchView ? '🌳 Single' : '🌐 Multi'}</span>
-                    </>
-                  )}
-                </button>
-              )}
-              <Link
-                to={`/branches/${branchId}/persons`}
-                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-xs sm:text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 flex-1 sm:flex-none min-w-[100px] touch-manipulation"
-              >
-                {t('tree.viewList')}
-              </Link>
-              <Link
-                to={`/branches/${branchId}/persons/create`}
-                className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none min-w-[100px] touch-manipulation"
-              >
-                {t('persons.create')}
-              </Link>
+                  {t('tree.viewList')}
+                </Link>
+                <Link
+                  to={`/branches/${branchId}/persons/create`}
+                  className="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none min-w-[120px] touch-manipulation"
+                >
+                  {t('persons.create')}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -430,19 +438,17 @@ export default function FamilyTree() {
               <div className="h-[800px]">
                 <EnhancedTreeView
                   treeData={multiBranchData}
-                  onPersonSelect={handlePersonSelect}
                 />
               </div>
             ) : multiBranchView && multiBranchData ? (
               <MultiBranchTreeView
                 treeData={multiBranchData}
-                onPersonSelect={handlePersonSelect}
               />
             ) : (
               <FamilyTreeView
                 persons={orderedPartnerData.orderedPersons}
                 partnerships={partnerships}
-                onPersonSelect={handlePersonSelect}
+                onPersonSelect={handleClassicPersonSelect}
               />
             )}
           </div>

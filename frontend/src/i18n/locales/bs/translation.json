@@ -649,7 +649,14 @@
       "descendants": "Prikaz potomaka",
       "descendantsShort": "Potomci",
       "hourglass": "Pješčani sat - Prikaz predaka i potomaka",
-      "hourglassShort": "Pješčani sat"
+      "hourglassShort": "Pješčani sat",
+      "selectLabel": "Prikaz"
+    },
+    "headerViews": {
+      "label": "Način prikaza",
+      "classic": "Klasični prikaz",
+      "multi": "Povezane porodice",
+      "enhanced": "Napredni prikaz"
     },
     "filters": {
       "title": "Filteri",
@@ -720,7 +727,8 @@
       "guruSectionTitle": "Dodijeljeni SuperGurui",
       "hierarchyTitle": "Hijerarhija regiona",
       "hierarchyHint": "Proširi državu da vidiš entitete, kantone i okruge.",
-      "noRegions": "Hijerarhija trenutno nema regiona."
+      "noRegions": "Hijerarhija trenutno nema regiona.",
+      "hierarchyError": "Hijerarhiju regiona trenutno nije moguće učitati."
     },
     "actions": {
       "addRegion": "Dodaj region",

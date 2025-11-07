@@ -520,7 +520,14 @@
       "descendants": "Nachkommenansicht",
       "descendantsShort": "Nachkommen",
       "hourglass": "Sanduhr - Vorfahren und Nachkommen anzeigen",
-      "hourglassShort": "Sanduhr"
+      "hourglassShort": "Sanduhr",
+      "selectLabel": "Visualisierung"
+    },
+    "headerViews": {
+      "label": "Ansicht",
+      "classic": "Klassischer Stammbaum",
+      "multi": "Verbundene Familien",
+      "enhanced": "Erweiterte Netzwerkansicht"
     },
     "filters": {
       "title": "Filter",
@@ -720,7 +727,8 @@
       "guruSectionTitle": "Zugewiesene SuperGurus",
       "hierarchyTitle": "Regionale Hierarchie",
       "hierarchyHint": "Land aufklappen, um Entitäten, Kantone und Bezirke zu sehen.",
-      "noRegions": "In der Hierarchie sind keine Regionen vorhanden."
+      "noRegions": "In der Hierarchie sind keine Regionen vorhanden.",
+      "hierarchyError": "Regionhierarchie konnte nicht geladen werden."
     },
     "actions": {
       "addRegion": "Region hinzufügen",

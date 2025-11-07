@@ -165,54 +165,20 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
   return (
     <div className="w-full h-full bg-gray-50 rounded-lg border border-gray-200 flex flex-col">
       {/* Header with controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 sm:p-4 bg-white border-b border-gray-200">
-        {/* View mode selector */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => handleViewModeChange('network')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition touch-manipulation ${
-              viewMode === 'network'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={t('tree.viewModes.network', 'Network View')}
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between p-3 sm:p-4 bg-white border-b border-gray-200">
+        <label className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+          <span className="font-medium">{t('tree.viewModes.selectLabel', 'Visualization')}</span>
+          <select
+            value={viewMode}
+            onChange={(event) => handleViewModeChange(event.target.value as TreeViewMode)}
+            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm focus:border-indigo-500 focus:ring-indigo-500"
           >
-            🌐 {t('tree.viewModes.networkShort', 'Network')}
-          </button>
-          <button
-            onClick={() => handleViewModeChange('pedigree')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition touch-manipulation ${
-              viewMode === 'pedigree'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={t('tree.viewModes.pedigree', 'Pedigree (Ancestors)')}
-          >
-            ⬆️ {t('tree.viewModes.pedigreeShort', 'Ancestors')}
-          </button>
-          <button
-            onClick={() => handleViewModeChange('descendants')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition touch-manipulation ${
-              viewMode === 'descendants'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={t('tree.viewModes.descendants', 'Descendants')}
-          >
-            ⬇️ {t('tree.viewModes.descendantsShort', 'Descendants')}
-          </button>
-          <button
-            onClick={() => handleViewModeChange('hourglass')}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition touch-manipulation ${
-              viewMode === 'hourglass'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-            title={t('tree.viewModes.hourglass', 'Hourglass (Ancestors + Descendants)')}
-          >
-            ⏳ {t('tree.viewModes.hourglassShort', 'Hourglass')}
-          </button>
-        </div>
+            <option value="network">🌐 {t('tree.viewModes.networkShort', 'Network')}</option>
+            <option value="pedigree">⬆️ {t('tree.viewModes.pedigreeShort', 'Ancestors')}</option>
+            <option value="descendants">⬇️ {t('tree.viewModes.descendantsShort', 'Descendants')}</option>
+            <option value="hourglass">⏳ {t('tree.viewModes.hourglassShort', 'Hourglass')}</option>
+          </select>
+        </label>
 
         {/* Search and filter toggles */}
         <div className="flex items-center gap-2 w-full sm:w-auto">

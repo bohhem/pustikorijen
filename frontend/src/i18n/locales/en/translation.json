@@ -655,7 +655,14 @@
       "descendants": "Descendant View - Show descendants",
       "descendantsShort": "Descendants",
       "hourglass": "Hourglass View - Show ancestors and descendants",
-      "hourglassShort": "Hourglass"
+      "hourglassShort": "Hourglass",
+      "selectLabel": "Visualization"
+    },
+    "headerViews": {
+      "label": "View style",
+      "classic": "Classic Tree",
+      "multi": "Connected Families",
+      "enhanced": "Enhanced Network"
     },
     "filters": {
       "title": "Filters",
@@ -726,7 +733,8 @@
       "guruSectionTitle": "Assigned SuperGurus",
       "hierarchyTitle": "Region hierarchy",
       "hierarchyHint": "Expand a country to browse its entities, cantons, and districts.",
-      "noRegions": "No regions available in the hierarchy."
+      "noRegions": "No regions available in the hierarchy.",
+      "hierarchyError": "Unable to load region hierarchy."
     },
     "actions": {
       "addRegion": "Add region",
