@@ -32,6 +32,7 @@ import adminRoutes from './routes/admin.routes';
 import geoRoutes from './routes/geo.routes';
 import businessAddressRoutes from './routes/business-address.routes';
 import { authenticateToken } from './middleware/auth.middleware';
+import { startBackupWorker } from './services/backup-worker';
 
 app.get('/api/v1', (_req, res) => {
   res.json({
@@ -120,6 +121,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📍 API: http://localhost:${PORT}/api/v1`);
+  startBackupWorker();
 });
 
 export default app;

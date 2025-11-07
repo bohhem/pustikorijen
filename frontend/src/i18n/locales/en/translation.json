@@ -791,6 +791,68 @@
       "guruRemoved": "SuperGuru removed",
       "cannotRemoveLast": "At least one SuperGuru must remain assigned"
     },
+    "backups": {
+      "title": "Backups",
+      "subtitle": "Trigger on-demand snapshots and confirm the platform has recent restore points.",
+      "stats": {
+        "lastSuccess": "Last successful backup",
+        "nextRun": "Next scheduled run",
+        "snapshots": "Snapshots",
+        "storage": "Storage usage",
+        "storageUnknown": "Unknown",
+        "outstanding": "Outstanding restores"
+      },
+      "manual": {
+        "title": "Manual backup",
+        "description": "Create an on-demand snapshot for the core database and optional media assets.",
+        "openForm": "New backup",
+        "closeForm": "Hide form",
+        "label": "Label",
+        "labelPlaceholder": "e.g., Pre-release drill",
+        "scope": "Scope",
+        "scopeFull": "Full platform",
+        "scopeRegion": "Specific region",
+        "regionPlaceholder": "Region ID (e.g., REG-401)",
+        "includeMedia": "Include media assets",
+        "retention": "Retention (days)",
+        "notify": "Notify emails",
+        "notifyPlaceholder": "name@example.com, ops@example.com",
+        "notifyHint": "Separate multiple emails with commas.",
+        "submit": "Start backup"
+      },
+      "history": {
+        "title": "Backup history",
+        "subtitle": "Latest 20 snapshots",
+        "count": "{{count}} backups loaded",
+        "empty": "No backups recorded yet.",
+      "columns": {
+        "status": "Status",
+        "label": "Label",
+        "scope": "Scope",
+        "started": "Started",
+        "completed": "Completed",
+        "size": "Size",
+        "actions": "Actions"
+      },
+      "download": "Download manifest",
+      "downloading": "Downloading...",
+      "notReady": "Backup is still processing.",
+      "downloadError": "Download failed. Please try again.",
+      "noDownload": "Download link not available yet.",
+      "regionFallback": "Region",
+      "initiatedBy": "Started by {{name}}"
+      },
+      "status": {
+        "queued": "Queued",
+        "running": "Running",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "messages": {
+        "created": "Backup request queued.",
+        "loadError": "Failed to load backup data."
+      }
+    },
     "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon.",
     "bridgeIssues": {
       "title": "Bridge link issues",

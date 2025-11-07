@@ -785,6 +785,68 @@
       "guruRemoved": "SuperGuru entfernt",
       "cannotRemoveLast": "Mindestens ein SuperGuru muss zugewiesen bleiben"
     },
+    "backups": {
+      "title": "Backups",
+      "subtitle": "Starte Snapshots auf Abruf und stelle sicher, dass aktuelle Wiederherstellungspunkte vorliegen.",
+      "stats": {
+        "lastSuccess": "Letztes erfolgreiches Backup",
+        "nextRun": "Nächster geplanter Lauf",
+        "snapshots": "Snapshots",
+        "storage": "Speicherkapazität",
+        "storageUnknown": "Unbekannt",
+        "outstanding": "Offene Restores"
+      },
+      "manual": {
+        "title": "Manuelles Backup",
+        "description": "Erstelle einen Snapshot der Kern-Datenbank und optional der Medien.",
+        "openForm": "Neues Backup",
+        "closeForm": "Formular ausblenden",
+        "label": "Bezeichnung",
+        "labelPlaceholder": "z. B. Pre-Release-Test",
+        "scope": "Umfang",
+        "scopeFull": "Gesamte Plattform",
+        "scopeRegion": "Bestimmte Region",
+        "regionPlaceholder": "Regions-ID (z. B. REG-401)",
+        "includeMedia": "Medien einschließen",
+        "retention": "Aufbewahrung (Tage)",
+        "notify": "Benachrichtigungs-E-Mails",
+        "notifyPlaceholder": "name@example.com, ops@example.com",
+        "notifyHint": "Mehrere Adressen mit Komma trennen.",
+        "submit": "Backup starten"
+      },
+      "history": {
+        "title": "Backup-Verlauf",
+        "subtitle": "Letzte 20 Snapshots",
+        "count": "{{count}} Backups geladen",
+        "empty": "Noch keine Backups vorhanden.",
+      "columns": {
+        "status": "Status",
+        "label": "Bezeichnung",
+        "scope": "Umfang",
+        "started": "Gestartet",
+        "completed": "Abgeschlossen",
+        "size": "Größe",
+        "actions": "Aktionen"
+      },
+      "download": "Manifest herunterladen",
+      "downloading": "Wird heruntergeladen...",
+      "notReady": "Backup läuft noch.",
+      "downloadError": "Download fehlgeschlagen. Bitte erneut versuchen.",
+      "noDownload": "Download-Link ist noch nicht verfügbar.",
+      "regionFallback": "Region",
+      "initiatedBy": "Gestartet von {{name}}"
+      },
+      "status": {
+        "queued": "Eingereiht",
+        "running": "Läuft",
+        "completed": "Abgeschlossen",
+        "failed": "Fehlgeschlagen"
+      },
+      "messages": {
+        "created": "Backup-Auftrag wurde gestartet.",
+        "loadError": "Backups konnten nicht geladen werden."
+      }
+    },
     "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze.",
     "bridgeIssues": {
       "title": "Brückenverbindungen prüfen",

@@ -93,6 +93,7 @@ model admin_regions {
   updated_at             DateTime
   family_branches        family_branches[]
   super_guru_assignments super_guru_assignments[]
+  backup_snapshots       backup_snapshots[]
   parent                 admin_regions?           @relation("AdminRegionHierarchy", fields: [parent_region_id], references: [region_id])
   children               admin_regions[]          @relation("AdminRegionHierarchy")
 
@@ -668,6 +669,32 @@ model super_guru_assignments {
   @@index([region_id])
 }
 
+model backup_snapshots {
+  backup_id      String         @id
+  label          String         @db.VarChar(120)
+  scope          BackupScope    @default(FULL)
+  region_id      String?
+  include_media  Boolean        @default(true)
+  status         BackupStatus   @default(QUEUED)
+  storage_path   String?
+  size_bytes     BigInt?
+  checksum       String?
+  started_at     DateTime       @default(now())
+  completed_at   DateTime?
+  initiated_by   String
+  retention_days Int            @default(30)
+  notify_emails  String[]       @default([])
+  notes          String?
+  metadata       Json?
+  source_env     String?        @db.VarChar(50)
+  region         admin_regions? @relation(fields: [region_id], references: [region_id], onDelete: SetNull)
+  initiated_by_user users       @relation(fields: [initiated_by], references: [user_id])
+
+  @@index([scope])
+  @@index([status])
+  @@index([started_at(sort: Desc)])
+}
+
 model users {
   user_id                                                         String                   @id
   email                                                           String                   @unique @db.VarChar(255)
@@ -707,6 +734,7 @@ model users {
   stories_stories_author_idTousers                                stories[]                @relation("stories_author_idTousers")
   super_guru_assignments_super_guru_assignments_created_byTousers super_guru_assignments[] @relation("super_guru_assignments_created_byTousers")
   super_guru_assignments_super_guru_assignments_user_idTousers    super_guru_assignments[] @relation("super_guru_assignments_user_idTousers")
+  backup_snapshots_initiated backup_snapshots[]
   branch_person_links_branch_person_links_requested_byTousers     branch_person_links[]    @relation("branch_person_links_requested_byTousers")
   branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
   branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
@@ -728,4 +756,16 @@ enum UserGlobalRole {
   REGIONAL_GURU
   SUPER_GURU
   ADMIN
+}
+
+enum BackupScope {
+  FULL
+  REGION
+}
+
+enum BackupStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
 }

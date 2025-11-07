@@ -21,6 +21,7 @@ import PersonDetail from './pages/PersonDetail';
 import EditPerson from './pages/EditPerson';
 import FamilyTree from './pages/FamilyTree';
 import AddPartnership from './pages/AddPartnership';
+import AdminBackups from './pages/admin/AdminBackups';
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
               element={
                 <SuperGuruRoute allowedRoles={['SUPER_GURU', 'ADMIN']}>
                   <AdminUsers />
+                </SuperGuruRoute>
+              }
+            />
+            <Route
+              path="/admin/backups"
+              element={
+                <SuperGuruRoute allowedRoles={['SUPER_GURU', 'ADMIN']}>
+                  <AdminBackups />
                 </SuperGuruRoute>
               }
             />

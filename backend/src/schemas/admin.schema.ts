@@ -77,9 +77,50 @@ export const updateBranchRegionSchema = z.object({
     }),
 });
 
+const backupBaseSchema = z.object({
+  label: z
+    .string()
+    .min(3, 'Label must be at least 3 characters')
+    .max(60, 'Label must be at most 60 characters')
+    .transform((value) => value.trim()),
+  scope: z.enum(['FULL', 'REGION']),
+  regionId: z
+    .string()
+    .optional()
+    .transform((value) => {
+      if (value === undefined) {
+        return undefined;
+      }
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : undefined;
+    }),
+  includeMedia: z.boolean().optional().default(true),
+  retentionDays: z.coerce.number().int().min(1).max(365).optional(),
+  notifyEmails: z
+    .array(z.string().email().transform((email) => email.trim().toLowerCase()))
+    .optional()
+    .transform((value) => (value && value.length ? value : undefined)),
+  notes: z
+    .string()
+    .max(500, 'Notes must be 500 characters or less')
+    .optional()
+    .transform((value) => (value ? value.trim() : undefined)),
+});
+
+export const createBackupSchema = backupBaseSchema.superRefine((data, ctx) => {
+  if (data.scope === 'REGION' && !data.regionId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Region is required for region-scoped backups',
+      path: ['regionId'],
+    });
+  }
+});
+
 export type CreateRegionInput = z.infer<typeof createRegionSchema>;
 export type AssignGuruInput = z.infer<typeof assignGuruSchema>;
 export type UpdateAssignmentInput = z.infer<typeof updateAssignmentSchema>;
 export type AdminBranchListQuery = z.infer<typeof adminBranchListQuerySchema>;
 export type ArchiveBranchInput = z.infer<typeof archiveBranchSchema>;
 export type UpdateBranchRegionInput = z.infer<typeof updateBranchRegionSchema>;
+export type CreateBackupInput = z.infer<typeof createBackupSchema>;

@@ -1,13 +1,17 @@
 import { Request, Response } from 'express';
 import {
   assignSuperGuruToRegion,
+  createBackupSnapshotRequest,
   createAdminRegion,
   archiveBranchForAdmin,
   getSuperGuruRegionsOverview,
   getAdminRegionHierarchy,
+  getBackupSummaryStats,
+  getBackupManifestPayload,
   updateBranchRegionAssignment,
   hardDeleteBranch,
   listBranchesForAdmin,
+  listBackupSnapshots,
   removeSuperGuruAssignment,
   unarchiveBranchForAdmin,
   updateSuperGuruAssignment,
@@ -23,6 +27,7 @@ import {
   assignGuruSchema,
   archiveBranchSchema,
   adminBranchListQuerySchema,
+  createBackupSchema,
   createRegionSchema,
   updateBranchRegionSchema,
   updateAssignmentSchema,
@@ -521,5 +526,97 @@ export async function updateBridgeGeneration(req: Request, res: Response): Promi
 
     console.error('Failed to update bridge generation:', error);
     res.status(500).json({ error: 'Failed to update bridge generation' });
+  }
+}
+
+export async function getBackupSummary(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const summary = await getBackupSummaryStats();
+    res.status(200).json({ summary });
+  } catch (error) {
+    console.error('Failed to load backup summary:', error);
+    res.status(500).json({ error: 'Failed to load backup summary' });
+  }
+}
+
+export async function listBackupHistory(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const snapshots = await listBackupSnapshots();
+    res.status(200).json({ snapshots });
+  } catch (error) {
+    console.error('Failed to load backup history:', error);
+    res.status(500).json({ error: 'Failed to load backup history' });
+  }
+}
+
+export async function createBackupSnapshotController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const input = createBackupSchema.parse(req.body);
+    const snapshot = await createBackupSnapshotRequest({
+      input,
+      actor: req.user,
+    });
+
+    res.status(201).json({ snapshot });
+  } catch (error: unknown) {
+    if (isZodError(error)) {
+      res.status(400).json({ error: 'Validation failed', details: error.issues });
+      return;
+    }
+
+    const message = getErrorMessage(error);
+
+    if (message === 'Region not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to create backup snapshot:', error);
+    res.status(500).json({ error: 'Failed to create backup snapshot' });
+  }
+}
+
+export async function downloadBackupManifest(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { backupId } = req.params;
+    const { snapshot, manifest } = await getBackupManifestPayload(backupId);
+
+    if (snapshot.status !== 'COMPLETED') {
+      res.status(400).json({ error: 'Backup is not completed yet' });
+      return;
+    }
+
+    const filename = `backup-${snapshot.id}.json`;
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.status(200).send(JSON.stringify(manifest, null, 2));
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (message === 'Backup not found') {
+      res.status(404).json({ error: message });
+      return;
+    }
+    console.error('Failed to download backup manifest:', error);
+    res.status(500).json({ error: 'Failed to download manifest' });
   }
 }

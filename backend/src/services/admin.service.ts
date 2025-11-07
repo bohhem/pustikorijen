@@ -1,8 +1,13 @@
 import { randomUUID } from 'crypto';
-import type { Prisma } from '@prisma/client';
+import type { Prisma, backup_snapshots } from '@prisma/client';
 import prisma from '../utils/prisma';
 import type { JwtPayload } from '../utils/jwt';
-import type { AssignGuruInput, CreateRegionInput, UpdateAssignmentInput } from '../schemas/admin.schema';
+import type {
+  AssignGuruInput,
+  CreateBackupInput,
+  CreateRegionInput,
+  UpdateAssignmentInput,
+} from '../schemas/admin.schema';
 
 type RegionAssignmentRecord = {
   assignment_id: string;
@@ -59,6 +64,12 @@ type RecentBranchRecord = {
   created_at: Date;
   admin_regions: AdminRegionRecord | null;
 };
+
+const DEFAULT_BACKUP_HISTORY_LIMIT = 20;
+const parsedRetention = Number(process.env.BACKUP_DEFAULT_RETENTION_DAYS ?? '30');
+const DEFAULT_BACKUP_RETENTION_DAYS =
+  Number.isFinite(parsedRetention) && parsedRetention > 0 ? Math.floor(parsedRetention) : 30;
+const BACKUP_SOURCE_ENV = process.env.BACKUP_SOURCE_ENV ?? process.env.NODE_ENV ?? 'development';
 
 const ADMIN_REGION_SELECT = {
   region_id: true,
@@ -241,6 +252,36 @@ export interface AdminBranchListResponse {
   };
 }
 
+export interface BackupSummaryStats {
+  lastSuccessfulAt: string | null;
+  nextScheduledAt: string | null;
+  totalSnapshots: number;
+  outstandingRestores: number;
+  storageUsageBytes: number;
+}
+
+export interface BackupSnapshotSummary {
+  id: string;
+  label: string;
+  scope: 'FULL' | 'REGION';
+  regionId?: string | null;
+  regionName?: string | null;
+  includeMedia: boolean;
+  status: 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  initiatedBy: {
+    id: string;
+    fullName: string;
+    email?: string | null;
+  };
+  startedAt: string;
+  completedAt?: string | null;
+  sizeBytes?: number | null;
+  storagePath?: string | null;
+  downloadUrl?: string | null;
+  manifestUrl?: string | null;
+  notes?: string | null;
+}
+
 export async function getAdminRegionHierarchy(): Promise<AdminRegionTreeNode[]> {
   const regions = (await prisma.admin_regions.findMany({
     orderBy: [
@@ -325,7 +366,7 @@ export async function updateBranchRegionAssignment(params: {
     }
   }
 
-  let targetRegionId: string | null = regionId ?? null;
+  const targetRegionId: string | null = regionId ?? null;
 
   if (targetRegionId) {
     const region = await prisma.admin_regions.findUnique({
@@ -1015,6 +1056,187 @@ export async function unarchiveBranchForAdmin(branchId: string, actor: JwtPayloa
 
   const refreshed = await fetchAdminBranch(branchId);
   return mapAdminBranch(refreshed);
+}
+
+type BackupSnapshotWithRelations = backup_snapshots & {
+  region: {
+    region_id: string;
+    name: string;
+  } | null;
+  initiated_by_user: {
+    user_id: string;
+    full_name: string;
+    email: string | null;
+  };
+};
+
+const BACKUP_SNAPSHOT_INCLUDE = {
+  region: {
+    select: {
+      region_id: true,
+      name: true,
+    },
+  },
+  initiated_by_user: {
+    select: {
+      user_id: true,
+      full_name: true,
+      email: true,
+    },
+  },
+} as const;
+
+function mapBackupSnapshot(record: BackupSnapshotWithRelations): BackupSnapshotSummary {
+  const canDownload = record.status === 'COMPLETED';
+  const manifestPath = `/api/v1/admin/backups/${record.backup_id}/manifest`;
+
+  return {
+    id: record.backup_id,
+    label: record.label,
+    scope: record.scope,
+    regionId: record.region_id ?? null,
+    regionName: record.region?.name ?? null,
+    includeMedia: record.include_media,
+    status: record.status,
+    initiatedBy: {
+      id: record.initiated_by_user.user_id,
+      fullName: record.initiated_by_user.full_name,
+      email: record.initiated_by_user.email,
+    },
+    startedAt: record.started_at.toISOString(),
+    completedAt: record.completed_at ? record.completed_at.toISOString() : null,
+    sizeBytes: record.size_bytes != null ? Number(record.size_bytes) : null,
+    storagePath: record.storage_path ?? null,
+    downloadUrl: canDownload ? manifestPath : null,
+    manifestUrl: canDownload ? manifestPath : null,
+    notes: record.notes ?? null,
+  };
+}
+
+function buildBackupManifest(record: BackupSnapshotWithRelations): Record<string, unknown> {
+  const metadata = (record.metadata as Record<string, unknown> | null) ?? null;
+  const manifestCandidate = metadata?.manifest;
+  if (manifestCandidate && typeof manifestCandidate === 'object') {
+    return manifestCandidate as Record<string, unknown>;
+  }
+
+  return {
+    version: '1.0',
+    backupId: record.backup_id,
+    label: record.label,
+    scope: record.scope,
+    includeMedia: record.include_media,
+    startedAt: record.started_at.toISOString(),
+    completedAt: record.completed_at ? record.completed_at.toISOString() : null,
+    region: record.region
+      ? {
+          id: record.region.region_id,
+          name: record.region.name,
+        }
+      : null,
+    sizeBytes: record.size_bytes != null ? Number(record.size_bytes) : null,
+    notes: record.notes ?? null,
+  };
+}
+
+export async function getBackupSummaryStats(): Promise<BackupSummaryStats> {
+  const [lastSuccess, totalSnapshots, storageSum] = await prisma.$transaction([
+    prisma.backup_snapshots.findFirst({
+      where: { status: 'COMPLETED' },
+      orderBy: { completed_at: 'desc' },
+    }),
+    prisma.backup_snapshots.count(),
+    prisma.backup_snapshots.aggregate({
+      _sum: { size_bytes: true },
+      where: { status: 'COMPLETED' },
+    }),
+  ]);
+
+  const sizeSum = storageSum._sum.size_bytes ?? BigInt(0);
+
+  return {
+    lastSuccessfulAt: lastSuccess?.completed_at ? lastSuccess.completed_at.toISOString() : null,
+    nextScheduledAt: null,
+    totalSnapshots,
+    outstandingRestores: 0,
+    storageUsageBytes: Number(sizeSum),
+  };
+}
+
+export async function listBackupSnapshots(limit = DEFAULT_BACKUP_HISTORY_LIMIT): Promise<BackupSnapshotSummary[]> {
+  const snapshots = await prisma.backup_snapshots.findMany({
+    take: limit,
+    orderBy: { started_at: 'desc' },
+    include: BACKUP_SNAPSHOT_INCLUDE,
+  });
+
+  return snapshots.map((snapshot) => mapBackupSnapshot(snapshot as BackupSnapshotWithRelations));
+}
+
+export async function createBackupSnapshotRequest(params: {
+  input: CreateBackupInput;
+  actor: JwtPayload;
+}): Promise<BackupSnapshotSummary> {
+  const {
+    input: { label, scope, regionId, includeMedia, retentionDays, notifyEmails, notes },
+    actor,
+  } = params;
+
+  if (scope === 'REGION') {
+    const targetRegionId = regionId ?? null;
+    if (!targetRegionId) {
+      throw new Error('Region is required for region-scoped backups');
+    }
+
+    const regionExists = await prisma.admin_regions.findUnique({
+      where: { region_id: targetRegionId },
+      select: { region_id: true },
+    });
+
+    if (!regionExists) {
+      throw new Error('Region not found');
+    }
+  }
+
+  const snapshot = await prisma.backup_snapshots.create({
+    data: {
+      backup_id: `bkp_${randomUUID()}`,
+      label,
+      scope,
+      region_id: scope === 'REGION' ? regionId ?? null : null,
+      include_media: includeMedia ?? true,
+      retention_days: retentionDays ?? DEFAULT_BACKUP_RETENTION_DAYS,
+      notify_emails: notifyEmails ?? [],
+      notes: notes ?? null,
+      initiated_by: actor.userId,
+      source_env: BACKUP_SOURCE_ENV,
+      metadata: {
+        requestedBy: actor.userId,
+        notifyCount: notifyEmails?.length ?? 0,
+      },
+    },
+    include: BACKUP_SNAPSHOT_INCLUDE,
+  });
+
+  return mapBackupSnapshot(snapshot as BackupSnapshotWithRelations);
+}
+
+export async function getBackupManifestPayload(backupId: string): Promise<{
+  snapshot: BackupSnapshotSummary;
+  manifest: Record<string, unknown>;
+}> {
+  const record = await prisma.backup_snapshots.findUnique({
+    where: { backup_id: backupId },
+    include: BACKUP_SNAPSHOT_INCLUDE,
+  });
+
+  if (!record) {
+    throw new Error('Backup not found');
+  }
+
+  const mapped = mapBackupSnapshot(record as BackupSnapshotWithRelations);
+  const manifest = buildBackupManifest(record as BackupSnapshotWithRelations);
+  return { snapshot: mapped, manifest };
 }
 
 export async function hardDeleteBranch(branchId: string, actor: JwtPayload): Promise<void> {

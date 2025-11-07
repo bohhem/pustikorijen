@@ -785,6 +785,68 @@
       "guruRemoved": "SuperGuru je uklonjen",
       "cannotRemoveLast": "Najmanje jedan SuperGuru mora ostati dodijeljen"
     },
+    "backups": {
+      "title": "Backupi",
+      "subtitle": "Pokreni backup na zahtjev i provjeri da postoji svježa tačka za povrat.",
+      "stats": {
+        "lastSuccess": "Zadnji uspješan backup",
+        "nextRun": "Sljedeći zakazani termin",
+        "snapshots": "Snapshoti",
+        "storage": "Potrošnja prostora",
+        "storageUnknown": "Nepoznato",
+        "outstanding": "Aktivna vraćanja"
+      },
+      "manual": {
+        "title": "Ručno pravljenje backupa",
+        "description": "Kreiraj snapshot baze i po želji uključi medijske datoteke.",
+        "openForm": "Novi backup",
+        "closeForm": "Sakrij formu",
+        "label": "Naziv",
+        "labelPlaceholder": "npr. Prije release-a",
+        "scope": "Opseg",
+        "scopeFull": "Cijela platforma",
+        "scopeRegion": "Određeni region",
+        "regionPlaceholder": "ID regiona (npr. REG-401)",
+        "includeMedia": "Uključi medijske fajlove",
+        "retention": "Zadržavanje (dana)",
+        "notify": "Emailovi za obavijest",
+        "notifyPlaceholder": "ime@primjer.com, ops@primjer.com",
+        "notifyHint": "Razdvoji emailove zarezom.",
+        "submit": "Pokreni backup"
+      },
+      "history": {
+        "title": "Historija backup-a",
+        "subtitle": "Posljednjih 20 snapshot-a",
+        "count": "{{count}} backup-a učitano",
+        "empty": "Još nema snimljenih backup-a.",
+      "columns": {
+        "status": "Status",
+        "label": "Naziv",
+        "scope": "Opseg",
+        "started": "Početak",
+        "completed": "Završetak",
+        "size": "Veličina",
+        "actions": "Akcije"
+      },
+      "download": "Preuzmi manifest",
+      "downloading": "Preuzimanje...",
+      "notReady": "Backup je još u toku.",
+      "downloadError": "Preuzimanje nije uspjelo. Pokušaj ponovo.",
+      "noDownload": "Link za preuzimanje još nije spreman.",
+      "regionFallback": "Region",
+      "initiatedBy": "Pokrenuo/la {{name}}"
+      },
+      "status": {
+        "queued": "U redu",
+        "running": "U toku",
+        "completed": "Završeno",
+        "failed": "Neuspješno"
+      },
+      "messages": {
+        "created": "Zahtjev za backup je poslan.",
+        "loadError": "Nije moguće učitati podatke o backupima."
+      }
+    },
     "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže.",
     "bridgeIssues": {
       "title": "Problemi sa mostovima",

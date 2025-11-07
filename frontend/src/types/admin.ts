@@ -196,3 +196,50 @@ export interface AdminBranchListResponse {
 export interface UpdateBranchRegionPayload {
   regionId?: string | null;
 }
+
+export type BackupScope = 'FULL' | 'REGION';
+
+export type BackupStatus = 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+
+export interface BackupSummary {
+  lastSuccessfulAt: string | null;
+  nextScheduledAt: string | null;
+  totalSnapshots: number;
+  outstandingRestores: number;
+  storageUsageBytes: number;
+}
+
+export interface BackupSnapshot {
+  id: string;
+  label: string;
+  scope: BackupScope;
+  regionId?: string | null;
+  regionName?: string | null;
+  includeMedia: boolean;
+  status: BackupStatus;
+  initiatedBy: {
+    id: string;
+    fullName: string;
+    email?: string | null;
+  };
+  startedAt: string;
+  completedAt?: string | null;
+  sizeBytes?: number | null;
+  storagePath?: string | null;
+  downloadUrl?: string | null;
+  manifestUrl?: string | null;
+  notes?: string | null;
+}
+
+export interface BackupHistoryResponse {
+  snapshots: BackupSnapshot[];
+}
+
+export interface CreateBackupPayload {
+  label: string;
+  scope: BackupScope;
+  regionId?: string;
+  includeMedia?: boolean;
+  retentionDays?: number;
+  notifyEmails?: string[];
+}

@@ -13,6 +13,10 @@ import type {
   UpdateAssignmentPayload,
   UpdateBranchRegionPayload,
   AdminRegionTreeNode,
+  BackupSummary,
+  BackupHistoryResponse,
+  BackupSnapshot,
+  CreateBackupPayload,
 } from '../types/admin';
 
 export async function getAdminRegionsOverview(): Promise<AdminRegionOverview[]> {
@@ -133,4 +137,26 @@ export async function updateAdminBranchRegion(
     payload
   );
   return response.data.branch;
+}
+
+export async function getBackupSummary(): Promise<BackupSummary> {
+  const response = await api.get<{ summary: BackupSummary }>('/admin/backups/summary');
+  return response.data.summary;
+}
+
+export async function getBackupHistory(): Promise<BackupSnapshot[]> {
+  const response = await api.get<BackupHistoryResponse>('/admin/backups');
+  return response.data.snapshots;
+}
+
+export async function createBackupSnapshot(payload: CreateBackupPayload): Promise<BackupSnapshot> {
+  const response = await api.post<{ snapshot: BackupSnapshot }>('/admin/backups', payload);
+  return response.data.snapshot;
+}
+
+export async function downloadBackupManifest(backupId: string): Promise<Blob> {
+  const response = await api.get(`/admin/backups/${backupId}/manifest`, {
+    responseType: 'blob',
+  });
+  return response.data;
 }

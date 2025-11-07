@@ -55,7 +55,7 @@ export default function AdminLayout({ title, description, children }: AdminLayou
       to: '/admin/backups',
       label: t('admin.sections.backups'),
       icon: '💾',
-      enabled: false,
+      enabled: true,
       access: 'FULL' as const,
     },
     {

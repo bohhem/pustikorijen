@@ -3,15 +3,19 @@ import { authenticateToken, requireFullSuperGuru, requireSuperGuru } from '../mi
 import {
   assignPrimaryBridge,
   assignRegionGuru,
+  createBackupSnapshotController,
   createRegion,
   archiveBranchAdmin,
   updateBranchRegion,
   deleteRegionAssignment,
   getAdminRegions,
   getAdminRegionTree,
+  getBackupSummary,
   hardDeleteBranchAdmin,
   listBridgeIssues,
   listAdminBranches,
+  listBackupHistory,
+  downloadBackupManifest,
   removePrimaryBridge,
   rejectBridgeLink,
   unarchiveBranchAdmin,
@@ -50,6 +54,12 @@ router.post('/branches/:branchId/archive', archiveBranchAdmin);
 router.post('/branches/:branchId/unarchive', unarchiveBranchAdmin);
 router.delete('/branches/:branchId', hardDeleteBranchAdmin);
 router.post('/branches/:branchId/region', updateBranchRegion);
+
+// Backup routes
+router.get('/backups/summary', requireFullSuperGuru, getBackupSummary);
+router.get('/backups', requireFullSuperGuru, listBackupHistory);
+router.post('/backups', requireFullSuperGuru, createBackupSnapshotController);
+router.get('/backups/:backupId/manifest', requireFullSuperGuru, downloadBackupManifest);
 
 // Bridge issue management routes
 router.get('/bridge-issues', requireFullSuperGuru, listBridgeIssues);
