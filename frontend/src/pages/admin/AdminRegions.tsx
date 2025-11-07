@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -6,11 +6,13 @@ import {
   assignSuperGuru,
   createAdminRegion,
   getAdminRegionsOverview,
+  getAdminRegionTree,
   removeSuperGuruAssignment,
   updateSuperGuruAssignment,
 } from '../../api/admin';
-import type { AdminRegionOverview } from '../../types/admin';
+import type { AdminRegionOverview, AdminRegionTreeNode } from '../../types/admin';
 import { useToast } from '../../contexts/ToastContext';
+import { formatRegionPath } from '../../utils/location';
 
 export default function AdminRegions() {
   const { t } = useTranslation();
@@ -30,6 +32,11 @@ export default function AdminRegions() {
   const [assignForm, setAssignForm] = useState({ email: '', isPrimary: false });
   const [assignError, setAssignError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [regionTree, setRegionTree] = useState<AdminRegionTreeNode[]>([]);
+  const [treeLoading, setTreeLoading] = useState(true);
+  const [treeError, setTreeError] = useState<string | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
+  const [focusedRegionId, setFocusedRegionId] = useState<string | null>(null);
 
   const parseErrorMessage = (err: unknown) => {
     if (axios.isAxiosError(err)) {
@@ -53,6 +60,95 @@ export default function AdminRegions() {
 
     loadRegions();
   }, [t]);
+
+  useEffect(() => {
+    const loadTree = async () => {
+      try {
+        setTreeLoading(true);
+        const response = await getAdminRegionTree();
+        setRegionTree(response);
+        const defaults: Record<string, boolean> = {};
+        const markDefaults = (node: AdminRegionTreeNode) => {
+          if (node.level <= 1) {
+            defaults[node.id] = true;
+          }
+          node.children.forEach(markDefaults);
+        };
+        response.forEach(markDefaults);
+        setExpandedNodes(defaults);
+      } catch (err) {
+        console.error('Failed to load region tree', err);
+        setTreeError(parseErrorMessage(err));
+      } finally {
+        setTreeLoading(false);
+      }
+    };
+
+    loadTree();
+  }, [t]);
+
+  const toggleNodeExpansion = useCallback((id: string) => {
+    setExpandedNodes((prev) => ({
+      ...prev,
+      [id]: !(prev[id] ?? false),
+    }));
+  }, []);
+
+  const handleSelectRegionFromTree = useCallback((id: string) => {
+    setFocusedRegionId(id);
+    const card = document.getElementById(`region-card-${id}`);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  const renderRegionTree = useCallback(
+    (nodes: AdminRegionTreeNode[], depth = 0): JSX.Element[] =>
+      nodes.map((node) => {
+        const hasChildren = node.children.length > 0;
+        const isExpanded = expandedNodes[node.id] ?? depth === 0;
+        const isActive = focusedRegionId === node.id;
+
+        return (
+          <div key={node.id}>
+            <div
+              className={`flex items-center gap-2 rounded-lg px-2 py-1 ${
+                isActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700'
+              }`}
+            >
+              {hasChildren && (
+                <button
+                  type="button"
+                  onClick={() => toggleNodeExpansion(node.id)}
+                  className="text-xs font-semibold text-slate-500 hover:text-slate-700"
+                  aria-label={
+                    isExpanded
+                      ? t('admin.accessibility.collapseRegion')
+                      : t('admin.accessibility.expandRegion')
+                  }
+                >
+                  {isExpanded ? '−' : '+'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => handleSelectRegionFromTree(node.id)}
+                className="flex-1 text-left"
+              >
+                <p className={`text-sm font-medium ${isActive ? 'text-indigo-700' : 'text-slate-700'}`}>{node.name}</p>
+                <p className="text-[11px] uppercase tracking-wide text-slate-400">{node.code}</p>
+              </button>
+            </div>
+            {hasChildren && isExpanded && (
+              <div className="ml-4 border-l border-slate-100 pl-3 space-y-1">
+                {renderRegionTree(node.children, depth + 1)}
+              </div>
+            )}
+          </div>
+        );
+      }),
+    [expandedNodes, focusedRegionId, handleSelectRegionFromTree, t, toggleNodeExpansion]
+  );
 
   const summary = useMemo(() => {
     if (!regions.length) {
@@ -291,13 +387,44 @@ export default function AdminRegions() {
             )}
           </section>
 
-          <section className="space-y-4">
-            {regions.map((region) => (
-              <div key={region.id} className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
+          <section className="grid gap-6 lg:grid-cols-[minmax(260px,340px)_1fr]">
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 space-y-3">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-slate-500">{t('admin.manageRegions.hierarchyTitle')}</p>
+                <p className="text-xs text-slate-500">{t('admin.manageRegions.hierarchyHint')}</p>
+              </div>
+              {treeLoading && (
+                <p className="text-sm text-slate-500">{t('common.loading')}</p>
+              )}
+              {!treeLoading && treeError && (
+                <p className="text-sm text-rose-600">{treeError}</p>
+              )}
+              {!treeLoading && !treeError && regionTree.length === 0 && (
+                <p className="text-sm text-slate-500">{t('admin.manageRegions.noRegions')}</p>
+              )}
+              {!treeLoading && !treeError && regionTree.length > 0 && (
+                <div className="space-y-1 max-h-[520px] overflow-y-auto pr-1">
+                  {renderRegionTree(regionTree)}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4">
+              {regions.map((region) => (
+                <div
+                  key={region.id}
+                  id={`region-card-${region.id}`}
+                  className={`bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4 ${
+                    focusedRegionId === region.id ? 'ring-2 ring-indigo-400' : ''
+                  }`}
+                >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-wide text-slate-500">{region.code}</p>
                     <h3 className="text-xl font-semibold text-slate-900">{region.name}</h3>
+                    {region.hierarchyPath?.length > 0 && (
+                      <p className="text-xs text-slate-500">{formatRegionPath(region.hierarchyPath)}</p>
+                    )}
                     {region.description && <p className="text-sm text-slate-600">{region.description}</p>}
                   </div>
                   <div className="flex flex-wrap gap-4 text-sm text-slate-600">
@@ -407,7 +534,8 @@ export default function AdminRegions() {
                   )}
                 </div>
               </div>
-            ))}
+              ))}
+            </div>
           </section>
         </>
       )}

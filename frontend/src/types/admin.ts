@@ -1,3 +1,10 @@
+export interface RegionBreadcrumb {
+  id: string;
+  name: string;
+  code: string;
+  level: number;
+}
+
 export interface AdminRegionGuru {
   assignmentId: string;
   id: string;
@@ -18,12 +25,7 @@ export interface AdminRegionBranch {
     level?: number;
     kind?: string;
   } | null;
-  adminRegionPath?: Array<{
-    id: string;
-    name: string;
-    code: string;
-    level: number;
-  }>;
+  adminRegionPath?: RegionBreadcrumb[];
   country: string | null;
   visibility: string;
   totalPeople: number;
@@ -44,6 +46,7 @@ export interface AdminRegionOverview {
     assignedAt: string;
   } | null;
   recentBranches: AdminRegionBranch[];
+  hierarchyPath: RegionBreadcrumb[];
 }
 
 export interface AdminRegionsResponse {

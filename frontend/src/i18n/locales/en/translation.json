@@ -723,7 +723,10 @@
     "manageRegions": {
       "title": "Manage regions",
       "subtitle": "Create regions and coordinate which SuperGuru is responsible for them.",
-      "guruSectionTitle": "Assigned SuperGurus"
+      "guruSectionTitle": "Assigned SuperGurus",
+      "hierarchyTitle": "Region hierarchy",
+      "hierarchyHint": "Expand a country to browse its entities, cantons, and districts.",
+      "noRegions": "No regions available in the hierarchy."
     },
     "actions": {
       "addRegion": "Add region",
@@ -735,6 +738,10 @@
       "makePrimary": "Make primary",
       "removeGuru": "Remove",
       "confirmRemove": "Remove this SuperGuru from the region?"
+    },
+    "accessibility": {
+      "expandRegion": "Expand region",
+      "collapseRegion": "Collapse region"
     },
     "forms": {
       "regionName": "Region name",

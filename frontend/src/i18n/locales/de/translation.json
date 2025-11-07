@@ -717,7 +717,10 @@
     "manageRegions": {
       "title": "Regionen verwalten",
       "subtitle": "Erstellen Sie Regionen und legen Sie fest, welcher SuperGuru verantwortlich ist.",
-      "guruSectionTitle": "Zugewiesene SuperGurus"
+      "guruSectionTitle": "Zugewiesene SuperGurus",
+      "hierarchyTitle": "Regionale Hierarchie",
+      "hierarchyHint": "Land aufklappen, um Entitäten, Kantone und Bezirke zu sehen.",
+      "noRegions": "In der Hierarchie sind keine Regionen vorhanden."
     },
     "actions": {
       "addRegion": "Region hinzufügen",
@@ -729,6 +732,10 @@
       "makePrimary": "Als primär festlegen",
       "removeGuru": "Entfernen",
       "confirmRemove": "Diesen SuperGuru aus der Region entfernen?"
+    },
+    "accessibility": {
+      "expandRegion": "Region aufklappen",
+      "collapseRegion": "Region einklappen"
     },
     "forms": {
       "regionName": "Regionsname",

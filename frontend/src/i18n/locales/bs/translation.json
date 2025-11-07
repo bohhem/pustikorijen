@@ -717,7 +717,10 @@
     "manageRegions": {
       "title": "Upravljaj regionima",
       "subtitle": "Kreiraj regione i odredi koji SuperGuru je zadužen za njih.",
-      "guruSectionTitle": "Dodijeljeni SuperGurui"
+      "guruSectionTitle": "Dodijeljeni SuperGurui",
+      "hierarchyTitle": "Hijerarhija regiona",
+      "hierarchyHint": "Proširi državu da vidiš entitete, kantone i okruge.",
+      "noRegions": "Hijerarhija trenutno nema regiona."
     },
     "actions": {
       "addRegion": "Dodaj region",
@@ -729,6 +732,10 @@
       "makePrimary": "Postavi kao primarnog",
       "removeGuru": "Ukloni",
       "confirmRemove": "Ukloniti ovog SuperGurua iz regiona?"
+    },
+    "accessibility": {
+      "expandRegion": "Proširi region",
+      "collapseRegion": "Sažmi region"
     },
     "forms": {
       "regionName": "Naziv regiona",

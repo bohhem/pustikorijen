@@ -23,6 +23,7 @@ type RegionQueryResult = {
   description: string | null;
   country: string | null;
   super_guru_assignments: RegionAssignmentRecord[];
+  parent?: AdminRegionRecord | null;
   _count: {
     family_branches: number;
   };
@@ -160,6 +161,12 @@ export interface RegionOverview {
     assignedAt: string;
   } | null;
   recentBranches: RegionBranchSummary[];
+  hierarchyPath: Array<{
+    id: string;
+    name: string;
+    code: string;
+    level: number;
+  }>;
 }
 
 export interface AdminRegionTreeNode {
@@ -371,31 +378,34 @@ export async function getSuperGuruRegionsOverview(params: {
             },
           }
         : undefined,
-    include: {
-      _count: {
-        select: {
-          family_branches: true,
-        },
+  include: {
+    _count: {
+      select: {
+        family_branches: true,
       },
-      super_guru_assignments: {
-        orderBy: {
-          created_at: 'asc',
-        },
-        include: {
-          users_super_guru_assignments_user_idTousers: {
-            select: {
-              user_id: true,
-              full_name: true,
-              email: true,
-            },
+    },
+    super_guru_assignments: {
+      orderBy: {
+        created_at: 'asc',
+      },
+      include: {
+        users_super_guru_assignments_user_idTousers: {
+          select: {
+            user_id: true,
+            full_name: true,
+            email: true,
           },
         },
       },
     },
-    orderBy: {
-      name: 'asc',
+    parent: {
+      select: ADMIN_REGION_SELECT,
     },
-  }) as RegionQueryResult[];
+  },
+  orderBy: {
+    name: 'asc',
+  },
+}) as RegionQueryResult[];
 
   const queriedRegionIds = regions.map((region) => region.region_id);
 
@@ -505,6 +515,7 @@ export async function getSuperGuruRegionsOverview(params: {
             }
           : null,
         recentBranches: formattedRecentBranches,
+        hierarchyPath: buildRegionPath(region as unknown as AdminRegionRecord),
       } satisfies RegionOverview;
     })
   );
@@ -529,6 +540,15 @@ export async function createAdminRegion(data: CreateRegionInput): Promise<Region
     },
   });
 
+  const hydrated = await prisma.admin_regions.findUnique({
+    where: { region_id: region.region_id },
+    include: {
+      parent: {
+        select: ADMIN_REGION_SELECT,
+      },
+    },
+  });
+
   return {
     id: region.region_id,
     name: region.name,
@@ -540,6 +560,7 @@ export async function createAdminRegion(data: CreateRegionInput): Promise<Region
     gurus: [],
     selfAssignment: null,
     recentBranches: [],
+    hierarchyPath: buildRegionPath(hydrated as unknown as AdminRegionRecord),
   } satisfies RegionOverview;
 }
 
