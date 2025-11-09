@@ -1,0 +1,126 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual deployment
+
+jobs:
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://pustikorijen.vibengin.com
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build backend
+        run: |
+          cd backend
+          npm run build
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Deploy to Production Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: ${{ secrets.PRODUCTION_SSH_PORT || 22 }}
+          script: |
+            set -e
+
+            echo "=== Starting Deployment ==="
+
+            # Navigate to project directory
+            cd ${{ secrets.PRODUCTION_PROJECT_PATH || '/home/bohhem/projects/pustikorijen' }}
+
+            # Backup current version
+            echo "Creating backup..."
+            timestamp=$(date +%Y%m%d_%H%M%S)
+            mkdir -p ~/backups
+            tar -czf ~/backups/pustikorijen_${timestamp}.tar.gz backend/dist frontend/dist 2>/dev/null || true
+
+            # Pull latest changes
+            echo "Pulling latest changes from GitHub..."
+            git fetch origin
+            git checkout main
+            git pull origin main
+
+            # Install dependencies
+            echo "Installing dependencies..."
+            npm ci
+
+            # Build backend
+            echo "Building backend..."
+            cd backend
+            npm run build
+
+            # Run database migrations
+            echo "Running database migrations..."
+            npm run db:migrate:prod
+
+            # Build frontend
+            echo "Building frontend..."
+            cd ../frontend
+            npm run build
+
+            # Restart backend service
+            echo "Restarting backend service..."
+            sudo systemctl restart pustikorijen-backend
+
+            # Wait for service to start
+            sleep 3
+
+            # Check if service is running
+            if sudo systemctl is-active --quiet pustikorijen-backend; then
+              echo "✅ Backend service is running"
+            else
+              echo "❌ Backend service failed to start"
+              sudo journalctl -u pustikorijen-backend -n 50 --no-pager
+              exit 1
+            fi
+
+            # Health check
+            echo "Performing health check..."
+            sleep 2
+            if curl -f https://api-pustikorijen.vibengin.com/health > /dev/null 2>&1; then
+              echo "✅ Health check passed"
+            else
+              echo "❌ Health check failed"
+              exit 1
+            fi
+
+            echo "=== Deployment Complete ==="
+            echo "Frontend: https://pustikorijen.vibengin.com"
+            echo "Backend: https://api-pustikorijen.vibengin.com"
+
+      - name: Notify Deployment Success
+        if: success()
+        run: |
+          echo "🚀 Successfully deployed to production!"
+          echo "Frontend: https://pustikorijen.vibengin.com"
+          echo "Backend: https://api-pustikorijen.vibengin.com/api/v1"
+
+      - name: Notify Deployment Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Check the logs above."
+          exit 1

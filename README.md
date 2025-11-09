@@ -67,6 +67,7 @@ npm run dev  # frontend (separate terminal)
 
 - **[Project Status (STATUS.md)](STATUS.md)** - Current implementation status and progress 🆕
 - **[Quick Start Guide](QUICKSTART.md)** - Get started quickly
+- **[CI/CD Setup Guide](docs/CICD_SETUP.md)** - Automated deployment and DevOps 🆕
 - **[Multilingual Support](docs/MULTILINGUAL_SUPPORT.md)** - i18n implementation guide 🆕
 - **[Implementation Roadmap](docs/08-implementation-roadmap.md)** - Detailed task breakdown
 - **[Technical Architecture](docs/07-technical-architecture.md)** - System design and tech stack
@@ -79,7 +80,26 @@ npm run dev  # frontend (separate terminal)
 - **Database:** PostgreSQL 15
 - **Cache:** Redis 7
 - **Storage:** S3-compatible (MinIO)
-- **DevOps:** Docker, GitHub Actions
+- **DevOps:** Docker, GitHub Actions, Automated CI/CD 🆕
+
+## 🚀 CI/CD & DevOps 🆕
+
+**Fully automated deployment pipeline:**
+- ✅ **Continuous Integration** - Automated testing, linting, and builds
+- ✅ **Continuous Deployment** - Auto-deploy to production on merge to main
+- ✅ **Security Scanning** - CodeQL analysis for vulnerabilities
+- ✅ **Dependency Updates** - Automated Dependabot PRs
+- ✅ **Docker Support** - Containerized builds and deployments
+- ✅ **Health Checks** - Automated post-deployment verification
+
+**Workflows:**
+- `ci.yml` - Run tests and builds on every push/PR
+- `deploy.yml` - Auto-deploy to production (main branch)
+- `codeql.yml` - Weekly security scans
+- `pr-checks.yml` - PR validation and quality checks
+- `docker-build.yml` - Build and push Docker images
+
+See [CI/CD Setup Guide](docs/CICD_SETUP.md) for complete configuration details.
 
 ## 🤝 Contributing
 
