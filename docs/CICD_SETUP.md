@@ -162,7 +162,28 @@ To enable automatic deployment, configure these secrets in GitHub:
 | `PRODUCTION_SSH_PORT` | SSH port (optional) | `22` |
 | `PRODUCTION_PROJECT_PATH` | Project directory on server | `/home/bohhem/projects/pustikorijen` |
 
-### Setting Up SSH Key
+### 📚 Detailed Setup Guides
+
+We have comprehensive guides for setting up secrets:
+
+**Quick Start (10 minutes):**
+- [SECRETS_QUICK_START.md](./SECRETS_QUICK_START.md) - Fast setup with visual diagrams
+
+**Complete Guide (detailed):**
+- [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md) - Full documentation with:
+  - Step-by-step instructions with screenshots
+  - Security best practices
+  - Multiple setup methods (Web UI, CLI, Script)
+  - Complete troubleshooting guide
+  - Testing procedures
+
+**Automated Setup:**
+```bash
+# Use our helper script
+./scripts/setup-github-secrets.sh
+```
+
+### Quick Setup Reference
 
 **On your production server:**
 
@@ -184,6 +205,8 @@ cat ~/.ssh/github_deploy
 3. Name: `PRODUCTION_SSH_KEY`
 4. Value: Paste the entire private key content
 5. Click "Add secret"
+
+**For complete instructions, see:** [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md)
 
 ---
 
