@@ -107,6 +107,16 @@ npm run dev
 - **`.env`** - Deprecated, kept for backwards compatibility
   - Falls back to development settings
 
+### Backup & Restore configuration
+
+The backup UI and restore worker read the following variables from the backend `.env.*` files:
+
+- `BACKUP_STORAGE_DIR` – Filesystem path that stores the `database.sql.gz` archives.
+- `BACKUP_DEFAULT_RETENTION_DAYS` / `BACKUP_WORKER_POLL_MS` – Controls how long snapshots stick around and how often the worker checks for new jobs.
+- `BACKUP_SOURCE_ENV` / `BACKUP_RESTORE_CONFIRM_TEMPLATE` – Labels snapshots and defines the confirmation phrase (`RESTORE {backupId}` by default).
+- `RESTORE_WORKER_ENABLED` / `RESTORE_WORKER_POLL_MS` – Enables the restore worker loop.
+- `RESTORE_TARGET_<ENV>_URL` – **At least one is required** (e.g. `RESTORE_TARGET_STAGING_URL=postgres://...`). The Admin → Backups page hides the “Restore” button until these targets exist.
+
 ### Frontend
 
 - **`.env.production`** - Used by `npm run build` (production builds)

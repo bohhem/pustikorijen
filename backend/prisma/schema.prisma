@@ -7,101 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model geo_states {
-  state_id   String       @id @db.VarChar(20)
-  name       String       @db.VarChar(150)
-  iso2       String?      @db.VarChar(5)
-  iso3       String?      @db.VarChar(5)
-  wikidata_id String?     @db.VarChar(50)
-  latitude   Float?
-  longitude  Float?
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
-  geo_regions geo_regions[]
-  geo_cities  geo_cities[]
-}
-
-model geo_regions {
-  region_id        String        @id @db.VarChar(50)
-  state_id         String        @db.VarChar(20)
-  parent_region_id String?       @db.VarChar(50)
-  name             String        @db.VarChar(150)
-  name_native      String?       @db.VarChar(150)
-  code             String?       @db.VarChar(20)
-  type             String        @db.VarChar(50)
-  seat             String?       @db.VarChar(150)
-  wikidata_id      String?       @db.VarChar(50)
-  latitude         Float?
-  longitude        Float?
-  created_at       DateTime      @default(now())
-  updated_at       DateTime      @updatedAt
-  state            geo_states    @relation(fields: [state_id], references: [state_id])
-  parent_region    geo_regions?  @relation("RegionChildren", fields: [parent_region_id], references: [region_id])
-  child_regions    geo_regions[] @relation("RegionChildren")
-  cities           geo_cities[]  @relation("CityRegion")
-  entity_cities    geo_cities[]  @relation("CityEntityRegion")
-
-  @@index([state_id])
-  @@index([parent_region_id])
-  @@index([code])
-}
-
-model geo_cities {
-  city_id         String                    @id @db.VarChar(60)
-  state_id        String                    @db.VarChar(20)
-  region_id       String?                   @db.VarChar(50)
-  entity_region_id String?                  @db.VarChar(50)
-  name            String                    @db.VarChar(150)
-  slug            String                    @db.VarChar(150)
-  city_code       String                    @db.VarChar(10)
-  wikidata_id     String?                   @db.VarChar(50)
-  is_official_city Boolean                  @default(false)
-  latitude        Float?
-  longitude       Float?
-  population_2013 Int?
-  num_settlements Int?
-  density_per_km2 Float?
-  area_km2        Float?
-  created_at      DateTime                  @default(now())
-  updated_at      DateTime                  @updatedAt
-  state           geo_states                @relation(fields: [state_id], references: [state_id])
-  region          geo_regions?              @relation("CityRegion", fields: [region_id], references: [region_id])
-  entity_region   geo_regions?              @relation("CityEntityRegion", fields: [entity_region_id], references: [region_id])
-  family_branches family_branches[]
-  guru_business_addresses guru_business_addresses[]
-  person_business_addresses person_business_addresses[]
-  branch_placeholders branch_placeholders[] @relation("placeholder_geo_city")
-
-  @@index([state_id])
-  @@index([region_id])
-  @@index([slug])
-  @@index([city_code])
-}
-
 model admin_regions {
   region_id              String                   @id
   name                   String                   @db.VarChar(150)
   code                   String                   @unique @db.VarChar(50)
   description            String?
   country                String?                  @db.VarChar(100)
-  level                  Int                      @default(1)
-  kind                   String?                  @db.VarChar(50)
-  parent_region_id       String?
-  geo_state_id           String?                  @db.VarChar(20)
-  geo_region_id          String?                  @db.VarChar(50)
   created_at             DateTime                 @default(now())
   updated_at             DateTime
+  level                  Int                      @default(1)
+  kind                   String?                  @db.VarChar(50)
+  parent_region_id       String?                  @db.VarChar(150)
+  geo_state_id           String?                  @db.VarChar(20)
+  geo_region_id          String?                  @db.VarChar(50)
+  parent                 admin_regions?           @relation("admin_regionsToadmin_regions", fields: [parent_region_id], references: [region_id])
+  children               admin_regions[]          @relation("admin_regionsToadmin_regions")
+  backup_snapshots       backup_snapshots[]       @relation("backup_snapshots_region")
   family_branches        family_branches[]
   super_guru_assignments super_guru_assignments[]
-  backup_snapshots       backup_snapshots[]
-  parent                 admin_regions?           @relation("AdminRegionHierarchy", fields: [parent_region_id], references: [region_id])
-  children               admin_regions[]          @relation("AdminRegionHierarchy")
 
   @@index([code])
-  @@index([parent_region_id])
-  @@index([level])
-  @@index([geo_state_id])
   @@index([geo_region_id])
+  @@index([geo_state_id])
+  @@index([level])
+  @@index([parent_region_id])
 }
 
 model audit_log {
@@ -141,6 +70,55 @@ model audit_log {
   @@index([user_id])
 }
 
+model backup_snapshots {
+  backup_id         String            @id
+  label             String            @db.VarChar(120)
+  scope             BackupScope       @default(FULL)
+  region_id         String?
+  include_media     Boolean           @default(true)
+  status            BackupStatus      @default(QUEUED)
+  storage_path      String?
+  size_bytes        BigInt?
+  checksum          String?
+  started_at        DateTime          @default(now()) @db.Timestamptz(6)
+  completed_at      DateTime?         @db.Timestamptz(6)
+  initiated_by      String
+  retention_days    Int               @default(30)
+  notify_emails     String[]          @default([])
+  notes             String?
+  metadata          Json?
+  source_env        String?           @db.VarChar(50)
+  initiated_by_user users             @relation("backup_snapshots_initiated_by", fields: [initiated_by], references: [user_id])
+  region            admin_regions?    @relation("backup_snapshots_region", fields: [region_id], references: [region_id])
+  restores          backup_restores[] @relation("backup_restores_snapshot")
+
+  @@index([scope])
+  @@index([started_at(sort: Desc)])
+  @@index([status])
+}
+
+model backup_restores {
+  restore_id      String           @id
+  backup_id       String
+  target_env      String           @db.VarChar(50)
+  status          RestoreStatus    @default(QUEUED)
+  dry_run         Boolean          @default(false)
+  initiated_by    String
+  started_at      DateTime         @default(now()) @db.Timestamptz(6)
+  completed_at    DateTime?        @db.Timestamptz(6)
+  metadata        Json?
+  failure_message String?
+  logs            Json?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  snapshot        backup_snapshots @relation("backup_restores_snapshot", fields: [backup_id], references: [backup_id], onDelete: Cascade)
+  initiator       users            @relation("backup_restores_initiated_by", fields: [initiated_by], references: [user_id])
+
+  @@index([status])
+  @@index([target_env])
+  @@index([started_at(sort: Desc)])
+}
+
 model branch_members {
   member_id                               String          @id
   branch_id                               String          @db.VarChar(50)
@@ -173,35 +151,78 @@ model branch_members {
 }
 
 model branch_person_links {
-  link_id                                          String          @id
-  person_id                                        String
-  branch_id                                        String          @db.VarChar(50)
-  source_branch_id                                 String          @db.VarChar(50)
-  status                                           String          @default("pending") @db.VarChar(30)
-  display_name                                     String?         @db.VarChar(255)
-  notes                                            String?
-  requested_by                                     String
-  source_approved_by                               String?
-  source_approved_at                               DateTime?
-  target_approved_by                               String?
-  target_approved_at                               DateTime?
-  is_primary_bridge                                Boolean         @default(false)
-  primary_set_by                                   String?
-  primary_set_at                                   DateTime?
-  display_generation_override                      Int?
-  created_at                                       DateTime         @default(now())
-  updated_at                                       DateTime         @updatedAt
-  persons                                          persons          @relation(fields: [person_id], references: [person_id])
-  family_branches                                  family_branches  @relation(fields: [branch_id], references: [branch_id])
-  users_branch_person_links_requested_byTousers    users            @relation("branch_person_links_requested_byTousers", fields: [requested_by], references: [user_id])
-  users_branch_person_links_source_approved_byTousers users?        @relation("branch_person_links_source_approved_byTousers", fields: [source_approved_by], references: [user_id])
-  users_branch_person_links_target_approved_byTousers users?        @relation("branch_person_links_target_approved_byTousers", fields: [target_approved_by], references: [user_id])
-  users_branch_person_links_primary_set_byTousers  users?           @relation("branch_person_links_primary_set_byTousers", fields: [primary_set_by], references: [user_id])
+  link_id                                             String          @id
+  person_id                                           String
+  branch_id                                           String          @db.VarChar(50)
+  source_branch_id                                    String          @db.VarChar(50)
+  status                                              String          @default("pending") @db.VarChar(30)
+  display_name                                        String?         @db.VarChar(255)
+  notes                                               String?
+  requested_by                                        String
+  source_approved_by                                  String?
+  source_approved_at                                  DateTime?
+  target_approved_by                                  String?
+  target_approved_at                                  DateTime?
+  created_at                                          DateTime        @default(now())
+  updated_at                                          DateTime
+  is_primary_bridge                                   Boolean         @default(false)
+  primary_set_at                                      DateTime?
+  primary_set_by                                      String?
+  display_generation_override                         Int?
+  family_branches                                     family_branches @relation(fields: [branch_id], references: [branch_id])
+  persons                                             persons         @relation(fields: [person_id], references: [person_id])
+  users_branch_person_links_primary_set_byTousers     users?          @relation("branch_person_links_primary_set_byTousers", fields: [primary_set_by], references: [user_id])
+  users_branch_person_links_requested_byTousers       users           @relation("branch_person_links_requested_byTousers", fields: [requested_by], references: [user_id])
+  users_branch_person_links_source_approved_byTousers users?          @relation("branch_person_links_source_approved_byTousers", fields: [source_approved_by], references: [user_id])
+  users_branch_person_links_target_approved_byTousers users?          @relation("branch_person_links_target_approved_byTousers", fields: [target_approved_by], references: [user_id])
 
   @@unique([person_id, branch_id])
   @@index([branch_id, status])
-  @@index([source_branch_id, status])
   @@index([requested_by])
+  @@index([source_branch_id, status])
+}
+
+model branch_placeholder_claims {
+  claim_id                                           String              @id @db.VarChar(50)
+  placeholder_id                                     String
+  branch_id                                          String              @db.VarChar(50)
+  user_id                                            String
+  message                                            String?             @db.VarChar(1000)
+  status                                             String              @default("pending") @db.VarChar(20)
+  resolved_by                                        String?
+  resolved_at                                        DateTime?
+  created_at                                         DateTime            @default(now())
+  updated_at                                         DateTime
+  branch_placeholders                                branch_placeholders @relation(fields: [placeholder_id], references: [placeholder_id])
+  users_branch_placeholder_claims_resolved_byTousers users?              @relation("branch_placeholder_claims_resolved_byTousers", fields: [resolved_by], references: [user_id])
+  users_branch_placeholder_claims_user_idTousers     users               @relation("branch_placeholder_claims_user_idTousers", fields: [user_id], references: [user_id])
+
+  @@index([branch_id])
+  @@index([status])
+}
+
+model branch_placeholders {
+  placeholder_id            String                      @id @db.VarChar(50)
+  branch_id                 String                      @db.VarChar(50)
+  created_by                String
+  display_name              String                      @db.VarChar(150)
+  relation_hint             String?                     @db.VarChar(200)
+  approx_birth_year         Int?
+  notes                     String?
+  is_public                 Boolean                     @default(true)
+  status                    String                      @default("open") @db.VarChar(20)
+  linked_person_id          String?
+  geo_city_id               String?                     @db.VarChar(60)
+  created_at                DateTime                    @default(now())
+  updated_at                DateTime
+  branch_placeholder_claims branch_placeholder_claims[]
+  family_branches           family_branches             @relation(fields: [branch_id], references: [branch_id])
+  users                     users                       @relation(fields: [created_by], references: [user_id])
+  geo_city                  geo_cities?                 @relation(fields: [geo_city_id], references: [city_id])
+  persons                   persons?                    @relation(fields: [linked_person_id], references: [person_id])
+
+  @@index([branch_id])
+  @@index([status])
 }
 
 model disputes {
@@ -273,73 +294,145 @@ model documents {
 }
 
 model family_branches {
-  branch_id             String                  @id @db.VarChar(50)
-  surname               String                  @db.VarChar(100)
-  surname_normalized    String                  @db.VarChar(100)
-  city_code             String                  @db.VarChar(10)
-  city_name             String                  @db.VarChar(100)
-  country               String                  @default("Bosnia and Herzegovina") @db.VarChar(100)
-  geo_city_id           String?                 @db.VarChar(60)
-  root_person_id        String?
-  oldest_ancestor_year  Int?
-  total_people          Int                     @default(0)
-  total_generations     Int                     @default(0)
-  description           String?
-  founded_by            String?
-  visibility            String                  @default("public") @db.VarChar(20)
-  is_verified           Boolean                 @default(false)
-  verification_date     DateTime?
-  root_change_count     Int                     @default(0)
-  last_major_update     DateTime?
-  created_at            DateTime                @default(now())
-  updated_at            DateTime
-  admin_region_id       String?
-  archived_at           DateTime?
-  archived_by           String?                 @db.VarChar(50)
-  archived_reason       String?                 @db.VarChar(500)
-  audit_log             audit_log[]
-  branch_members        branch_members[]
-  branch_person_links   branch_person_links[]
-  disputes              disputes[]
-  documents             documents[]
-  admin_regions         admin_regions?          @relation(fields: [admin_region_id], references: [region_id])
-  users                 users?                  @relation(fields: [founded_by], references: [user_id])
-  partnerships          partnerships[]
-  persons               persons[]
-  root_change_proposals root_change_proposals[]
-  stories               stories[]
-  geo_city              geo_cities?             @relation(fields: [geo_city_id], references: [city_id])
-  placeholders          branch_placeholders[]
-  person_claims         person_claims[]
-  archived_by_user      users?                  @relation("family_branches_archived_byTousers", fields: [archived_by], references: [user_id])
+  branch_id                                String                  @id @db.VarChar(50)
+  surname                                  String                  @db.VarChar(100)
+  surname_normalized                       String                  @db.VarChar(100)
+  city_code                                String                  @db.VarChar(10)
+  city_name                                String                  @db.VarChar(100)
+  country                                  String                  @default("Bosnia and Herzegovina") @db.VarChar(100)
+  root_person_id                           String?
+  oldest_ancestor_year                     Int?
+  total_people                             Int                     @default(0)
+  total_generations                        Int                     @default(0)
+  description                              String?
+  founded_by                               String?
+  visibility                               String                  @default("public") @db.VarChar(20)
+  is_verified                              Boolean                 @default(false)
+  verification_date                        DateTime?
+  root_change_count                        Int                     @default(0)
+  last_major_update                        DateTime?
+  created_at                               DateTime                @default(now())
+  updated_at                               DateTime
+  admin_region_id                          String?
+  geo_city_id                              String?                 @db.VarChar(60)
+  archived_at                              DateTime?
+  archived_by                              String?                 @db.VarChar(50)
+  archived_reason                          String?                 @db.VarChar(500)
+  audit_log                                audit_log[]
+  branch_members                           branch_members[]
+  branch_person_links                      branch_person_links[]
+  branch_placeholders                      branch_placeholders[]
+  disputes                                 disputes[]
+  documents                                documents[]
+  admin_regions                            admin_regions?          @relation(fields: [admin_region_id], references: [region_id])
+  archived_by_user                         users?                  @relation("family_branches_archived_byTousers", fields: [archived_by], references: [user_id])
+  users                                    users?                  @relation("family_branches_founded_byTousers", fields: [founded_by], references: [user_id])
+  geo_city                                 geo_cities?             @relation(fields: [geo_city_id], references: [city_id])
+  partnerships                             partnerships[]
+  person_claims                            person_claims[]
+  persons                                  persons[]
+  root_change_proposals                    root_change_proposals[]
+  stories                                  stories[]
 
   @@index([admin_region_id])
-  @@index([geo_city_id])
+  @@index([archived_at])
   @@index([city_code])
+  @@index([geo_city_id])
   @@index([surname_normalized])
   @@index([visibility])
-  @@index([archived_at])
 }
 
-model person_claims {
-  claim_id        String          @id
-  branch_id       String          @db.VarChar(50)
-  person_id       String
-  user_id         String
-  message         String?
-  status          String          @default("pending") @db.VarChar(20)
-  resolution_notes String?
-  resolved_at     DateTime?
-  resolved_by     String?
-  created_at      DateTime        @default(now())
-  updated_at      DateTime        @updatedAt
-  family_branches family_branches @relation(fields: [branch_id], references: [branch_id])
-  person          persons         @relation("person_claim_person", fields: [person_id], references: [person_id])
-  user            users           @relation("person_claims_user", fields: [user_id], references: [user_id])
-  resolver        users?          @relation("person_claims_resolver", fields: [resolved_by], references: [user_id])
+model geo_cities {
+  city_id                                              String                      @id @db.VarChar(60)
+  state_id                                             String                      @db.VarChar(20)
+  region_id                                            String?                     @db.VarChar(50)
+  entity_region_id                                     String?                     @db.VarChar(50)
+  name                                                 String                      @db.VarChar(150)
+  slug                                                 String                      @db.VarChar(150)
+  city_code                                            String                      @db.VarChar(10)
+  wikidata_id                                          String?                     @db.VarChar(50)
+  is_official_city                                     Boolean                     @default(false)
+  latitude                                             Float?
+  longitude                                            Float?
+  population_2013                                      Int?
+  num_settlements                                      Int?
+  density_per_km2                                      Float?
+  area_km2                                             Float?
+  created_at                                           DateTime                    @default(now())
+  updated_at                                           DateTime
+  branch_placeholders                                  branch_placeholders[]
+  family_branches                                      family_branches[]
+  entity_region                                       geo_regions?                @relation("geo_cities_entity_region_idTogeo_regions", fields: [entity_region_id], references: [region_id])
+  region                                              geo_regions?                @relation("geo_cities_region_idTogeo_regions", fields: [region_id], references: [region_id])
+  state                                               geo_states                  @relation(fields: [state_id], references: [state_id])
+  guru_business_addresses                              guru_business_addresses[]
+  person_business_addresses                            person_business_addresses[]
 
-  @@index([branch_id, status])
-  @@index([user_id, status])
+  @@index([city_code])
+  @@index([region_id])
+  @@index([slug])
+  @@index([state_id])
+}
+
+model geo_regions {
+  region_id                                           String        @id @db.VarChar(50)
+  state_id                                            String        @db.VarChar(20)
+  parent_region_id                                    String?       @db.VarChar(50)
+  name                                                String        @db.VarChar(150)
+  name_native                                         String?       @db.VarChar(150)
+  code                                                String?       @db.VarChar(20)
+  type                                                String        @db.VarChar(50)
+  seat                                                String?       @db.VarChar(150)
+  wikidata_id                                         String?       @db.VarChar(50)
+  latitude                                            Float?
+  longitude                                           Float?
+  created_at                                          DateTime      @default(now())
+  updated_at                                          DateTime
+  geo_cities_geo_cities_entity_region_idTogeo_regions geo_cities[]  @relation("geo_cities_entity_region_idTogeo_regions")
+  geo_cities_geo_cities_region_idTogeo_regions        geo_cities[]  @relation("geo_cities_region_idTogeo_regions")
+  geo_regions                                         geo_regions?  @relation("geo_regionsTogeo_regions", fields: [parent_region_id], references: [region_id])
+  other_geo_regions                                   geo_regions[] @relation("geo_regionsTogeo_regions")
+  geo_states                                          geo_states    @relation(fields: [state_id], references: [state_id])
+
+  @@index([code])
+  @@index([parent_region_id])
+  @@index([state_id])
+}
+
+model geo_states {
+  state_id    String        @id @db.VarChar(20)
+  name        String        @db.VarChar(150)
+  iso2        String?       @db.VarChar(5)
+  iso3        String?       @db.VarChar(5)
+  wikidata_id String?       @db.VarChar(50)
+  latitude    Float?
+  longitude   Float?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime
+  geo_cities  geo_cities[]
+  geo_regions geo_regions[]
+}
+
+model guru_business_addresses {
+  address_id           String     @id @db.VarChar(50)
+  user_id              String
+  geo_city_id          String     @db.VarChar(60)
+  label                String?    @db.VarChar(100)
+  address_line1        String?    @db.VarChar(255)
+  address_line2        String?    @db.VarChar(255)
+  postal_code          String?    @db.VarChar(20)
+  latitude             Float?
+  longitude            Float?
+  google_maps_place_id String?    @db.VarChar(255)
+  google_maps_url      String?    @db.VarChar(500)
+  is_public            Boolean    @default(true)
+  created_at           DateTime   @default(now())
+  updated_at           DateTime
+  is_primary           Boolean    @default(false)
+  geo_city            geo_cities @relation(fields: [geo_city_id], references: [city_id])
+  users                users      @relation(fields: [user_id], references: [user_id])
+
+  @@index([geo_city_id])
 }
 
 model notifications {
@@ -361,28 +454,6 @@ model notifications {
 
   @@index([created_at(sort: Desc)])
   @@index([user_id, is_read])
-}
-
-model guru_business_addresses {
-  address_id           String     @id @db.VarChar(50)
-  user_id              String
-  geo_city_id          String     @db.VarChar(60)
-  label                String?    @db.VarChar(100)
-  address_line1        String?    @db.VarChar(255)
-  address_line2        String?    @db.VarChar(255)
-  postal_code          String?    @db.VarChar(20)
-  latitude             Float?
-  longitude            Float?
-  google_maps_place_id String?    @db.VarChar(255)
-  google_maps_url      String?    @db.VarChar(500)
-  is_public            Boolean    @default(true)
-  is_primary           Boolean    @default(false)
-  created_at           DateTime   @default(now())
-  updated_at           DateTime   @updatedAt
-  user                 users      @relation(fields: [user_id], references: [user_id])
-  geo_city             geo_cities @relation(fields: [geo_city_id], references: [city_id])
-
-  @@index([geo_city_id])
 }
 
 model partnerships {
@@ -424,67 +495,112 @@ model partnerships {
   @@index([status])
 }
 
+model person_business_addresses {
+  address_id           String     @id @db.VarChar(50)
+  person_id            String
+  geo_city_id          String     @db.VarChar(60)
+  label                String?    @db.VarChar(100)
+  address_line1        String?    @db.VarChar(255)
+  address_line2        String?    @db.VarChar(255)
+  postal_code          String?    @db.VarChar(20)
+  latitude             Float?
+  longitude            Float?
+  google_maps_place_id String?    @db.VarChar(255)
+  google_maps_url      String?    @db.VarChar(500)
+  is_primary           Boolean    @default(false)
+  notes                String?
+  created_at           DateTime   @default(now())
+  updated_at           DateTime
+  geo_city            geo_cities @relation(fields: [geo_city_id], references: [city_id])
+  persons              persons    @relation(fields: [person_id], references: [person_id])
+
+  @@index([geo_city_id])
+  @@index([is_primary])
+  @@index([person_id])
+}
+
+model person_claims {
+  claim_id                               String          @id
+  branch_id                              String          @db.VarChar(50)
+  person_id                              String
+  user_id                                String
+  message                                String?
+  status                                 String          @default("pending") @db.VarChar(20)
+  resolution_notes                       String?
+  resolved_at                            DateTime?
+  resolved_by                            String?
+  created_at                             DateTime        @default(now())
+  updated_at                             DateTime
+  family_branches                        family_branches @relation(fields: [branch_id], references: [branch_id])
+  persons                                persons         @relation(fields: [person_id], references: [person_id])
+  users_person_claims_resolved_byTousers users?          @relation("person_claims_resolved_byTousers", fields: [resolved_by], references: [user_id])
+  users_person_claims_user_idTousers     users           @relation("person_claims_user_idTousers", fields: [user_id], references: [user_id])
+
+  @@index([branch_id, status])
+  @@index([user_id, status])
+}
+
 model persons {
-  person_id                                                               String                  @id
-  branch_id                                                               String                  @db.VarChar(50)
-  full_name                                                               String                  @db.VarChar(255)
-  given_name                                                              String?                 @db.VarChar(100)
-  surname                                                                 String?                 @db.VarChar(100)
-  maiden_name                                                             String?                 @db.VarChar(100)
-  nickname                                                                String?                 @db.VarChar(100)
+  person_id                                                               String                      @id
+  branch_id                                                               String                      @db.VarChar(50)
+  full_name                                                               String                      @db.VarChar(255)
+  given_name                                                              String?                     @db.VarChar(100)
+  surname                                                                 String?                     @db.VarChar(100)
+  maiden_name                                                             String?                     @db.VarChar(100)
+  nickname                                                                String?                     @db.VarChar(100)
   birth_year                                                              Int?
-  birth_date                                                              DateTime?               @db.Date
-  birth_place                                                             String?                 @db.VarChar(255)
+  birth_date                                                              DateTime?                   @db.Date
+  birth_place                                                             String?                     @db.VarChar(255)
   death_year                                                              Int?
-  death_date                                                              DateTime?               @db.Date
-  death_place                                                             String?                 @db.VarChar(255)
+  death_date                                                              DateTime?                   @db.Date
+  death_place                                                             String?                     @db.VarChar(255)
   is_living                                                               Boolean?
-  current_location                                                        String?                 @db.VarChar(255)
-  current_country                                                         String?                 @db.VarChar(100)
-  gender                                                                  String?                 @db.VarChar(20)
-  occupation                                                              String?                 @db.VarChar(255)
+  current_location                                                        String?                     @db.VarChar(255)
+  current_country                                                         String?                     @db.VarChar(100)
+  gender                                                                  String?                     @db.VarChar(20)
+  occupation                                                              String?                     @db.VarChar(255)
   education                                                               String?
   biography                                                               String?
-  profile_photo_url                                                       String?                 @db.VarChar(500)
-  generation                                                              String?                 @db.VarChar(10)
+  profile_photo_url                                                       String?                     @db.VarChar(500)
+  generation                                                              String?                     @db.VarChar(10)
   generation_number                                                       Int?
-  is_branch_root                                                          Boolean                 @default(false)
+  is_branch_root                                                          Boolean                     @default(false)
   father_id                                                               String?
   mother_id                                                               String?
-  reference_code                                                          String?                 @db.VarChar(100)
-  url_slug                                                                String?                 @db.VarChar(255)
-  quality_score                                                           Int                     @default(0)
-  verification_level                                                      Int                     @default(1)
-  is_verified                                                             Boolean                 @default(false)
+  reference_code                                                          String?                     @db.VarChar(100)
+  url_slug                                                                String?                     @db.VarChar(255)
+  quality_score                                                           Int                         @default(0)
+  verification_level                                                      Int                         @default(1)
+  is_verified                                                             Boolean                     @default(false)
   verified_by                                                             String?
   verified_at                                                             DateTime?
-  created_from_root_change                                                String?                 @db.VarChar(50)
+  created_from_root_change                                                String?                     @db.VarChar(50)
   created_by                                                              String?
-  visibility                                                              String                  @default("family_only") @db.VarChar(20)
-  share_in_ledger                                                         Boolean                 @default(false)
-  estimated_birth_year                                                    Int?
-  created_at                                                              DateTime                @default(now())
+  visibility                                                              String                      @default("family_only") @db.VarChar(20)
+  created_at                                                              DateTime                    @default(now())
   updated_at                                                              DateTime
+  estimated_birth_year                                                    Int?
+  share_in_ledger                                                         Boolean                     @default(false)
   audit_log                                                               audit_log[]
   branch_members                                                          branch_members[]
+  branch_person_links                                                     branch_person_links[]
+  branch_placeholders                                                     branch_placeholders[]
   documents                                                               documents[]
-  partnerships_partnerships_person1_idTopersons                           partnerships[]          @relation("partnerships_person1_idTopersons")
-  partnerships_partnerships_person2_idTopersons                           partnerships[]          @relation("partnerships_person2_idTopersons")
-  family_branches                                                         family_branches         @relation(fields: [branch_id], references: [branch_id])
-  users_persons_created_byTousers                                         users?                  @relation("persons_created_byTousers", fields: [created_by], references: [user_id])
-  persons_persons_father_idTopersons                                      persons?                @relation("persons_father_idTopersons", fields: [father_id], references: [person_id])
-  other_persons_persons_father_idTopersons                                persons[]               @relation("persons_father_idTopersons")
-  persons_persons_mother_idTopersons                                      persons?                @relation("persons_mother_idTopersons", fields: [mother_id], references: [person_id])
-  other_persons_persons_mother_idTopersons                                persons[]               @relation("persons_mother_idTopersons")
-  users_persons_verified_byTousers                                        users?                  @relation("persons_verified_byTousers", fields: [verified_by], references: [user_id])
-  relationships_relationships_person1_idTopersons                         relationships[]         @relation("relationships_person1_idTopersons")
-  relationships_relationships_person2_idTopersons                         relationships[]         @relation("relationships_person2_idTopersons")
-  root_change_proposals_root_change_proposals_new_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_new_root_person_idTopersons")
-  root_change_proposals_root_change_proposals_old_root_person_idTopersons root_change_proposals[] @relation("root_change_proposals_old_root_person_idTopersons")
-  branch_person_links                                                        branch_person_links[]
-  person_business_addresses                                                 person_business_addresses[]
-  placeholder_links                                                         branch_placeholders[] @relation("placeholder_person_link")
-  person_claims                                                             person_claims[]        @relation("person_claim_person")
+  partnerships_partnerships_person1_idTopersons                           partnerships[]              @relation("partnerships_person1_idTopersons")
+  partnerships_partnerships_person2_idTopersons                           partnerships[]              @relation("partnerships_person2_idTopersons")
+  person_business_addresses                                               person_business_addresses[]
+  person_claims                                                           person_claims[]
+  family_branches                                                         family_branches             @relation(fields: [branch_id], references: [branch_id])
+  users_persons_created_byTousers                                         users?                      @relation("persons_created_byTousers", fields: [created_by], references: [user_id])
+  persons_persons_father_idTopersons                                      persons?                    @relation("persons_father_idTopersons", fields: [father_id], references: [person_id])
+  other_persons_persons_father_idTopersons                                persons[]                   @relation("persons_father_idTopersons")
+  persons_persons_mother_idTopersons                                      persons?                    @relation("persons_mother_idTopersons", fields: [mother_id], references: [person_id])
+  other_persons_persons_mother_idTopersons                                persons[]                   @relation("persons_mother_idTopersons")
+  users_persons_verified_byTousers                                        users?                      @relation("persons_verified_byTousers", fields: [verified_by], references: [user_id])
+  relationships_relationships_person1_idTopersons                         relationships[]             @relation("relationships_person1_idTopersons")
+  relationships_relationships_person2_idTopersons                         relationships[]             @relation("relationships_person2_idTopersons")
+  root_change_proposals_root_change_proposals_new_root_person_idTopersons root_change_proposals[]     @relation("root_change_proposals_new_root_person_idTopersons")
+  root_change_proposals_root_change_proposals_old_root_person_idTopersons root_change_proposals[]     @relation("root_change_proposals_old_root_person_idTopersons")
 
   @@index([birth_year])
   @@index([branch_id, generation_number])
@@ -516,73 +632,6 @@ model relationships {
   @@index([person1_id])
   @@index([person2_id])
   @@index([relationship_type])
-}
-
-model person_business_addresses {
-  address_id           String     @id @db.VarChar(50)
-  person_id            String
-  geo_city_id          String     @db.VarChar(60)
-  label                String?    @db.VarChar(100)
-  address_line1        String?    @db.VarChar(255)
-  address_line2        String?    @db.VarChar(255)
-  postal_code          String?    @db.VarChar(20)
-  latitude             Float?
-  longitude            Float?
-  google_maps_place_id String?    @db.VarChar(255)
-  google_maps_url      String?    @db.VarChar(500)
-  is_primary           Boolean    @default(false)
-  notes                String?
-  created_at           DateTime   @default(now())
-  updated_at           DateTime   @updatedAt
-  person               persons    @relation(fields: [person_id], references: [person_id])
-  geo_city             geo_cities @relation(fields: [geo_city_id], references: [city_id])
-
-  @@index([person_id])
-  @@index([geo_city_id])
-  @@index([is_primary])
-}
-
-model branch_placeholders {
-  placeholder_id    String                    @id @db.VarChar(50)
-  branch_id         String                    @db.VarChar(50)
-  created_by        String
-  display_name      String                    @db.VarChar(150)
-  relation_hint     String?                   @db.VarChar(200)
-  approx_birth_year Int?
-  notes             String?
-  is_public         Boolean                   @default(true)
-  status            String                    @default("open") @db.VarChar(20)
-  linked_person_id  String?
-  geo_city_id       String?                   @db.VarChar(60)
-  created_at        DateTime                  @default(now())
-  updated_at        DateTime                  @updatedAt
-  family_branches   family_branches           @relation(fields: [branch_id], references: [branch_id])
-  created_by_user   users                     @relation("placeholder_creator", fields: [created_by], references: [user_id])
-  linked_person     persons?                  @relation("placeholder_person_link", fields: [linked_person_id], references: [person_id])
-  geo_city          geo_cities?               @relation("placeholder_geo_city", fields: [geo_city_id], references: [city_id])
-  claims            branch_placeholder_claims[]
-
-  @@index([branch_id])
-  @@index([status])
-}
-
-model branch_placeholder_claims {
-  claim_id       String               @id @db.VarChar(50)
-  placeholder_id String
-  branch_id      String               @db.VarChar(50)
-  user_id        String
-  message        String?              @db.VarChar(1000)
-  status         String               @default("pending") @db.VarChar(20)
-  resolved_by    String?
-  resolved_at    DateTime?
-  created_at     DateTime             @default(now())
-  updated_at     DateTime             @updatedAt
-  placeholder    branch_placeholders  @relation(fields: [placeholder_id], references: [placeholder_id])
-  user           users                @relation("placeholder_claim_user", fields: [user_id], references: [user_id])
-  resolver       users?               @relation("placeholder_claim_resolver", fields: [resolved_by], references: [user_id])
-
-  @@index([branch_id])
-  @@index([status])
 }
 
 model root_change_proposals {
@@ -669,93 +718,61 @@ model super_guru_assignments {
   @@index([region_id])
 }
 
-model backup_snapshots {
-  backup_id      String         @id
-  label          String         @db.VarChar(120)
-  scope          BackupScope    @default(FULL)
-  region_id      String?
-  include_media  Boolean        @default(true)
-  status         BackupStatus   @default(QUEUED)
-  storage_path   String?
-  size_bytes     BigInt?
-  checksum       String?
-  started_at     DateTime       @default(now())
-  completed_at   DateTime?
-  initiated_by   String
-  retention_days Int            @default(30)
-  notify_emails  String[]       @default([])
-  notes          String?
-  metadata       Json?
-  source_env     String?        @db.VarChar(50)
-  region         admin_regions? @relation(fields: [region_id], references: [region_id], onDelete: SetNull)
-  initiated_by_user users       @relation(fields: [initiated_by], references: [user_id])
-
-  @@index([scope])
-  @@index([status])
-  @@index([started_at(sort: Desc)])
-}
-
 model users {
-  user_id                                                         String                   @id
-  email                                                           String                   @unique @db.VarChar(255)
-  password_hash                                                   String                   @db.VarChar(255)
-  full_name                                                       String                   @db.VarChar(255)
-  birth_year                                                      Int?
-  current_location                                                String?                  @db.VarChar(255)
-  preferred_language                                              String                   @default("bs") @db.VarChar(10)
-  email_verified                                                  Boolean                  @default(false)
-  email_verification_token                                        String?                  @db.VarChar(255)
-  two_factor_enabled                                              Boolean                  @default(false)
-  two_factor_secret                                               String?                  @db.VarChar(255)
-  reset_password_token                                            String?                  @db.VarChar(255)
-  reset_password_expires                                          DateTime?
-  is_active                                                       Boolean                  @default(true)
-  last_login                                                      DateTime?
-  created_at                                                      DateTime                 @default(now())
-  updated_at                                                      DateTime
-  global_role                                                     UserGlobalRole           @default(USER)
-  audit_log_audit_log_disputed_byTousers                          audit_log[]              @relation("audit_log_disputed_byTousers")
-  audit_log_audit_log_user_idTousers                              audit_log[]              @relation("audit_log_user_idTousers")
-  branch_members_branch_members_approved_byTousers                branch_members[]         @relation("branch_members_approved_byTousers")
-  branch_members_branch_members_invited_byTousers                 branch_members[]         @relation("branch_members_invited_byTousers")
-  branch_members_branch_members_user_idTousers                    branch_members[]         @relation("branch_members_user_idTousers")
-  disputes_disputes_raised_byTousers                              disputes[]               @relation("disputes_raised_byTousers")
-  disputes_disputes_resolved_byTousers                            disputes[]               @relation("disputes_resolved_byTousers")
-  documents_documents_uploaded_byTousers                          documents[]              @relation("documents_uploaded_byTousers")
-  documents_documents_verified_byTousers                          documents[]              @relation("documents_verified_byTousers")
-  family_branches                                                 family_branches[]
-  notifications                                                   notifications[]
-  partnerships_partnerships_created_byTousers                     partnerships[]           @relation("partnerships_created_byTousers")
-  partnerships_partnerships_verified_byTousers                    partnerships[]           @relation("partnerships_verified_byTousers")
-  persons_persons_created_byTousers                               persons[]                @relation("persons_created_byTousers")
-  persons_persons_verified_byTousers                              persons[]                @relation("persons_verified_byTousers")
-  root_change_proposals                                           root_change_proposals[]
-  stories_stories_approved_byTousers                              stories[]                @relation("stories_approved_byTousers")
-  stories_stories_author_idTousers                                stories[]                @relation("stories_author_idTousers")
-  super_guru_assignments_super_guru_assignments_created_byTousers super_guru_assignments[] @relation("super_guru_assignments_created_byTousers")
-  super_guru_assignments_super_guru_assignments_user_idTousers    super_guru_assignments[] @relation("super_guru_assignments_user_idTousers")
-  backup_snapshots_initiated backup_snapshots[]
-  branch_person_links_branch_person_links_requested_byTousers     branch_person_links[]    @relation("branch_person_links_requested_byTousers")
-  branch_person_links_branch_person_links_source_approved_byTousers branch_person_links[]  @relation("branch_person_links_source_approved_byTousers")
-  branch_person_links_branch_person_links_target_approved_byTousers branch_person_links[]  @relation("branch_person_links_target_approved_byTousers")
-  branch_person_links_branch_person_links_primary_set_byTousers   branch_person_links[]    @relation("branch_person_links_primary_set_byTousers")
-  guru_business_addresses                                          guru_business_addresses[]
-  branch_placeholders_created                                      branch_placeholders[]     @relation("placeholder_creator")
-  placeholder_claims                                               branch_placeholder_claims[] @relation("placeholder_claim_user")
-  placeholder_claims_resolved                                      branch_placeholder_claims[] @relation("placeholder_claim_resolver")
-  person_claims_user                                               person_claims[]          @relation("person_claims_user")
-  person_claims_resolved                                           person_claims[]          @relation("person_claims_resolver")
-  archived_branches                                                family_branches[]        @relation("family_branches_archived_byTousers")
+  user_id                                                                String                      @id
+  email                                                                  String                      @unique @db.VarChar(255)
+  password_hash                                                          String                      @db.VarChar(255)
+  full_name                                                              String                      @db.VarChar(255)
+  birth_year                                                             Int?
+  current_location                                                       String?                     @db.VarChar(255)
+  preferred_language                                                     String                      @default("bs") @db.VarChar(10)
+  email_verified                                                         Boolean                     @default(false)
+  email_verification_token                                               String?                     @db.VarChar(255)
+  two_factor_enabled                                                     Boolean                     @default(false)
+  two_factor_secret                                                      String?                     @db.VarChar(255)
+  reset_password_token                                                   String?                     @db.VarChar(255)
+  reset_password_expires                                                 DateTime?
+  is_active                                                              Boolean                     @default(true)
+  last_login                                                             DateTime?
+  created_at                                                             DateTime                    @default(now())
+  updated_at                                                             DateTime
+  global_role                                                            UserGlobalRole              @default(USER)
+  audit_log_audit_log_disputed_byTousers                                 audit_log[]                 @relation("audit_log_disputed_byTousers")
+  audit_log_audit_log_user_idTousers                                     audit_log[]                 @relation("audit_log_user_idTousers")
+  backup_snapshots                                                       backup_snapshots[]          @relation("backup_snapshots_initiated_by")
+  backup_restores                                                        backup_restores[]           @relation("backup_restores_initiated_by")
+  branch_members_branch_members_approved_byTousers                       branch_members[]            @relation("branch_members_approved_byTousers")
+  branch_members_branch_members_invited_byTousers                        branch_members[]            @relation("branch_members_invited_byTousers")
+  branch_members_branch_members_user_idTousers                           branch_members[]            @relation("branch_members_user_idTousers")
+  branch_person_links_branch_person_links_primary_set_byTousers          branch_person_links[]       @relation("branch_person_links_primary_set_byTousers")
+  branch_person_links_branch_person_links_requested_byTousers            branch_person_links[]       @relation("branch_person_links_requested_byTousers")
+  branch_person_links_branch_person_links_source_approved_byTousers      branch_person_links[]       @relation("branch_person_links_source_approved_byTousers")
+  branch_person_links_branch_person_links_target_approved_byTousers      branch_person_links[]       @relation("branch_person_links_target_approved_byTousers")
+  branch_placeholder_claims_branch_placeholder_claims_resolved_byTousers branch_placeholder_claims[] @relation("branch_placeholder_claims_resolved_byTousers")
+  branch_placeholder_claims_branch_placeholder_claims_user_idTousers     branch_placeholder_claims[] @relation("branch_placeholder_claims_user_idTousers")
+  branch_placeholders                                                    branch_placeholders[]
+  disputes_disputes_raised_byTousers                                     disputes[]                  @relation("disputes_raised_byTousers")
+  disputes_disputes_resolved_byTousers                                   disputes[]                  @relation("disputes_resolved_byTousers")
+  documents_documents_uploaded_byTousers                                 documents[]                 @relation("documents_uploaded_byTousers")
+  documents_documents_verified_byTousers                                 documents[]                 @relation("documents_verified_byTousers")
+  family_branches_family_branches_archived_byTousers                     family_branches[]           @relation("family_branches_archived_byTousers")
+  family_branches_family_branches_founded_byTousers                      family_branches[]           @relation("family_branches_founded_byTousers")
+  guru_business_addresses                                                guru_business_addresses[]
+  notifications                                                          notifications[]
+  partnerships_partnerships_created_byTousers                            partnerships[]              @relation("partnerships_created_byTousers")
+  partnerships_partnerships_verified_byTousers                           partnerships[]              @relation("partnerships_verified_byTousers")
+  person_claims_person_claims_resolved_byTousers                         person_claims[]             @relation("person_claims_resolved_byTousers")
+  person_claims_person_claims_user_idTousers                             person_claims[]             @relation("person_claims_user_idTousers")
+  persons_persons_created_byTousers                                      persons[]                   @relation("persons_created_byTousers")
+  persons_persons_verified_byTousers                                     persons[]                   @relation("persons_verified_byTousers")
+  root_change_proposals                                                  root_change_proposals[]
+  stories_stories_approved_byTousers                                     stories[]                   @relation("stories_approved_byTousers")
+  stories_stories_author_idTousers                                       stories[]                   @relation("stories_author_idTousers")
+  super_guru_assignments_super_guru_assignments_created_byTousers        super_guru_assignments[]    @relation("super_guru_assignments_created_byTousers")
+  super_guru_assignments_super_guru_assignments_user_idTousers           super_guru_assignments[]    @relation("super_guru_assignments_user_idTousers")
 
   @@index([email])
   @@index([is_active])
-}
-
-enum UserGlobalRole {
-  USER
-  REGIONAL_GURU
-  SUPER_GURU
-  ADMIN
 }
 
 enum BackupScope {
@@ -768,4 +785,18 @@ enum BackupStatus {
   RUNNING
   COMPLETED
   FAILED
+}
+
+enum RestoreStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum UserGlobalRole {
+  USER
+  SUPER_GURU
+  ADMIN
+  REGIONAL_GURU
 }

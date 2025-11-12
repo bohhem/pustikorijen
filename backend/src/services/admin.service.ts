@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import type { Prisma, backup_snapshots } from '@prisma/client';
+import type { Prisma, backup_snapshots, backup_restores } from '@prisma/client';
 import prisma from '../utils/prisma';
 import type { JwtPayload } from '../utils/jwt';
 import type {
@@ -70,6 +70,37 @@ const parsedRetention = Number(process.env.BACKUP_DEFAULT_RETENTION_DAYS ?? '30'
 const DEFAULT_BACKUP_RETENTION_DAYS =
   Number.isFinite(parsedRetention) && parsedRetention > 0 ? Math.floor(parsedRetention) : 30;
 const BACKUP_SOURCE_ENV = process.env.BACKUP_SOURCE_ENV ?? process.env.NODE_ENV ?? 'development';
+const RESTORE_CONFIRM_TEMPLATE = process.env.BACKUP_RESTORE_CONFIRM_TEMPLATE ?? 'RESTORE {backupId}';
+
+type RestoreTargetMap = Record<string, string>;
+
+function buildRestoreTargetMap(): RestoreTargetMap {
+  return Object.entries(process.env).reduce<RestoreTargetMap>((acc, [key, value]) => {
+    if (!value) {
+      return acc;
+    }
+    const match = key.match(/^RESTORE_TARGET_([A-Z0-9_]+)_URL$/i);
+    if (match) {
+      acc[match[1].toUpperCase()] = value;
+    }
+    return acc;
+  }, {});
+}
+
+const RESTORE_TARGET_URLS = buildRestoreTargetMap();
+
+function getAvailableRestoreTargets(): string[] {
+  return Object.keys(RESTORE_TARGET_URLS);
+}
+
+function getRestoreTargetUrl(targetEnv: string): string | null {
+  const normalized = targetEnv.toUpperCase();
+  return RESTORE_TARGET_URLS[normalized] ?? null;
+}
+
+function getRestoreConfirmPhrase(backupId: string): string {
+  return RESTORE_CONFIRM_TEMPLATE.replace('{backupId}', backupId);
+}
 
 const ADMIN_REGION_SELECT = {
   region_id: true,
@@ -260,6 +291,28 @@ export interface BackupSummaryStats {
   storageUsageBytes: number;
 }
 
+export type BackupRestoreStatus = 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+
+export interface BackupRestoreSummary {
+  id: string;
+  targetEnv: string;
+  status: BackupRestoreStatus;
+  dryRun: boolean;
+  startedAt: string;
+  completedAt: string | null;
+  failureMessage?: string | null;
+}
+
+export interface BackupImpactPreview {
+  backupId: string;
+  targetEnv: string;
+  sizeBytes: number | null;
+  includeMedia: boolean;
+  checksum?: string | null;
+  estimatedDowntimeMinutes: number;
+  recommendedSteps: string[];
+}
+
 export interface BackupSnapshotSummary {
   id: string;
   label: string;
@@ -280,6 +333,7 @@ export interface BackupSnapshotSummary {
   downloadUrl?: string | null;
   manifestUrl?: string | null;
   notes?: string | null;
+  latestRestore?: BackupRestoreSummary | null;
 }
 
 export async function getAdminRegionHierarchy(): Promise<AdminRegionTreeNode[]> {
@@ -1058,6 +1112,14 @@ export async function unarchiveBranchForAdmin(branchId: string, actor: JwtPayloa
   return mapAdminBranch(refreshed);
 }
 
+type BackupRestoreRecordWithRelations = backup_restores & {
+  initiator: {
+    user_id: string;
+    full_name: string;
+    email: string | null;
+  } | null;
+};
+
 type BackupSnapshotWithRelations = backup_snapshots & {
   region: {
     region_id: string;
@@ -1068,6 +1130,7 @@ type BackupSnapshotWithRelations = backup_snapshots & {
     full_name: string;
     email: string | null;
   };
+  restores: BackupRestoreRecordWithRelations[];
 };
 
 const BACKUP_SNAPSHOT_INCLUDE = {
@@ -1084,11 +1147,37 @@ const BACKUP_SNAPSHOT_INCLUDE = {
       email: true,
     },
   },
+  restores: {
+    take: 1,
+    orderBy: { started_at: 'desc' },
+    include: {
+      initiator: {
+        select: {
+          user_id: true,
+          full_name: true,
+          email: true,
+        },
+      },
+    },
+  },
 } as const;
+
+function mapBackupRestore(record: BackupRestoreRecordWithRelations): BackupRestoreSummary {
+  return {
+    id: record.restore_id,
+    targetEnv: record.target_env,
+    status: record.status,
+    dryRun: record.dry_run,
+    startedAt: record.started_at.toISOString(),
+    completedAt: record.completed_at ? record.completed_at.toISOString() : null,
+    failureMessage: record.failure_message ?? null,
+  };
+}
 
 function mapBackupSnapshot(record: BackupSnapshotWithRelations): BackupSnapshotSummary {
   const canDownload = record.status === 'COMPLETED';
   const manifestPath = `/api/v1/admin/backups/${record.backup_id}/manifest`;
+  const latestRestore = record.restores.length > 0 ? mapBackupRestore(record.restores[0]) : null;
 
   return {
     id: record.backup_id,
@@ -1110,6 +1199,7 @@ function mapBackupSnapshot(record: BackupSnapshotWithRelations): BackupSnapshotS
     downloadUrl: canDownload ? manifestPath : null,
     manifestUrl: canDownload ? manifestPath : null,
     notes: record.notes ?? null,
+    latestRestore,
   };
 }
 
@@ -1140,7 +1230,7 @@ function buildBackupManifest(record: BackupSnapshotWithRelations): Record<string
 }
 
 export async function getBackupSummaryStats(): Promise<BackupSummaryStats> {
-  const [lastSuccess, totalSnapshots, storageSum] = await prisma.$transaction([
+  const [lastSuccess, totalSnapshots, storageSum, activeRestores] = await prisma.$transaction([
     prisma.backup_snapshots.findFirst({
       where: { status: 'COMPLETED' },
       orderBy: { completed_at: 'desc' },
@@ -1150,6 +1240,9 @@ export async function getBackupSummaryStats(): Promise<BackupSummaryStats> {
       _sum: { size_bytes: true },
       where: { status: 'COMPLETED' },
     }),
+    prisma.backup_restores.count({
+      where: { status: { in: ['QUEUED', 'RUNNING'] } },
+    }),
   ]);
 
   const sizeSum = storageSum._sum.size_bytes ?? BigInt(0);
@@ -1158,19 +1251,27 @@ export async function getBackupSummaryStats(): Promise<BackupSummaryStats> {
     lastSuccessfulAt: lastSuccess?.completed_at ? lastSuccess.completed_at.toISOString() : null,
     nextScheduledAt: null,
     totalSnapshots,
-    outstandingRestores: 0,
+    outstandingRestores: activeRestores,
     storageUsageBytes: Number(sizeSum),
   };
 }
 
+export function getBackupOptions() {
+  const restoreTargets = getAvailableRestoreTargets();
+  return {
+    restoreTargets,
+    confirmTemplate: RESTORE_CONFIRM_TEMPLATE,
+  };
+}
+
 export async function listBackupSnapshots(limit = DEFAULT_BACKUP_HISTORY_LIMIT): Promise<BackupSnapshotSummary[]> {
-  const snapshots = await prisma.backup_snapshots.findMany({
+  const snapshots = (await prisma.backup_snapshots.findMany({
     take: limit,
     orderBy: { started_at: 'desc' },
     include: BACKUP_SNAPSHOT_INCLUDE,
-  });
+  })) as BackupSnapshotWithRelations[];
 
-  return snapshots.map((snapshot) => mapBackupSnapshot(snapshot as BackupSnapshotWithRelations));
+  return snapshots.map((snapshot) => mapBackupSnapshot(snapshot));
 }
 
 export async function createBackupSnapshotRequest(params: {
@@ -1237,6 +1338,114 @@ export async function getBackupManifestPayload(backupId: string): Promise<{
   const mapped = mapBackupSnapshot(record as BackupSnapshotWithRelations);
   const manifest = buildBackupManifest(record as BackupSnapshotWithRelations);
   return { snapshot: mapped, manifest };
+}
+
+export async function getBackupImpactPreview(
+  backupId: string,
+  targetEnv: string
+): Promise<BackupImpactPreview> {
+  const snapshot = await prisma.backup_snapshots.findUnique({
+    where: { backup_id: backupId },
+  });
+
+  if (!snapshot) {
+    throw new Error('Backup not found');
+  }
+
+  const targetUrl = getRestoreTargetUrl(targetEnv);
+  if (!targetUrl) {
+    throw new Error('Target environment not configured');
+  }
+
+  const sizeBytes = snapshot.size_bytes != null ? Number(snapshot.size_bytes) : null;
+  const estimatedDowntimeMinutes =
+    sizeBytes && sizeBytes > 0 ? Math.max(5, Math.ceil(sizeBytes / 1024 / 1024 / 25)) : 5;
+
+  return {
+    backupId: snapshot.backup_id,
+    targetEnv,
+    sizeBytes,
+    includeMedia: snapshot.include_media,
+    checksum: snapshot.checksum,
+    estimatedDowntimeMinutes,
+    recommendedSteps: [
+      'Notify end users and schedule a maintenance window.',
+      'Take a fresh snapshot of the target environment before restoring.',
+      'Pause background workers and integrations that write to the database.',
+    ],
+  };
+}
+
+export async function requestBackupRestore(params: {
+  backupId: string;
+  actor: JwtPayload;
+  input: {
+    targetEnv: string;
+    dryRun?: boolean;
+    confirmPhrase: string;
+    otpCode?: string | null;
+  };
+}): Promise<BackupRestoreSummary> {
+  const { backupId, actor, input } = params;
+
+  const snapshot = await prisma.backup_snapshots.findUnique({
+    where: { backup_id: backupId },
+    select: {
+      backup_id: true,
+      status: true,
+      storage_path: true,
+    },
+  });
+
+  if (!snapshot) {
+    throw new Error('Backup not found');
+  }
+
+  if (snapshot.status !== 'COMPLETED') {
+    throw new Error('Backup must be completed before requesting a restore');
+  }
+
+  const targetEnv = input.targetEnv.toUpperCase();
+  const targetUrl = getRestoreTargetUrl(targetEnv);
+  if (!targetUrl) {
+    throw new Error('Target environment not configured');
+  }
+
+  const confirmPhrase = getRestoreConfirmPhrase(snapshot.backup_id);
+  if (input.confirmPhrase.trim().toUpperCase() !== confirmPhrase.toUpperCase()) {
+    throw new Error('Confirmation phrase does not match');
+  }
+
+  const existing = await prisma.backup_restores.findFirst({
+    where: {
+      target_env: targetEnv,
+      status: { in: ['QUEUED', 'RUNNING'] },
+    },
+  });
+
+  if (existing) {
+    throw new Error(`Another restore for ${targetEnv} is already in progress`);
+  }
+
+  const restore = await prisma.backup_restores.create({
+    data: {
+      restore_id: `rst_${randomUUID()}`,
+      backup_id: snapshot.backup_id,
+      target_env: targetEnv,
+      dry_run: Boolean(input.dryRun),
+      initiated_by: actor.userId,
+      metadata: {
+        requestedBy: actor.userId,
+        otpProvided: Boolean(input.otpCode),
+        sourceEnv: BACKUP_SOURCE_ENV,
+      },
+    },
+  });
+
+  return mapBackupRestore({
+    ...restore,
+    initiator: null,
+  } as BackupRestoreRecordWithRelations);
 }
 
 export async function hardDeleteBranch(branchId: string, actor: JwtPayload): Promise<void> {

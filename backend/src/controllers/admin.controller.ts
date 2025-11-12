@@ -1,19 +1,22 @@
 import { Request, Response } from 'express';
 import {
+  archiveBranchForAdmin,
   assignSuperGuruToRegion,
   createBackupSnapshotRequest,
   createAdminRegion,
-  archiveBranchForAdmin,
-  getSuperGuruRegionsOverview,
   getAdminRegionHierarchy,
-  getBackupSummaryStats,
+  getBackupImpactPreview,
   getBackupManifestPayload,
-  updateBranchRegionAssignment,
+  getBackupOptions,
+  getBackupSummaryStats,
+  getSuperGuruRegionsOverview,
   hardDeleteBranch,
-  listBranchesForAdmin,
   listBackupSnapshots,
+  listBranchesForAdmin,
   removeSuperGuruAssignment,
+  requestBackupRestore,
   unarchiveBranchForAdmin,
+  updateBranchRegionAssignment,
   updateSuperGuruAssignment,
 } from '../services/admin.service';
 import {
@@ -544,6 +547,20 @@ export async function getBackupSummary(req: Request, res: Response): Promise<voi
   }
 }
 
+export async function getBackupOptionsController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const options = getBackupOptions();
+    res.status(200).json({ options });
+  } catch (error) {
+    console.error('Failed to load backup options:', error);
+    res.status(500).json({ error: 'Failed to load backup options' });
+  }
+}
+
 export async function listBackupHistory(req: Request, res: Response): Promise<void> {
   try {
     if (!req.user) {
@@ -618,5 +635,87 @@ export async function downloadBackupManifest(req: Request, res: Response): Promi
     }
     console.error('Failed to download backup manifest:', error);
     res.status(500).json({ error: 'Failed to download manifest' });
+  }
+}
+
+export async function getBackupImpactController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { backupId } = req.params;
+    const targetEnv = (req.query.targetEnv as string | undefined) ?? '';
+
+    if (!targetEnv) {
+      res.status(400).json({ error: 'targetEnv is required' });
+      return;
+    }
+
+    const impact = await getBackupImpactPreview(backupId, targetEnv);
+    res.status(200).json({ impact });
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (message === 'Backup not found' || message?.includes('not configured')) {
+      res.status(400).json({ error: message });
+      return;
+    }
+    console.error('Failed to load backup impact:', error);
+    res.status(500).json({ error: 'Failed to load backup impact' });
+  }
+}
+
+export async function requestBackupRestoreController(req: Request, res: Response): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { backupId } = req.params;
+    const { targetEnv, dryRun, confirmPhrase, otpCode } = req.body as {
+      targetEnv?: string;
+      dryRun?: boolean;
+      confirmPhrase?: string;
+      otpCode?: string;
+    };
+
+    if (!targetEnv || !confirmPhrase) {
+      res.status(400).json({ error: 'targetEnv and confirmPhrase are required' });
+      return;
+    }
+
+    const restore = await requestBackupRestore({
+      backupId,
+      actor: req.user,
+      input: {
+        targetEnv,
+        dryRun,
+        confirmPhrase,
+        otpCode,
+      },
+    });
+
+    res.status(201).json({ restore });
+  } catch (error) {
+    const message = getErrorMessage(error);
+    if (
+      message === 'Backup not found' ||
+      message === 'Backup must be completed before requesting a restore' ||
+      message === 'Confirmation phrase does not match' ||
+      (message && message.startsWith('Another restore'))
+    ) {
+      res.status(400).json({ error: message });
+      return;
+    }
+
+    if (message === 'Target environment not configured') {
+      res.status(422).json({ error: message });
+      return;
+    }
+
+    console.error('Failed to queue backup restore:', error);
+    res.status(500).json({ error: 'Failed to queue restore request' });
   }
 }

@@ -21,6 +21,8 @@
     "never": "Nikada",
     "previous": "Prethodni",
     "next": "Sljedeći",
+    "processing": "Obrada...",
+    "minutes": "minuta",
     "pageOf": "Stranica {{current}} od {{total}}"
   },
   "auth": {
@@ -842,7 +844,9 @@
       "downloadError": "Preuzimanje nije uspjelo. Pokušaj ponovo.",
       "noDownload": "Link za preuzimanje još nije spreman.",
       "regionFallback": "Region",
-      "initiatedBy": "Pokrenuo/la {{name}}"
+      "initiatedBy": "Pokrenuo/la {{name}}",
+      "restore": "Obnovi",
+      "latestRestore": "Zadnja obnova {{status}} za {{env}}"
       },
       "status": {
         "queued": "U redu",
@@ -853,6 +857,41 @@
       "messages": {
         "created": "Zahtjev za backup je poslan.",
         "loadError": "Nije moguće učitati podatke o backupima."
+      },
+      "restore": {
+        "title": "Obnova “{{label}}”",
+        "subtitle": "Potvrdi ciljnu okolinu i pregledaj uticaj prije primjene snapshot-a.",
+        "steps": {
+          "1": "Okolina",
+          "2": "Uticaj",
+          "3": "Potvrda"
+        },
+        "targetEnv": "Ciljna okolina",
+        "noTargets": "Nema konfigurisanih okolina",
+        "dryRun": "Probni režim (bez primjene)",
+        "targetHint": "Obnove prepisuju izabranu okolinu. Koristi probni režim za provjeru bez promjena.",
+        "stats": {
+          "size": "Veličina snapshot-a",
+          "downtime": "Procijenjeni prekid",
+          "includeMedia": "Uključuje medije"
+        },
+        "checklistTitle": "Lista provjera",
+        "checklist": {
+          "maintenance": "Termin održavanja zakazan i korisnici obaviješteni",
+          "backup": "Svježi backup ciljne baze napravljen",
+          "paused": "Pozadinski poslovi i integracije pauzirani"
+        },
+        "recommended": "Preporučeni koraci",
+        "errors": {
+          "impact": "Greška pri učitavanju pregleda uticaja."
+        },
+        "confirmWarning": "Obnavljate {{env}}. Ova akcija je nepovratna.",
+        "snapshotInfo": "Snapshot napravljen {{started}}.",
+        "confirmLabel": "Upišite {{phrase}} za potvrdu",
+        "otpLabel": "Jednokratni kod (opcionalno)",
+        "otpHint": "Unesite kod iz autentifikatora ili ostavite prazno ako nije potrebno.",
+        "confirmCta": "Potvrdi obnovu",
+        "success": "Obnova je zakazana za {{env}}."
       }
     },
     "regionsComingSoon": "Detaljna administracija regiona (importi, metapodaci, analitika) uskoro stiže.",

@@ -21,6 +21,8 @@
     "never": "Never",
     "previous": "Previous",
     "next": "Next",
+    "processing": "Processing...",
+    "minutes": "minutes",
     "pageOf": "Page {{current}} of {{total}}"
   },
   "auth": {
@@ -848,7 +850,9 @@
       "downloadError": "Download failed. Please try again.",
       "noDownload": "Download link not available yet.",
       "regionFallback": "Region",
-      "initiatedBy": "Started by {{name}}"
+      "initiatedBy": "Started by {{name}}",
+      "restore": "Restore",
+      "latestRestore": "Last restore {{status}} for {{env}}"
       },
       "status": {
         "queued": "Queued",
@@ -859,6 +863,42 @@
       "messages": {
         "created": "Backup request queued.",
         "loadError": "Failed to load backup data."
+      }
+      ,
+      "restore": {
+        "title": "Restore “{{label}}”",
+        "subtitle": "Confirm the target environment and review the impact before applying the snapshot.",
+        "steps": {
+          "1": "Target",
+          "2": "Impact",
+          "3": "Confirm"
+        },
+        "targetEnv": "Target environment",
+        "noTargets": "No target environments configured",
+        "dryRun": "Run a dry-run (validation only)",
+        "targetHint": "Restores overwrite the selected environment. Use dry-run to validate the archive without applying changes.",
+        "stats": {
+          "size": "Snapshot size",
+          "downtime": "Estimated downtime",
+          "includeMedia": "Media included"
+        },
+        "checklistTitle": "Pre-restore checklist",
+        "checklist": {
+          "maintenance": "Maintenance window scheduled and stakeholders notified",
+          "backup": "Fresh target backup created",
+          "paused": "Background jobs and integrations paused"
+        },
+        "recommended": "Recommended steps",
+        "errors": {
+          "impact": "Failed to load impact preview."
+        },
+        "confirmWarning": "You are about to restore {{env}}. This action cannot be undone.",
+        "snapshotInfo": "Snapshot captured {{started}}.",
+        "confirmLabel": "Type {{phrase}} to confirm",
+        "otpLabel": "One-time passcode (optional)",
+        "otpHint": "Use the code from your authenticator or leave blank if not required.",
+        "confirmCta": "Confirm restore",
+        "success": "Restore queued for {{env}}."
       }
     },
     "regionsComingSoon": "Detailed region administration (imports, metadata, analytics) is coming soon.",

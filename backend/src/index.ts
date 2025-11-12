@@ -5,8 +5,11 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { getErrorMessage } from './utils/error.util';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'production'
+  ? '.env.production'
+  : '.env.development';
+dotenv.config({ path: envFile });
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -33,6 +36,7 @@ import geoRoutes from './routes/geo.routes';
 import businessAddressRoutes from './routes/business-address.routes';
 import { authenticateToken } from './middleware/auth.middleware';
 import { startBackupWorker } from './services/backup-worker';
+import { startRestoreWorker } from './services/restore-worker';
 
 app.get('/api/v1', (_req, res) => {
   res.json({
@@ -122,6 +126,7 @@ app.listen(PORT, () => {
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📍 API: http://localhost:${PORT}/api/v1`);
   startBackupWorker();
+  startRestoreWorker();
 });
 
 export default app;

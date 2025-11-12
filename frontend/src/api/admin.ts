@@ -17,6 +17,10 @@ import type {
   BackupHistoryResponse,
   BackupSnapshot,
   CreateBackupPayload,
+  BackupOptions,
+  BackupImpactPreview,
+  CreateRestorePayload,
+  BackupRestoreSummary,
 } from '../types/admin';
 
 export async function getAdminRegionsOverview(): Promise<AdminRegionOverview[]> {
@@ -149,9 +153,29 @@ export async function getBackupHistory(): Promise<BackupSnapshot[]> {
   return response.data.snapshots;
 }
 
+export async function getBackupOptions(): Promise<BackupOptions> {
+  const response = await api.get<{ options: BackupOptions }>('/admin/backups/options');
+  return response.data.options;
+}
+
 export async function createBackupSnapshot(payload: CreateBackupPayload): Promise<BackupSnapshot> {
   const response = await api.post<{ snapshot: BackupSnapshot }>('/admin/backups', payload);
   return response.data.snapshot;
+}
+
+export async function getBackupImpact(backupId: string, targetEnv: string): Promise<BackupImpactPreview> {
+  const response = await api.get<{ impact: BackupImpactPreview }>(`/admin/backups/${backupId}/impact`, {
+    params: { targetEnv },
+  });
+  return response.data.impact;
+}
+
+export async function requestBackupRestore(
+  backupId: string,
+  payload: CreateRestorePayload
+): Promise<BackupRestoreSummary> {
+  const response = await api.post<{ restore: BackupRestoreSummary }>(`/admin/backups/${backupId}/restore`, payload);
+  return response.data.restore;
 }
 
 export async function downloadBackupManifest(backupId: string): Promise<Blob> {

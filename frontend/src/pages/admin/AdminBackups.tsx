@@ -4,8 +4,22 @@ import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useToast } from '../../contexts/ToastContext';
-import { createBackupSnapshot, downloadBackupManifest, getBackupHistory, getBackupSummary } from '../../api/admin';
-import type { BackupScope, BackupSnapshot, BackupSummary } from '../../types/admin';
+import {
+  createBackupSnapshot,
+  downloadBackupManifest,
+  getBackupHistory,
+  getBackupOptions,
+  getBackupSummary,
+  requestBackupRestore,
+} from '../../api/admin';
+import RestoreBackupModal from '../../components/admin/backup/RestoreBackupModal';
+import type {
+  BackupOptions,
+  BackupScope,
+  BackupSnapshot,
+  BackupSummary,
+  CreateRestorePayload,
+} from '../../types/admin';
 
 interface ManualBackupFormState {
   label: string;
@@ -60,12 +74,15 @@ export default function AdminBackups() {
   const [history, setHistory] = useState<BackupSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [options, setOptions] = useState<BackupOptions | null>(null);
 
   const [manualFormOpen, setManualFormOpen] = useState(false);
   const [manualForm, setManualForm] = useState<ManualBackupFormState>(DEFAULT_FORM_STATE);
   const [manualError, setManualError] = useState<string | null>(null);
   const [manualSubmitting, setManualSubmitting] = useState(false);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [restoreSnapshot, setRestoreSnapshot] = useState<BackupSnapshot | null>(null);
+  const [restoreSubmitting, setRestoreSubmitting] = useState(false);
 
   const parseErrorMessage = (err: unknown) => {
     if (axios.isAxiosError(err)) {
@@ -106,6 +123,11 @@ export default function AdminBackups() {
     };
 
     fetchBackups(true);
+    getBackupOptions()
+      .then(setOptions)
+      .catch((err) => {
+        console.error('Failed to load backup options', err);
+      });
     const intervalId = window.setInterval(() => {
       fetchBackups(false);
     }, 10000);
@@ -222,6 +244,33 @@ export default function AdminBackups() {
       showErrorToast(message ?? t('admin.backups.history.downloadError'));
     } finally {
       setDownloadingId(null);
+    }
+  };
+
+  const handleRestoreSubmit = async (payload: CreateRestorePayload) => {
+    if (!restoreSnapshot) {
+      return;
+    }
+    setRestoreSubmitting(true);
+    try {
+      const restore = await requestBackupRestore(restoreSnapshot.id, payload);
+      setHistory((prev) =>
+        prev.map((item) =>
+          item.id === restoreSnapshot.id
+            ? {
+                ...item,
+                latestRestore: restore,
+              }
+            : item
+        )
+      );
+      showSuccessToast(t('admin.backups.restore.success', { env: restore.targetEnv }));
+    } catch (err) {
+      const message = parseErrorMessage(err);
+      showErrorToast(message);
+      throw err;
+    } finally {
+      setRestoreSubmitting(false);
     }
   };
 
@@ -482,17 +531,37 @@ export default function AdminBackups() {
                             : '—'}
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-600">{formatBytes(snapshot.sizeBytes)}</td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => handleDownload(snapshot)}
-                            disabled={snapshot.status !== 'COMPLETED' || downloadingId === snapshot.id}
-                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500 disabled:text-slate-400 disabled:cursor-not-allowed"
-                          >
-                            {downloadingId === snapshot.id
-                              ? t('admin.backups.history.downloading')
-                              : t('admin.backups.history.download')}
-                          </button>
+                        <td className="px-4 py-3 text-right space-y-1">
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => handleDownload(snapshot)}
+                              disabled={snapshot.status !== 'COMPLETED' || downloadingId === snapshot.id}
+                              className="text-sm font-medium text-indigo-600 hover:text-indigo-500 disabled:text-slate-400 disabled:cursor-not-allowed"
+                            >
+                              {downloadingId === snapshot.id
+                                ? t('admin.backups.history.downloading')
+                                : t('admin.backups.history.download')}
+                            </button>
+                          </div>
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => setRestoreSnapshot(snapshot)}
+                              disabled={snapshot.status !== 'COMPLETED' || !options?.restoreTargets?.length}
+                              className="text-sm font-medium text-rose-600 hover:text-rose-500 disabled:text-slate-400 disabled:cursor-not-allowed"
+                            >
+                              {t('admin.backups.history.restore')}
+                            </button>
+                          </div>
+                          {snapshot.latestRestore && (
+                            <p className="text-xs text-slate-500">
+                              {t('admin.backups.history.latestRestore', {
+                                status: snapshot.latestRestore.status.toLowerCase(),
+                                env: snapshot.latestRestore.targetEnv,
+                              })}
+                            </p>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -503,6 +572,21 @@ export default function AdminBackups() {
           </section>
         </>
       )}
+      <RestoreBackupModal
+        open={Boolean(restoreSnapshot)}
+        snapshot={restoreSnapshot}
+        onClose={() => {
+          if (!restoreSubmitting) {
+            setRestoreSnapshot(null);
+          }
+        }}
+        onSubmit={async (payload) => {
+          await handleRestoreSubmit(payload);
+          setRestoreSnapshot(null);
+        }}
+        restoreTargets={options?.restoreTargets ?? []}
+        confirmTemplate={options?.confirmTemplate ?? 'RESTORE {backupId}'}
+      />
     </AdminLayout>
   );
 }

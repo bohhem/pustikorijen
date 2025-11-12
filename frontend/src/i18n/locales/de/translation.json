@@ -21,6 +21,8 @@
     "never": "Nie",
     "previous": "Zurück",
     "next": "Weiter",
+    "processing": "Wird verarbeitet...",
+    "minutes": "Minuten",
     "pageOf": "Seite {{current}} von {{total}}"
   },
   "auth": {
@@ -842,7 +844,9 @@
       "downloadError": "Download fehlgeschlagen. Bitte erneut versuchen.",
       "noDownload": "Download-Link ist noch nicht verfügbar.",
       "regionFallback": "Region",
-      "initiatedBy": "Gestartet von {{name}}"
+      "initiatedBy": "Gestartet von {{name}}",
+      "restore": "Wiederherstellen",
+      "latestRestore": "Letzte Wiederherstellung {{status}} für {{env}}"
       },
       "status": {
         "queued": "Eingereiht",
@@ -853,6 +857,41 @@
       "messages": {
         "created": "Backup-Auftrag wurde gestartet.",
         "loadError": "Backups konnten nicht geladen werden."
+      },
+      "restore": {
+        "title": "Backup „{{label}}“ wiederherstellen",
+        "subtitle": "Wähle die Zielumgebung und prüfe den Impact bevor du den Snapshot anwendest.",
+        "steps": {
+          "1": "Ziel",
+          "2": "Auswirkung",
+          "3": "Bestätigen"
+        },
+        "targetEnv": "Zielumgebung",
+        "noTargets": "Keine Zielumgebungen konfiguriert",
+        "dryRun": "Trockenlauf (nur Validierung)",
+        "targetHint": "Wiederherstellungen überschreiben die gewählte Umgebung. Nutze den Trockenlauf für eine Prüfung ohne Änderungen.",
+        "stats": {
+          "size": "Snapshot-Größe",
+          "downtime": "Geschätzte Ausfallzeit",
+          "includeMedia": "Medien enthalten"
+        },
+        "checklistTitle": "Checkliste vor der Wiederherstellung",
+        "checklist": {
+          "maintenance": "Wartungsfenster geplant und Stakeholder informiert",
+          "backup": "Frisches Backup der Zielumgebung erstellt",
+          "paused": "Schreibende Hintergrundprozesse pausiert"
+        },
+        "recommended": "Empfohlene Schritte",
+        "errors": {
+          "impact": "Impact-Vorschau konnte nicht geladen werden."
+        },
+        "confirmWarning": "Du bist dabei {{env}} wiederherzustellen. Diese Aktion kann nicht rückgängig gemacht werden.",
+        "snapshotInfo": "Snapshot erstellt {{started}}.",
+        "confirmLabel": "{{phrase}} eingeben um zu bestätigen",
+        "otpLabel": "Einmalcode (optional)",
+        "otpHint": "Code aus dem Authentifikator eingeben oder leer lassen, falls nicht erforderlich.",
+        "confirmCta": "Wiederherstellung bestätigen",
+        "success": "Wiederherstellung für {{env}} wurde gestartet."
       }
     },
     "regionsComingSoon": "Detaillierte Regionsverwaltung (Importe, Metadaten, Analysen) folgt in Kürze.",

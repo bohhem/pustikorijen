@@ -201,6 +201,33 @@ export type BackupScope = 'FULL' | 'REGION';
 
 export type BackupStatus = 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
 
+export type RestoreStatus = 'QUEUED' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+
+export interface BackupRestoreSummary {
+  id: string;
+  targetEnv: string;
+  status: RestoreStatus;
+  dryRun: boolean;
+  startedAt: string;
+  completedAt: string | null;
+  failureMessage?: string | null;
+}
+
+export interface BackupImpactPreview {
+  backupId: string;
+  targetEnv: string;
+  sizeBytes: number | null;
+  includeMedia: boolean;
+  checksum?: string | null;
+  estimatedDowntimeMinutes: number;
+  recommendedSteps: string[];
+}
+
+export interface BackupOptions {
+  restoreTargets: string[];
+  confirmTemplate: string;
+}
+
 export interface BackupSummary {
   lastSuccessfulAt: string | null;
   nextScheduledAt: string | null;
@@ -229,6 +256,7 @@ export interface BackupSnapshot {
   downloadUrl?: string | null;
   manifestUrl?: string | null;
   notes?: string | null;
+  latestRestore?: BackupRestoreSummary | null;
 }
 
 export interface BackupHistoryResponse {
@@ -242,4 +270,11 @@ export interface CreateBackupPayload {
   includeMedia?: boolean;
   retentionDays?: number;
   notifyEmails?: string[];
+}
+
+export interface CreateRestorePayload {
+  targetEnv: string;
+  dryRun?: boolean;
+  confirmPhrase: string;
+  otpCode?: string;
 }

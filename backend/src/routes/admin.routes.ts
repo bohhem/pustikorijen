@@ -1,25 +1,28 @@
 import { Router } from 'express';
 import { authenticateToken, requireFullSuperGuru, requireSuperGuru } from '../middleware/auth.middleware';
 import {
+  archiveBranchAdmin,
   assignPrimaryBridge,
   assignRegionGuru,
   createBackupSnapshotController,
   createRegion,
-  archiveBranchAdmin,
-  updateBranchRegion,
   deleteRegionAssignment,
-  getAdminRegions,
+  downloadBackupManifest,
   getAdminRegionTree,
+  getAdminRegions,
+  getBackupImpactController,
+  getBackupOptionsController,
   getBackupSummary,
   hardDeleteBranchAdmin,
-  listBridgeIssues,
   listAdminBranches,
   listBackupHistory,
-  downloadBackupManifest,
-  removePrimaryBridge,
+  listBridgeIssues,
   rejectBridgeLink,
+  removePrimaryBridge,
+  requestBackupRestoreController,
   unarchiveBranchAdmin,
   updateBridgeGeneration,
+  updateBranchRegion,
   updateRegionAssignment,
 } from '../controllers/admin.controller';
 import {
@@ -57,8 +60,11 @@ router.post('/branches/:branchId/region', updateBranchRegion);
 
 // Backup routes
 router.get('/backups/summary', requireFullSuperGuru, getBackupSummary);
+router.get('/backups/options', requireFullSuperGuru, getBackupOptionsController);
 router.get('/backups', requireFullSuperGuru, listBackupHistory);
 router.post('/backups', requireFullSuperGuru, createBackupSnapshotController);
+router.get('/backups/:backupId/impact', requireFullSuperGuru, getBackupImpactController);
+router.post('/backups/:backupId/restore', requireFullSuperGuru, requestBackupRestoreController);
 router.get('/backups/:backupId/manifest', requireFullSuperGuru, downloadBackupManifest);
 
 // Bridge issue management routes
