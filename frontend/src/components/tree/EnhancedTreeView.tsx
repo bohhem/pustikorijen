@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import PedigreeChart from './PedigreeChart';
 import DescendantChart from './DescendantChart';
 import NetworkGraph from './NetworkGraph';
+import CityGraph from './CityGraph';
 import TreeFilters from './TreeFilters';
 import PersonSearchBox from './PersonSearchBox';
 import type { MultiBranchTreeResponse, MultiBranchTreePerson } from '../../types/branch';
@@ -13,13 +14,14 @@ import {
   getDescendantNodes,
   getHourglassNodes,
 } from '../../utils/relativesTreeAdapter';
+import { buildCityGraphData } from '../../utils/cityGraph';
 
 interface EnhancedTreeViewProps {
   treeData: MultiBranchTreeResponse;
   onPersonSelect?: (person: MultiBranchTreePerson) => void;
 }
 
-export type TreeViewMode = 'pedigree' | 'descendants' | 'hourglass' | 'network';
+export type TreeViewMode = 'pedigree' | 'descendants' | 'hourglass' | 'network' | 'city';
 
 export interface TreeFiltersState {
   generationNumbers: number[];
@@ -36,7 +38,7 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
   const { t } = useTranslation();
 
   // View mode state
-  const [viewMode, setViewMode] = useState<TreeViewMode>('network');
+  const [viewMode, setViewMode] = useState<TreeViewMode>('city');
   const [focusPersonId, setFocusPersonId] = useState<string | null>(null);
 
   // Filter state
@@ -95,9 +97,13 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
     return nodes;
   }, [allTreeNodes, filters]);
 
+  const cityGraphData = useMemo(() => {
+    return buildCityGraphData(filteredNodes);
+  }, [filteredNodes]);
+
   // Get nodes for current view mode
   const viewNodes = useMemo(() => {
-    if (!focusPersonId || viewMode === 'network') {
+    if (!focusPersonId || viewMode === 'network' || viewMode === 'city') {
       return filteredNodes;
     }
 
@@ -115,7 +121,7 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
 
   // Auto-select focus person if needed
   useEffect(() => {
-    if (!focusPersonId && viewMode !== 'network' && allTreeNodes.length > 0) {
+    if (!focusPersonId && viewMode !== 'network' && viewMode !== 'city' && allTreeNodes.length > 0) {
       // Auto-select the oldest generation person
       const oldestGen = Math.min(...allTreeNodes.map(n => n.generationNumber));
       const oldestPerson = allTreeNodes.find(n => n.generationNumber === oldestGen);
@@ -142,8 +148,8 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
   const handleViewModeChange = (mode: TreeViewMode) => {
     setViewMode(mode);
 
-    // If switching to network view, clear focus person
-    if (mode === 'network') {
+    // If switching to network-style views, clear focus person
+    if (mode === 'network' || mode === 'city') {
       setFocusPersonId(null);
     }
   };
@@ -174,6 +180,7 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
             className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm focus:border-indigo-500 focus:ring-indigo-500"
           >
             <option value="network">🌐 {t('tree.viewModes.networkShort', 'Network')}</option>
+            <option value="city">🏙️ {t('tree.viewModes.cityShort', 'City')}</option>
             <option value="pedigree">⬆️ {t('tree.viewModes.pedigreeShort', 'Ancestors')}</option>
             <option value="descendants">⬇️ {t('tree.viewModes.descendantsShort', 'Descendants')}</option>
             <option value="hourglass">⏳ {t('tree.viewModes.hourglassShort', 'Hourglass')}</option>
@@ -236,7 +243,7 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
             <strong>{branchCount}</strong> {t('tree.stats.branches', 'branches')}
           </span>
         </div>
-        {focusPersonNode && viewMode !== 'network' && (
+        {focusPersonNode && viewMode !== 'network' && viewMode !== 'city' && (
           <div className="flex items-center gap-2">
             <span className="text-gray-500">{t('tree.stats.focusOn', 'Focus:')}</span>
             <strong className="text-indigo-700">{focusPersonNode.fullName}</strong>
@@ -250,6 +257,15 @@ export default function EnhancedTreeView({ treeData, onPersonSelect }: EnhancedT
           <NetworkGraph
             nodes={viewNodes}
             treeData={treeData}
+            onPersonSelect={handlePersonSelect}
+            focusPersonId={focusPersonId || undefined}
+            showLegend={showLegend}
+          />
+        )}
+        {viewMode === 'city' && (
+          <CityGraph
+            nodes={viewNodes}
+            graphData={cityGraphData}
             onPersonSelect={handlePersonSelect}
             focusPersonId={focusPersonId || undefined}
             showLegend={showLegend}

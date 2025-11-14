@@ -652,7 +652,9 @@
       "descendantsShort": "Potomci",
       "hourglass": "Pješčani sat - Prikaz predaka i potomaka",
       "hourglassShort": "Pješčani sat",
-      "selectLabel": "Prikaz"
+      "selectLabel": "Prikaz",
+      "city": "City prikaz - Povezane porodice kao grad",
+      "cityShort": "Grad"
     },
     "headerViews": {
       "label": "Način prikaza",
@@ -687,6 +689,21 @@
       "people": "osoba",
       "branches": "grana",
       "focusOn": "Fokus:"
+    },
+    "city": {
+      "infoTitle": "Porodični gradski prikaz",
+      "infoDescription": "Zumirajte između pregleda grada i detalja porodice.",
+      "layoutCity": "Gradski prikaz",
+      "layoutGenerations": "Generacije",
+      "freeze": "Zamrzni",
+      "unfreeze": "Odmrzni",
+      "reset": "Resetuj",
+      "legendParent": "Roditelj → Dijete",
+      "legendPartnership": "Partnerstvo",
+      "status": "Status",
+      "life": "Život",
+      "location": "Lokacija",
+      "branchLabel": "Grana"
     }
   },
   "validation": {
@@ -829,24 +846,24 @@
         "subtitle": "Posljednjih 20 snapshot-a",
         "count": "{{count}} backup-a učitano",
         "empty": "Još nema snimljenih backup-a.",
-      "columns": {
-        "status": "Status",
-        "label": "Naziv",
-        "scope": "Opseg",
-        "started": "Početak",
-        "completed": "Završetak",
-        "size": "Veličina",
-        "actions": "Akcije"
-      },
-      "download": "Preuzmi manifest",
-      "downloading": "Preuzimanje...",
-      "notReady": "Backup je još u toku.",
-      "downloadError": "Preuzimanje nije uspjelo. Pokušaj ponovo.",
-      "noDownload": "Link za preuzimanje još nije spreman.",
-      "regionFallback": "Region",
-      "initiatedBy": "Pokrenuo/la {{name}}",
-      "restore": "Obnovi",
-      "latestRestore": "Zadnja obnova {{status}} za {{env}}"
+        "columns": {
+          "status": "Status",
+          "label": "Naziv",
+          "scope": "Opseg",
+          "started": "Početak",
+          "completed": "Završetak",
+          "size": "Veličina",
+          "actions": "Akcije"
+        },
+        "download": "Preuzmi manifest",
+        "downloading": "Preuzimanje...",
+        "notReady": "Backup je još u toku.",
+        "downloadError": "Preuzimanje nije uspjelo. Pokušaj ponovo.",
+        "noDownload": "Link za preuzimanje još nije spreman.",
+        "regionFallback": "Region",
+        "initiatedBy": "Pokrenuo/la {{name}}",
+        "restore": "Obnovi",
+        "latestRestore": "Zadnja obnova {{status}} za {{env}}"
       },
       "status": {
         "queued": "U redu",
@@ -944,20 +961,20 @@
       },
       "searchPlaceholder": "Pretraži po prezimenu, ID-u grane ili gradu...",
       "searchAction": "Pretraži",
-    "resultsSummary": "Ukupno {{total}} grana • Stranica {{page}} od {{totalPages}}",
-    "selectionSummary": "Odabrano: {{count}}",
-    "selectionActions": {
-      "selectAll": "Označi stranicu",
-      "clear": "Poništi"
-    },
-    "filters": {
-      "regionLabel": "Region",
-      "allRegions": "Svi regioni",
-      "unassignedRegion": "Bez regiona",
-      "regionPlaceholder": "Odaberi državu, entitet, kanton...",
-      "activeRegion": "Filter: {{path}}"
-    },
-    "regionTreeError": "Hijerarhiju regiona trenutno nije moguće učitati.",
+      "resultsSummary": "Ukupno {{total}} grana • Stranica {{page}} od {{totalPages}}",
+      "selectionSummary": "Odabrano: {{count}}",
+      "selectionActions": {
+        "selectAll": "Označi stranicu",
+        "clear": "Poništi"
+      },
+      "filters": {
+        "regionLabel": "Region",
+        "allRegions": "Svi regioni",
+        "unassignedRegion": "Bez regiona",
+        "regionPlaceholder": "Odaberi državu, entitet, kanton...",
+        "activeRegion": "Filter: {{path}}"
+      },
+      "regionTreeError": "Hijerarhiju regiona trenutno nije moguće učitati.",
       "loadRegionsError": "Nije moguće učitati regione za filtriranje.",
       "loadError": "Neuspješno učitavanje grana.",
       "archiveConfirm": "Arhivirati ovu granu? Članovi joj neće moći pristupiti dok se ne vrati.",
@@ -981,9 +998,9 @@
       "loading": "Učitavanje grana...",
       "verifiedBadge": "Verifikovana",
       "archivedBadge": "Arhivirana",
-    "unknownLocation": "Nepoznata lokacija",
-    "regionLabel": "Dodijeljeni region: {{region}}",
-    "regionPathLabel": "Hijerarhija: {{path}}",
+      "unknownLocation": "Nepoznata lokacija",
+      "regionLabel": "Dodijeljeni region: {{region}}",
+      "regionPathLabel": "Hijerarhija: {{path}}",
       "archivedMeta": "Arhivirano {{date}} od strane {{by}}",
       "archivedUnknownUser": "nepoznat korisnik",
       "archivedUnknownDate": "Arhivirano (datum nepoznat)",
@@ -996,21 +1013,21 @@
         "delete": "Obriši",
         "assignRegion": "Dodijeli region"
       },
-    "assignRegion": {
-      "title": "Dodijeli region",
-      "subtitle": "Odabrano {{count}} grana",
-      "selectLabel": "Odaberi region",
-      "noSelection": "Odaberite barem jednu granu prije primjene.",
-      "selectRegion": "Prvo odaberite region.",
-      "noRegionsAvailable": "Nema dostupnih regiona za ovu akciju.",
-      "modeRegion": "Odaberi region",
-      "modeUnassigned": "Označi kao bez regiona",
-      "selectedPath": "Odabrano: {{path}}",
-      "unassignedDescription": "Grane bez regiona neće se prikazivati na regionalnim pregledima.",
-      "unassignedNotAllowed": "Samo SuperGuru može ukloniti region sa grane.",
-      "success": "Ažurirano {{count}} grana",
-      "submit": "Primijeni"
-    },
+      "assignRegion": {
+        "title": "Dodijeli region",
+        "subtitle": "Odabrano {{count}} grana",
+        "selectLabel": "Odaberi region",
+        "noSelection": "Odaberite barem jednu granu prije primjene.",
+        "selectRegion": "Prvo odaberite region.",
+        "noRegionsAvailable": "Nema dostupnih regiona za ovu akciju.",
+        "modeRegion": "Odaberi region",
+        "modeUnassigned": "Označi kao bez regiona",
+        "selectedPath": "Odabrano: {{path}}",
+        "unassignedDescription": "Grane bez regiona neće se prikazivati na regionalnim pregledima.",
+        "unassignedNotAllowed": "Samo SuperGuru može ukloniti region sa grane.",
+        "success": "Ažurirano {{count}} grana",
+        "submit": "Primijeni"
+      },
       "paginationSummary": "Prikazano {{start}}–{{end}} od {{total}} grana",
       "paginationPrev": "Prethodna",
       "paginationNext": "Sljedeća"

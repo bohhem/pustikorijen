@@ -523,7 +523,9 @@
       "descendantsShort": "Nachkommen",
       "hourglass": "Sanduhr - Vorfahren und Nachkommen anzeigen",
       "hourglassShort": "Sanduhr",
-      "selectLabel": "Visualisierung"
+      "selectLabel": "Visualisierung",
+      "city": "Stadtansicht - Familiencluster wie eine Stadt erkunden",
+      "cityShort": "Stadt"
     },
     "headerViews": {
       "label": "Ansicht",
@@ -558,6 +560,21 @@
       "people": "Personen",
       "branches": "Zweige",
       "focusOn": "Fokus:"
+    },
+    "city": {
+      "infoTitle": "Familienstadt-Ansicht",
+      "infoDescription": "Zwischen Stadtübersicht und Familienclustern zoomen.",
+      "layoutCity": "Stadtlayout",
+      "layoutGenerations": "Generationen",
+      "freeze": "Einfrieren",
+      "unfreeze": "Auftauen",
+      "reset": "Zurücksetzen",
+      "legendParent": "Eltern → Kind",
+      "legendPartnership": "Partnerschaft",
+      "status": "Status",
+      "life": "Lebenszeit",
+      "location": "Ort",
+      "branchLabel": "Zweig"
     }
   },
   "geoSelector": {
@@ -829,24 +846,24 @@
         "subtitle": "Letzte 20 Snapshots",
         "count": "{{count}} Backups geladen",
         "empty": "Noch keine Backups vorhanden.",
-      "columns": {
-        "status": "Status",
-        "label": "Bezeichnung",
-        "scope": "Umfang",
-        "started": "Gestartet",
-        "completed": "Abgeschlossen",
-        "size": "Größe",
-        "actions": "Aktionen"
-      },
-      "download": "Manifest herunterladen",
-      "downloading": "Wird heruntergeladen...",
-      "notReady": "Backup läuft noch.",
-      "downloadError": "Download fehlgeschlagen. Bitte erneut versuchen.",
-      "noDownload": "Download-Link ist noch nicht verfügbar.",
-      "regionFallback": "Region",
-      "initiatedBy": "Gestartet von {{name}}",
-      "restore": "Wiederherstellen",
-      "latestRestore": "Letzte Wiederherstellung {{status}} für {{env}}"
+        "columns": {
+          "status": "Status",
+          "label": "Bezeichnung",
+          "scope": "Umfang",
+          "started": "Gestartet",
+          "completed": "Abgeschlossen",
+          "size": "Größe",
+          "actions": "Aktionen"
+        },
+        "download": "Manifest herunterladen",
+        "downloading": "Wird heruntergeladen...",
+        "notReady": "Backup läuft noch.",
+        "downloadError": "Download fehlgeschlagen. Bitte erneut versuchen.",
+        "noDownload": "Download-Link ist noch nicht verfügbar.",
+        "regionFallback": "Region",
+        "initiatedBy": "Gestartet von {{name}}",
+        "restore": "Wiederherstellen",
+        "latestRestore": "Letzte Wiederherstellung {{status}} für {{env}}"
       },
       "status": {
         "queued": "Eingereiht",
@@ -944,20 +961,20 @@
       },
       "searchPlaceholder": "Nach Nachnamen, Zweig-ID oder Stadt suchen...",
       "searchAction": "Suchen",
-    "resultsSummary": "Insgesamt {{total}} Zweige • Seite {{page}} von {{totalPages}}",
-    "selectionSummary": "{{count}} ausgewählt",
-    "selectionActions": {
-      "selectAll": "Seite auswählen",
-      "clear": "Auswahl löschen"
-    },
-    "filters": {
-      "regionLabel": "Region",
-      "allRegions": "Alle Regionen",
-      "unassignedRegion": "Ohne Region",
-      "regionPlaceholder": "Land, Entität, Kanton wählen...",
-      "activeRegion": "Filter: {{path}}"
-    },
-    "regionTreeError": "Regionhierarchie konnte nicht geladen werden.",
+      "resultsSummary": "Insgesamt {{total}} Zweige • Seite {{page}} von {{totalPages}}",
+      "selectionSummary": "{{count}} ausgewählt",
+      "selectionActions": {
+        "selectAll": "Seite auswählen",
+        "clear": "Auswahl löschen"
+      },
+      "filters": {
+        "regionLabel": "Region",
+        "allRegions": "Alle Regionen",
+        "unassignedRegion": "Ohne Region",
+        "regionPlaceholder": "Land, Entität, Kanton wählen...",
+        "activeRegion": "Filter: {{path}}"
+      },
+      "regionTreeError": "Regionhierarchie konnte nicht geladen werden.",
       "loadRegionsError": "Regionsfilter konnten nicht geladen werden.",
       "loadError": "Zweige konnten nicht geladen werden.",
       "archiveConfirm": "Diesen Zweig archivieren? Mitglieder können ihn erst nach Wiederherstellung sehen.",
@@ -981,9 +998,9 @@
       "loading": "Zweige werden geladen...",
       "verifiedBadge": "Verifiziert",
       "archivedBadge": "Archiviert",
-    "unknownLocation": "Unbekannter Ort",
-    "regionLabel": "Zugeordnete Region: {{region}}",
-    "regionPathLabel": "Hierarchie: {{path}}",
+      "unknownLocation": "Unbekannter Ort",
+      "regionLabel": "Zugeordnete Region: {{region}}",
+      "regionPathLabel": "Hierarchie: {{path}}",
       "archivedMeta": "Archiviert am {{date}} von {{by}}",
       "archivedUnknownUser": "unbekannte Person",
       "archivedUnknownDate": "Archiviert (Datum unbekannt)",
@@ -996,21 +1013,21 @@
         "delete": "Löschen",
         "assignRegion": "Region zuweisen"
       },
-    "assignRegion": {
-      "title": "Region zuweisen",
-      "subtitle": "{{count}} Zweige ausgewählt",
-      "selectLabel": "Region auswählen",
-      "noSelection": "Wählen Sie mindestens einen Zweig aus, bevor Sie fortfahren.",
-      "selectRegion": "Bitte zuerst eine Region auswählen.",
-      "noRegionsAvailable": "Keine Regionen für diese Aktion verfügbar.",
-      "modeRegion": "Region auswählen",
-      "modeUnassigned": "Als ohne Region markieren",
-      "selectedPath": "Ausgewählt: {{path}}",
-      "unassignedDescription": "Zweige ohne Region erscheinen nicht in regionalen Übersichten.",
-      "unassignedNotAllowed": "Nur SuperGurus können eine Region entfernen.",
-      "success": "{{count}} Zweige aktualisiert",
-      "submit": "Übernehmen"
-    },
+      "assignRegion": {
+        "title": "Region zuweisen",
+        "subtitle": "{{count}} Zweige ausgewählt",
+        "selectLabel": "Region auswählen",
+        "noSelection": "Wählen Sie mindestens einen Zweig aus, bevor Sie fortfahren.",
+        "selectRegion": "Bitte zuerst eine Region auswählen.",
+        "noRegionsAvailable": "Keine Regionen für diese Aktion verfügbar.",
+        "modeRegion": "Region auswählen",
+        "modeUnassigned": "Als ohne Region markieren",
+        "selectedPath": "Ausgewählt: {{path}}",
+        "unassignedDescription": "Zweige ohne Region erscheinen nicht in regionalen Übersichten.",
+        "unassignedNotAllowed": "Nur SuperGurus können eine Region entfernen.",
+        "success": "{{count}} Zweige aktualisiert",
+        "submit": "Übernehmen"
+      },
       "paginationSummary": "{{start}}–{{end}} von {{total}} Zweigen",
       "paginationPrev": "Zurück",
       "paginationNext": "Weiter"

@@ -658,7 +658,9 @@
       "descendantsShort": "Descendants",
       "hourglass": "Hourglass View - Show ancestors and descendants",
       "hourglassShort": "Hourglass",
-      "selectLabel": "Visualization"
+      "selectLabel": "Visualization",
+      "city": "City View - Explore family clusters like a city",
+      "cityShort": "City"
     },
     "headerViews": {
       "label": "View style",
@@ -835,24 +837,24 @@
         "subtitle": "Latest 20 snapshots",
         "count": "{{count}} backups loaded",
         "empty": "No backups recorded yet.",
-      "columns": {
-        "status": "Status",
-        "label": "Label",
-        "scope": "Scope",
-        "started": "Started",
-        "completed": "Completed",
-        "size": "Size",
-        "actions": "Actions"
-      },
-      "download": "Download manifest",
-      "downloading": "Downloading...",
-      "notReady": "Backup is still processing.",
-      "downloadError": "Download failed. Please try again.",
-      "noDownload": "Download link not available yet.",
-      "regionFallback": "Region",
-      "initiatedBy": "Started by {{name}}",
-      "restore": "Restore",
-      "latestRestore": "Last restore {{status}} for {{env}}"
+        "columns": {
+          "status": "Status",
+          "label": "Label",
+          "scope": "Scope",
+          "started": "Started",
+          "completed": "Completed",
+          "size": "Size",
+          "actions": "Actions"
+        },
+        "download": "Download manifest",
+        "downloading": "Downloading...",
+        "notReady": "Backup is still processing.",
+        "downloadError": "Download failed. Please try again.",
+        "noDownload": "Download link not available yet.",
+        "regionFallback": "Region",
+        "initiatedBy": "Started by {{name}}",
+        "restore": "Restore",
+        "latestRestore": "Last restore {{status}} for {{env}}"
       },
       "status": {
         "queued": "Queued",
@@ -863,8 +865,7 @@
       "messages": {
         "created": "Backup request queued.",
         "loadError": "Failed to load backup data."
-      }
-      ,
+      },
       "restore": {
         "title": "Restore “{{label}}”",
         "subtitle": "Confirm the target environment and review the impact before applying the snapshot.",
@@ -945,22 +946,22 @@
       },
       "searchPlaceholder": "Search by surname, branch ID, or city...",
       "searchAction": "Search",
-    "resultsSummary": "Total {{total}} branches • Page {{page}} of {{totalPages}}",
-    "selectionSummary": "{{count}} selected",
-    "selectionActions": {
-      "selectAll": "Select page",
-      "clear": "Clear"
-    },
-    "filters": {
-      "regionLabel": "Region",
-      "allRegions": "All regions",
-      "unassignedRegion": "Unassigned",
-      "regionPlaceholder": "Pick a country, entity, canton…",
-      "activeRegion": "Filtering by {{path}}"
-    },
-    "regionTreeError": "Unable to load region hierarchy. Please try again.",
-    "loadRegionsError": "Failed to load regions for filtering.",
-    "loadError": "Failed to load branches.",
+      "resultsSummary": "Total {{total}} branches • Page {{page}} of {{totalPages}}",
+      "selectionSummary": "{{count}} selected",
+      "selectionActions": {
+        "selectAll": "Select page",
+        "clear": "Clear"
+      },
+      "filters": {
+        "regionLabel": "Region",
+        "allRegions": "All regions",
+        "unassignedRegion": "Unassigned",
+        "regionPlaceholder": "Pick a country, entity, canton…",
+        "activeRegion": "Filtering by {{path}}"
+      },
+      "regionTreeError": "Unable to load region hierarchy. Please try again.",
+      "loadRegionsError": "Failed to load regions for filtering.",
+      "loadError": "Failed to load branches.",
       "archiveConfirm": "Archive this branch? Members will no longer be able to access it until it is restored.",
       "archiveReasonPrompt": "Add an archive reason (optional):",
       "archiveSuccess": "Branch archived.",
@@ -982,9 +983,9 @@
       "loading": "Loading branches...",
       "verifiedBadge": "Verified",
       "archivedBadge": "Archived",
-    "unknownLocation": "Location unknown",
-    "regionLabel": "Assigned region: {{region}}",
-    "regionPathLabel": "Hierarchy: {{path}}",
+      "unknownLocation": "Location unknown",
+      "regionLabel": "Assigned region: {{region}}",
+      "regionPathLabel": "Hierarchy: {{path}}",
       "archivedMeta": "Archived on {{date}} by {{by}}",
       "archivedUnknownUser": "unknown user",
       "archivedUnknownDate": "Archived (date unknown)",
@@ -997,21 +998,21 @@
         "delete": "Delete",
         "assignRegion": "Assign region"
       },
-    "assignRegion": {
-      "title": "Assign region",
-      "subtitle": "Selected {{count}} branches",
-      "selectLabel": "Choose a region",
-      "noSelection": "Select at least one branch before applying.",
-      "selectRegion": "Select a region first.",
-      "noRegionsAvailable": "No regions available for this action.",
-      "modeRegion": "Select region",
-      "modeUnassigned": "Mark as unassigned",
-      "selectedPath": "Selected: {{path}}",
-      "unassignedDescription": "Branches marked as unassigned will not appear in any regional dashboards.",
-      "unassignedNotAllowed": "Only SuperGurus can clear a branch region.",
-      "success": "{{count}} branches updated",
-      "submit": "Apply"
-    },
+      "assignRegion": {
+        "title": "Assign region",
+        "subtitle": "Selected {{count}} branches",
+        "selectLabel": "Choose a region",
+        "noSelection": "Select at least one branch before applying.",
+        "selectRegion": "Select a region first.",
+        "noRegionsAvailable": "No regions available for this action.",
+        "modeRegion": "Select region",
+        "modeUnassigned": "Mark as unassigned",
+        "selectedPath": "Selected: {{path}}",
+        "unassignedDescription": "Branches marked as unassigned will not appear in any regional dashboards.",
+        "unassignedNotAllowed": "Only SuperGurus can clear a branch region.",
+        "success": "{{count}} branches updated",
+        "submit": "Apply"
+      },
       "paginationSummary": "Showing {{start}}–{{end}} of {{total}} branches",
       "paginationPrev": "Previous",
       "paginationNext": "Next"
